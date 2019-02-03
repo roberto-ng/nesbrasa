@@ -2,10 +2,12 @@ api_version = '0.1'
 
 nesbrasa_sources = [
     'nesbrasa.c',
+    'instrucao.c',
 ]
 
 nesbrasa_headers = [
   'nesbrasa.h',
+  'instrucao.h',
 ]
 
 

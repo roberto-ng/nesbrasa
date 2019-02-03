@@ -10,9 +10,9 @@ instrucao_new (uint8_t codigo,
 {
   Instrucao *instr = malloc (sizeof (Instrucao));
   instr->codigo = codigo;
-  inst->bytes = bytes;
-  inst->ciclos = ciclos;
-  inst->modo = modo;
+  instr->bytes = bytes;
+  instr->ciclos = ciclos;
+  instr->modo = modo;
 
   return instr;
 }
