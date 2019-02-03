@@ -27,3 +27,10 @@ struct _Instrucao {
   int ciclos;
   InstrucaoModo modo;
 };
+
+Instrucao* instrucao_new  (uint8_t       codigo,
+                           uint8_t       bytes,
+                           int           ciclos,
+                           InstrucaoModo modo);
+
+void       instrucao_free (Instrucao *instr);
