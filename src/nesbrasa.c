@@ -18,6 +18,3 @@
  
 #include "nesbrasa.h"
 
-int quadrado(int num) {
-    return num * num;
-}

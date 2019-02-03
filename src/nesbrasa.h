@@ -18,4 +18,4 @@
 
 #pragma once
 
-int quadrado(int num);
+#include "instrucao.h"
