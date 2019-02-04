@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lista_p.h"
+#include "lista_ptr.h"
 
-ListaP*
-lista_p_new (size_t item_tamanho)
+ListaPtr*
+lista_ptr_new (size_t item_tamanho)
 {
-  ListaP *lista = malloc (sizeof (ListaP));
+  ListaPtr *lista = malloc (sizeof (ListaPtr));
   lista->total = 0;
   lista->dados = NULL;
   lista->fun_deletar = NULL;
@@ -16,7 +16,7 @@ lista_p_new (size_t item_tamanho)
 }
 
 void
-lista_p_free (ListaP *lista)
+lista_ptr_free (ListaPtr *lista)
 {
   if (lista == NULL) {
     return;
@@ -41,8 +41,8 @@ lista_p_free (ListaP *lista)
 }
 
 void
-lista_p_set_fun_del (ListaP *lista,
-                     FuncDeletar  fun_del)
+lista_ptr_set_fun_del (ListaPtr     *lista,
+                       FuncDeletar  fun_del)
 {
   if (lista == NULL) {
     return;
@@ -52,8 +52,8 @@ lista_p_set_fun_del (ListaP *lista,
 }
 
 void*
-lista_p_posicao (const ListaP *lista,
-                 size_t       pos)
+lista_ptr_posicao (const ListaPtr *lista,
+                   size_t         pos)
 {
   if (lista->dados == NULL || pos >= lista->total) {
     return NULL;
@@ -63,8 +63,8 @@ lista_p_posicao (const ListaP *lista,
 }
 
 void
-lista_p_inserir (ListaP *lista,
-                 void   *ponteiro)
+lista_ptr_inserir (ListaPtr *lista,
+                   void   *ponteiro)
 {
   if (lista->total == 0) {
     if (lista->dados == NULL) {
@@ -90,8 +90,8 @@ lista_p_inserir (ListaP *lista,
 }
 
 void
-lista_p_inserir_inicio (ListaP *lista,
-                        void   *ponteiro)
+lista_ptr_inserir_inicio (ListaPtr *lista,
+                          void     *ponteiro)
 {
   if (lista->total == 0) {
     if (lista->dados == NULL) {
