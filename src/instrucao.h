@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-// modos de endereçamento
+// modos de endereçamento das instruções
 typedef enum {
   MODO_ENDER_ACM,      // acumulador
   MODO_ENDER_ABS,      // absoluto
@@ -14,18 +14,18 @@ typedef enum {
   MODO_ENDER_IND_X,    // indireto, indexado pelo registrador x
   MODO_ENDER_IND_Y,    // indireto, indexado pelo registrador y
   MODO_ENDER_REL,      // relativo
-  MODO_ENDER_P_ZERO,   // indireto
-  MODO_ENDER_P_ZERO_X, // indireto, indexado pelo registrador x
-  MODO_ENDER_P_ZERO_Y, // indireto, indexado pelo registrador y
+  MODO_ENDER_P_ZERO,   // página 0
+  MODO_ENDER_P_ZERO_X, // página 0, indexado pelo registrador x
+  MODO_ENDER_P_ZERO_Y, // página 0, indexado pelo registrador y
 } InstrucaoModo;
 
 typedef struct _Instrucao Instrucao;
 
 struct _Instrucao {
-  uint8_t codigo;
-  uint8_t bytes;
-  int ciclos;
-  InstrucaoModo modo;
+        uint8_t       codigo;
+        uint8_t       bytes;
+        int           ciclos;
+        InstrucaoModo modo;
 };
 
 Instrucao* instrucao_new  (uint8_t       codigo,

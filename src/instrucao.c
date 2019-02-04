@@ -3,9 +3,9 @@
 #include "instrucao.h"
 
 Instrucao*
-instrucao_new (uint8_t codigo,
-               uint8_t bytes,
-               int ciclos,
+instrucao_new (uint8_t       codigo,
+               uint8_t       bytes,
+               int           ciclos,
                InstrucaoModo modo)
 {
   Instrucao *instr = malloc (sizeof (Instrucao));
