@@ -38,6 +38,7 @@ lista_ptr_free (ListaPtr *lista)
   }
 
   free (lista->dados);
+  free(lista);
 }
 
 void
