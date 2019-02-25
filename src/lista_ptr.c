@@ -38,7 +38,7 @@ lista_ptr_free (ListaPtr *lista)
   }
 
   free (lista->dados);
-  free(lista);
+  free (lista);
 }
 
 void
@@ -110,8 +110,8 @@ lista_ptr_inserir_inicio (ListaPtr *lista,
     if (lista->dados != NULL) {
       lista->total += 1;
 
-      // move todos os itens da lista pra frente,
-      // deixando o primeiro item disponível
+      // move todos os itens da lista pra trás,
+      // deixando o primeiro item disponível 
       memmove (&lista->dados[1], lista->dados, antigo_tamanho);
       lista->dados[0] = ponteiro;
     }

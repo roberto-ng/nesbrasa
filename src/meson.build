@@ -9,6 +9,8 @@ nesbrasa_sources = [
 nesbrasa_headers = [
   'nesbrasa.h',
   'instrucao.h',
+  'cpu.h'
+  'nes.h'
   'lista_ptr.h',
 ]
 
