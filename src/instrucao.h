@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "cpu.h"
+
 // modos de endereçamento das instruções
 typedef enum {
   MODO_ENDER_ACM,      // acumulador
@@ -21,16 +23,23 @@ typedef enum {
 
 typedef struct _Instrucao Instrucao;
 
+/* Ponteiro para uma fução de alto nivel que
+   sera usada para reimplementar uma instrução
+   da arquitetura 6502 */
+typedef void (*InstrucaoFunc)(Instrucao*, Cpu*);
+
 struct _Instrucao {
         uint8_t       codigo;
         uint8_t       bytes;
         int           ciclos;
         InstrucaoModo modo;
+        InstrucaoFunc funcao;
 };
 
 Instrucao* instrucao_new  (uint8_t       codigo,
                            uint8_t       bytes,
                            int           ciclos,
-                           InstrucaoModo modo);
+                           InstrucaoModo modo,
+                           InstrucaoFunc funcao);
 
 void       instrucao_free (Instrucao *instr);
