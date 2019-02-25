@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-// referencia utilizada:
+// referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
 
 typedef struct _Cpu Cpu;
@@ -18,4 +18,6 @@ struct _Cpu {
         uint8_t  d;  // flag decimal
         uint8_t  v;  // flag de transbordamento (overflow flag)
         uint8_t  n;  // flag de negativo
+        uint8_t  i;  // flag de desabilitar interrupções
+        uint8_t  b;  // flag da instrução break (break command flag)
 };
