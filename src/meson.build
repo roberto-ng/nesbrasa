@@ -3,6 +3,7 @@ api_version = '0.1'
 nesbrasa_sources = [
     'nesbrasa.c',
     'instrucao.c',
+    'memoria.c',
     'lista_ptr.c',
 ]
 
@@ -11,6 +12,7 @@ nesbrasa_headers = [
   'instrucao.h',
   'cpu.h',
   'nes.h',
+  'memoria.h',
   'lista_ptr.h',
 ]
 
