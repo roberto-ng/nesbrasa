@@ -44,7 +44,6 @@ ler_memoria_16_bits (Nes      *nes,
   return (maior << 8) | menor;
 }
 
-// implementa o bug no modo indireto da cpu 6502
 uint16_t
 ler_memoria_16_bits_bug (Nes      *nes,
                          uint16_t endereco)

@@ -28,6 +28,10 @@ instrucao_free (Instrucao *instr)
   free (instr);
 }
 
+/*!
+  Busca o endereço que vai ser usado pela instrução de
+  acordo com o modo de endereçamento da CPU
+ */
 static uint16_t
 buscar_endereco (Instrucao *instrucao,
                  Nes       *nes)
@@ -74,6 +78,10 @@ buscar_endereco (Instrucao *instrucao,
   return 0;
 }
 
+/*!
+  Instrução ADC
+  A + M + C -> A, C
+ */
 static void
 adc(Instrucao *instrucao,
     Nes       *nes)

@@ -26,11 +26,12 @@ struct _Cpu {
         uint8_t           b;  // flag da instrução break (break command flag)
 };
 
+//! Ativa a flag de zero caso seja necessario
 void cpu_set_z (Cpu     *cpu,
                 uint8_t valor);
-
+//! Ativa a flag de valor negativo caso seja necessario
 void cpu_set_n (Cpu     *cpu,
                 uint8_t valor);
-
+//! Ativa a flag de carregamento (carry flag) caso seja necessario
 void cpu_set_c (Cpu     *cpu,
                 int32_t valor);

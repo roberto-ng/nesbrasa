@@ -30,8 +30,6 @@ void
 cpu_set_c (Cpu     *cpu,
            int32_t valor)
 {
-  // checa se vai ser necessario ativar
-  // a flag de carregamento (carry flag)
   if (valor > 0xFF) {
     cpu->c = 1;
   }
