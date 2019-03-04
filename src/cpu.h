@@ -11,7 +11,6 @@
 typedef struct _Cpu Cpu;
 
 struct _Cpu {
-        struct _Memoria  *memoria;
         uint16_t          pc; // contador de programa
         uint8_t           sp; // ponteiro da stack
         uint8_t           a;  // registrador acumulador
