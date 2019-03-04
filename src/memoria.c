@@ -52,7 +52,7 @@ ler_memoria_16_bits_bug (Nes      *nes,
   uint16_t menor = ler_memoria (nes, endereco);
   uint16_t maior = 0;
 
-  if ((menor & 0x00FF) == 0x00FF) {
+  if ((endereco & 0x00FF) == 0x00FF) {
     maior = ler_memoria (nes, endereco & 0xFF00);
   }
   else {
