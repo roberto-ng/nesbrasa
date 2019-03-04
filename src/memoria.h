@@ -1,20 +1,15 @@
 #pragma once
 
-#include "cpu.h"
+#include "nesbrasa.h"
 
-typedef struct _Memoria Memoria;
+typedef struct _Nes Nes;
 
-struct _Memoria {
-        uint8_t     *ram;
-        struct _Cpu *cpu;
-};
-
-uint8_t  memoria_ler             (Memoria  *memoria,
+uint8_t  ler_memoria             (Nes      *memoria,
                                   uint16_t endereco);
 
-uint16_t memoria_ler_16_bits     (Memoria  *memoria,
+uint16_t ler_memoria_16_bits     (Nes      *memoria,
                                   uint16_t endereco);
 
 // implementa o bug do 6502 que ocorre quando o modo indireto utilizado
-uint16_t memoria_ler_16_bits_bug (Memoria  *memoria,
+uint16_t ler_memoria_16_bits_bug (Nes      *memoria,
                                   uint16_t endereco);

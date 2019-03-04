@@ -1,16 +1,19 @@
 #include "memoria.h"
+#include "nesbrasa.h"
+
+typedef struct _Nes Nes;
 
 uint8_t
-memoria_ler (Memoria  *memoria,
+ler_memoria (Nes      *nes,
              uint16_t endereco)
 {
   if (endereco <= 0x07FF) {
-    return memoria->ram[endereco];
+    return nes->ram[endereco];
   }
   else if (endereco >= 0x0800 && endereco <=0x1FFF) {
     // endereços nesta area são espelhos dos endereços
     // localizados entre 0x0000 e 0x07FF
-    return memoria->ram[endereco % 0x0800];
+    return nes->ram[endereco % 0x0800];
   }
   else if (endereco >= 0x2000 && endereco <= 0x2007) {
     // TODO: retornar registradores da PPU
@@ -32,29 +35,29 @@ memoria_ler (Memoria  *memoria,
 }
 
 uint16_t
-memoria_ler_16_bits (Memoria  *memoria,
+ler_memoria_16_bits (Nes      *nes,
                      uint16_t endereco)
 {
-  uint16_t baixo = memoria_ler (memoria, endereco);
-  uint16_t alto  = memoria_ler (memoria, endereco + 1);
+  uint16_t menor = ler_memoria (nes, endereco);
+  uint16_t maior = ler_memoria (nes, endereco + 1);
 
-  return (alto << 8) | baixo;
+  return (maior << 8) | menor;
 }
 
 // implementa o bug no modo indireto da cpu 6502
 uint16_t
-memoria_ler_16_bits_bug (Memoria  *memoria,
+ler_memoria_16_bits_bug (Nes      *nes,
                          uint16_t endereco)
 {
-  uint16_t baixo = memoria_ler (memoria, endereco);
-  uint16_t alto  = 0;
+  uint16_t menor = ler_memoria (nes, endereco);
+  uint16_t maior = 0;
 
-  if ((baixo & 0x00FF) == 0x00FF) {
-    alto = memoria_ler (memoria, - 0xFF);
+  if ((menor & 0x00FF) == 0x00FF) {
+    maior = ler_memoria (nes, endereco & 0xFF00);
   }
   else {
-    alto = memoria_ler (memoria, endereco + 1);
+    maior = ler_memoria (nes, endereco + 1);
   }
 
-  return (alto << 8) | baixo;
+  return (maior << 8) | menor;
 }

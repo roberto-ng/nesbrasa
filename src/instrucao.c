@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
+#include "cpu.h"
 #include "instrucao.h"
 #include "memoria.h"
-#include "cpu.h"
+#include "nesbrasa.h"
 
 Instrucao*
 instrucao_new (uint8_t       codigo,
@@ -29,8 +30,9 @@ instrucao_free (Instrucao *instr)
 
 static uint16_t
 buscar_endereco (Instrucao *instrucao,
-                 Cpu       *cpu)
+                 Nes       *nes)
 {
+  Cpu *cpu = nes->cpu;
   switch (instrucao->modo)
   {
     case MODO_ENDER_ACM:
@@ -38,33 +40,33 @@ buscar_endereco (Instrucao *instrucao,
     case MODO_ENDER_IMPL:
       return 0;
     case MODO_ENDER_IMED:
-      return cpu->pc + 1;
+      return nes->cpu->pc + 1;
     case MODO_ENDER_P_ZERO:
-      return memoria_ler (cpu->memoria, (cpu->pc + 1)%0xFF);
+      return ler_memoria (nes, (cpu->pc + 1)%0xFF);
     case MODO_ENDER_P_ZERO_X:
-      return memoria_ler (cpu->memoria, (cpu->pc + 1 + cpu->x)%0xFF);
+      return ler_memoria (nes, (cpu->pc + 1 + cpu->x)%0xFF);
     case MODO_ENDER_P_ZERO_Y:
-      return memoria_ler (cpu->memoria, (cpu->pc + 1 + cpu->y)%0xFF);
+      return ler_memoria (nes, (cpu->pc + 1 + cpu->y)%0xFF);
     case MODO_ENDER_ABS:
-      return memoria_ler_16_bits (cpu->memoria, cpu->pc + 1);
+      return ler_memoria_16_bits (nes, cpu->pc + 1);
     case MODO_ENDER_ABS_X:
-      return memoria_ler_16_bits (cpu->memoria, cpu->pc + 1 + cpu->x);
+      return ler_memoria_16_bits (nes, cpu->pc + 1 + cpu->x);
     case MODO_ENDER_ABS_Y:
-      return memoria_ler_16_bits (cpu->memoria, cpu->pc + 1 + cpu->y);
+      return ler_memoria_16_bits (nes, cpu->pc + 1 + cpu->y);
     case MODO_ENDER_IND: {
-      const uint16_t valor = memoria_ler_16_bits (cpu->memoria, cpu->pc+1);
-      return memoria_ler_16_bits_bug (cpu->memoria, valor);
+      const uint16_t valor = ler_memoria_16_bits (nes, cpu->pc+1);
+      return ler_memoria_16_bits_bug (nes, valor);
     }
     case MODO_ENDER_INDEX_IND: {
-      const uint16_t valor = memoria_ler (cpu->memoria, cpu->pc + 1);
-      return memoria_ler_16_bits_bug (cpu->memoria, valor + cpu->x);
+      const uint16_t valor = ler_memoria (nes, cpu->pc + 1);
+      return ler_memoria_16_bits_bug (nes, valor + cpu->x);
     }
     case MODO_ENDER_IND_INDEX: {
-      const uint16_t valor = memoria_ler (cpu->memoria, cpu->pc + 1);
-      return memoria_ler_16_bits_bug (cpu->memoria, valor + cpu->y);
+      const uint16_t valor = ler_memoria (nes, cpu->pc + 1);
+      return ler_memoria_16_bits_bug (nes, valor + cpu->y);
     }
     case MODO_ENDER_REL: {
-      const uint16_t valor = memoria_ler (cpu->memoria, cpu->pc + 1);
+      const uint16_t valor = ler_memoria (nes, cpu->pc + 1);
       return cpu->pc + 2 + valor - ((valor < 0x80) ? 0 : 0x100);
     }
   }
@@ -74,6 +76,27 @@ buscar_endereco (Instrucao *instrucao,
 
 static void
 adc(Instrucao *instrucao,
-    Cpu       *cpu)
+    Nes       *nes)
 {
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  uint8_t a = nes->cpu->a;
+  uint8_t m = valor;
+  uint8_t c = nes->cpu->c;
+
+  nes->cpu->a = a + m + c;
+
+  cpu_set_c (nes->cpu, ((int32_t)a + (int32_t)m + (int32_t)c));
+  cpu_set_n (nes->cpu, nes->cpu->a);
+  cpu_set_z (nes->cpu, nes->cpu->a);
+
+  // checa se houve um overflow/transbordamento
+  // solução baseada em: https://stackoverflow.com/a/16861251
+  if ((~(a ^ m)) & (a ^ c) & 0x80) {
+    nes->cpu->v = 1;
+  }
+  else {
+    nes->cpu->v = 0;
+  }
 }

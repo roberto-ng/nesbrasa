@@ -18,4 +18,15 @@
 
 #pragma once
 
-#include "instrucao.h"
+#include <stdint.h>
+
+#include "cpu.h"
+
+typedef struct _Cpu Cpu;
+
+typedef struct _Nes Nes;
+
+struct _Nes {
+        uint8_t ram[0x800];
+        Cpu     *cpu;
+};
