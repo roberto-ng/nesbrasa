@@ -83,15 +83,15 @@ buscar_endereco (Instrucao *instrucao,
   A + M + C -> A, C
  */
 static void
-adc(Instrucao *instrucao,
-    Nes       *nes)
+adc (Instrucao *instrucao,
+     Nes       *nes)
 {
   uint16_t endereco = buscar_endereco (instrucao, nes);
   uint8_t valor = ler_memoria (nes, endereco);
 
-  uint8_t a = nes->cpu->a;
-  uint8_t m = valor;
-  uint8_t c = nes->cpu->c;
+  const uint8_t a = nes->cpu->a;
+  const uint8_t m = valor;
+  const uint8_t c = nes->cpu->c;
 
   nes->cpu->a = a + m + c;
 
@@ -106,5 +106,65 @@ adc(Instrucao *instrucao,
   }
   else {
     nes->cpu->v = 0;
+  }
+}
+
+/*!
+  Instrução AND com o acumulador
+  A AND M -> A
+ */
+static void
+and (Instrucao *instrucao,
+     Nes       *nes)
+{
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  const uint8_t a = nes->cpu->a;
+  const uint8_t m = valor;
+
+  nes->cpu->a = a & m;
+
+  cpu_set_n (nes->cpu, nes->cpu->a);
+  cpu_set_z (nes->cpu, nes->cpu->a);
+}
+
+/*!
+  Instrução shift para a esquerda com a memoria ou com o acumulador
+ */
+static void
+asl (Instrucao *instrucao,
+     Nes       *nes)
+{
+  if (instrucao->modo == MODO_ENDER_ACM) {
+    // checa se o setimo bit do valor é '1'
+    if ((nes->cpu->a & 0b01000000) >> 7 == 1) {
+      nes->cpu->c = 1;
+    }
+    else {
+      nes->cpu->c = 0;
+    }
+
+    nes->cpu->a <<= 1;
+
+    cpu_set_n (nes->cpu, nes->cpu->a);
+    cpu_set_z (nes->cpu, nes->cpu->a);
+  }
+  else {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    uint8_t valor = ler_memoria (nes, endereco);
+
+    // checa se o setimo bit do valor é '1'
+    if ((valor & 0b01000000) >> 7 == 1) {
+      nes->cpu->c = 1;
+    }
+    else {
+      nes->cpu->c = 0;
+    }
+
+    escrever_memoria (nes, endereco, valor << 1);
+
+    cpu_set_n (nes->cpu, nes->cpu->a);
+    cpu_set_z (nes->cpu, nes->cpu->a);
   }
 }

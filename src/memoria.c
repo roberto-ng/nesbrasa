@@ -5,7 +5,7 @@ typedef struct _Nes Nes;
 
 uint8_t
 ler_memoria (Nes      *nes,
-             uint16_t endereco)
+             uint16_t  endereco)
 {
   if (endereco <= 0x07FF) {
     return nes->ram[endereco];
@@ -36,7 +36,7 @@ ler_memoria (Nes      *nes,
 
 uint16_t
 ler_memoria_16_bits (Nes      *nes,
-                     uint16_t endereco)
+                     uint16_t  endereco)
 {
   uint16_t menor = ler_memoria (nes, endereco);
   uint16_t maior = ler_memoria (nes, endereco + 1);
@@ -46,7 +46,7 @@ ler_memoria_16_bits (Nes      *nes,
 
 uint16_t
 ler_memoria_16_bits_bug (Nes      *nes,
-                         uint16_t endereco)
+                         uint16_t  endereco)
 {
   uint16_t menor = ler_memoria (nes, endereco);
   uint16_t maior = 0;
@@ -59,4 +59,12 @@ ler_memoria_16_bits_bug (Nes      *nes,
   }
 
   return (maior << 8) | menor;
+}
+
+void
+escrever_memoria (Nes      *nes,
+                  uint16_t  endereco,
+                  uint8_t   valor)
+{
+  //TODO: implementar
 }
