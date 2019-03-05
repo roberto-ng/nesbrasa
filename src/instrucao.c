@@ -80,8 +80,8 @@ buscar_endereco (Instrucao *instrucao,
 
   case MODO_ENDER_IND_INDEX:
     {
-    const uint16_t valor = ler_memoria (nes, cpu->pc + 1);
-    return ler_memoria_16_bits_bug (nes, valor + cpu->y);
+      const uint16_t valor = ler_memoria (nes, cpu->pc + 1);
+      return ler_memoria_16_bits_bug (nes, valor + cpu->y);
     }
 
   case MODO_ENDER_REL:
