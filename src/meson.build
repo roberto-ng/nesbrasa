@@ -5,6 +5,7 @@ nesbrasa_sources = [
     'instrucao.c',
     'memoria.c',
     'nesbrasa.c',
+    'ppu.c',
 ]
 
 nesbrasa_headers = [
@@ -12,6 +13,7 @@ nesbrasa_headers = [
   'instrucao.h',
   'memoria.h',
   'nesbrasa.h',
+  'ppu.h',
 ]
 
 
