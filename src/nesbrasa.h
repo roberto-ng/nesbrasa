@@ -21,12 +21,20 @@
 #include <stdint.h>
 
 #include "cpu.h"
+#include "ppu.h"
+
+#define NES_RAM_TAM 0x800
 
 typedef struct _Cpu Cpu;
 
 typedef struct _Nes Nes;
 
 struct _Nes {
-        uint8_t  ram[0x800];
+        uint8_t  ram[NES_RAM_TAM];
         Cpu     *cpu;
+        Ppu     *ppu;
 };
+
+Nes* nes_new  (void);
+
+void nes_free (Nes *nes);

@@ -1,5 +1,57 @@
+#include <stdlib.h>
+
 #include "ppu.h"
 #include "util.h"
+
+Ppu*
+ppu_new (void)
+{
+  Ppu *ppu = malloc (sizeof (Ppu));
+
+  ppu->ultimo_valor = 0;
+  ppu->vram_incrementar = 0;
+  ppu->nametable_endereco = 0;
+  ppu->padrao_fundo_endereco = 0;
+  ppu->padrao_sprite_endereco = 0;
+
+  ppu->flag_nmi = false;
+  ppu->flag_mestre_escravo = false;
+  ppu->flag_sprite_altura = false;
+  ppu->flag_padrao_fundo = false;
+  ppu->flag_padrao_sprite = false;
+  ppu->flag_incrementar = false;
+  ppu->flag_nametable_base = 0;
+
+  ppu->flag_enfase_b = false;
+  ppu->flag_enfase_g = false;
+  ppu->flag_enfase_r = false;
+  ppu->flag_sprite_habilitar = false;
+  ppu->flag_fundo_habilitar = false;
+  ppu->flag_sprite_habilitar_col_esquerda = false;
+  ppu->flag_fundo_habilitar_col_esquerda = false;
+  ppu->flag_escala_cinza = false;
+
+  ppu->flag_vblank = false;
+  ppu->flag_sprite_zero = false;
+  ppu->flag_sprite_transbordamento = false;
+
+  ppu->v = 0;
+  ppu->t = 0;
+  ppu->x = 0;
+  ppu->w = 0;
+
+  for (int i = 0; i < PPU_MEMORIA_TAM; i++) {
+    ppu->memoria[i] = 0;
+  }
+
+  return ppu;
+}
+
+void
+ppu_free (Ppu *ppu)
+{
+  free (ppu);
+}
 
 void
 ppu_controle_escrever (Ppu     *ppu,

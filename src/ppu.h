@@ -6,11 +6,13 @@
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 
+#define PPU_MEMORIA_TAM 0x800
+
 typedef struct _Ppu Ppu;
 
 struct _Ppu {
         // Memoria interna da ppu
-        uint8_t  memoria[0x800];
+        uint8_t  memoria[PPU_MEMORIA_TAM];
         // último valor escrito na ppu
         uint8_t  ultimo_valor;
         uint16_t vram_incrementar;
@@ -48,6 +50,10 @@ struct _Ppu {
         uint8_t  x;
         uint8_t  w;
 };
+
+Ppu*    ppu_new               (void);
+
+void    ppu_free              (Ppu *ppu);
 
 void    ppu_controle_escrever (Ppu     *ppu,
                                uint8_t  valor);

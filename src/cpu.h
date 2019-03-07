@@ -25,6 +25,10 @@ struct _Cpu {
         uint8_t  b;  // flag da instrução break (break command flag)
 };
 
+Cpu* cpu_new   (void);
+
+void cpu_free  (Cpu *cpu);
+
 //! Ativa a flag de zero caso seja necessario
 void cpu_set_z (Cpu     *cpu,
                 uint8_t  valor);
