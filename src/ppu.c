@@ -48,7 +48,7 @@ ppu_mascara_escrever (Ppu     *ppu,
   ppu->flag_enfase_g = buscar_bit (valor, 6);
   ppu->flag_enfase_r = buscar_bit (valor, 5);
   ppu->flag_sprite_habilitar = buscar_bit (valor, 4);
-  ppu->flag_fundo_habilitar = (bool)((valor & 0b00001000) >> 3);
+  ppu->flag_fundo_habilitar = buscar_bit (valor, 3);
   ppu->flag_sprite_habilitar_col_esquerda = buscar_bit (valor, 2);
   ppu->flag_fundo_habilitar_col_esquerda = buscar_bit (valor, 1);
   ppu->flag_escala_cinza = buscar_bit (valor, 0);
