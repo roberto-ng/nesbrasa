@@ -139,8 +139,7 @@ oam_dados_escrever (Ppu     *ppu,
 }
 
 uint8_t
-oam_dados_ler (Ppu     *ppu,
-               uint8_t  valor)
+oam_dados_ler (Ppu *ppu)
 {
   return ppu->oam[ppu->oam_endereco];
 }

@@ -70,5 +70,4 @@ void    oam_enderco_escrever  (Ppu     *ppu,
 void    oam_dados_escrever    (Ppu     *ppu,
                                uint8_t  valor);
 
-uint8_t oam_dados_ler         (Ppu     *ppu,
-                               uint8_t  valor);
+uint8_t oam_dados_ler         (Ppu     *ppu);
