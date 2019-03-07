@@ -1,15 +1,16 @@
 #include "ppu.h"
+#include "util.h"
 
 void
 ppu_controle_escrever (Ppu     *ppu,
                        uint8_t  valor)
 {
-  ppu->flag_nmi = (bool)((valor & 0b10000000) >> 7);
-  ppu->flag_mestre_escravo = (bool)((valor & 0b01000000) >> 6);
-  ppu->flag_sprite_altura = (bool)((valor & 0b00100000) >> 5);
-  ppu->flag_padrao_fundo = (bool)((valor & 0b00010000) >> 4);
-  ppu->flag_padrao_sprite = (bool)((valor & 0b00001000) >> 3);
-  ppu->flag_incrementar = (bool)((valor & 0b00000100) >> 2);
+  ppu->flag_nmi = buscar_bit (valor, 7);
+  ppu->flag_mestre_escravo = buscar_bit (valor, 6);
+  ppu->flag_sprite_altura = buscar_bit (valor, 5);
+  ppu->flag_padrao_fundo = buscar_bit (valor, 4);
+  ppu->flag_padrao_sprite = buscar_bit (valor, 3);
+  ppu->flag_incrementar = buscar_bit (valor, 2);
   ppu->flag_nametable_base = valor & 0b00000011;
 
   ppu->nametable_endereco = 0x2000 + (0x400 * ppu->flag_nametable_base);
@@ -43,14 +44,14 @@ void
 ppu_mascara_escrever (Ppu     *ppu,
                       uint8_t  valor)
 {
-  ppu->flag_enfase_b = (bool)((valor & 0b10000000) >> 7);
-  ppu->flag_enfase_g = (bool)((valor & 0b01000000) >> 6);
-  ppu->flag_enfase_r = (bool)((valor & 0b00100000) >> 5);
-  ppu->flag_sprite_habilitar = (bool)((valor & 0b00010000) >> 4);
+  ppu->flag_enfase_b = buscar_bit (valor, 7);
+  ppu->flag_enfase_g = buscar_bit (valor, 6);
+  ppu->flag_enfase_r = buscar_bit (valor, 5);
+  ppu->flag_sprite_habilitar = buscar_bit (valor, 4);
   ppu->flag_fundo_habilitar = (bool)((valor & 0b00001000) >> 3);
-  ppu->flag_sprite_habilitar_col_esquerda = (bool)((valor & 0b00000100) >> 2);
-  ppu->flag_fundo_habilitar_col_esquerda = (bool)((valor & 0b00000010) >> 1);
-  ppu->flag_escala_cinza = (bool)(valor & 0b00000001);
+  ppu->flag_sprite_habilitar_col_esquerda = buscar_bit (valor, 2);
+  ppu->flag_fundo_habilitar_col_esquerda = buscar_bit (valor, 1);
+  ppu->flag_escala_cinza = buscar_bit (valor, 0);
 }
 
 uint8_t
