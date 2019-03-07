@@ -6,19 +6,20 @@
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 
-#define PPU_MEMORIA_TAM 0x800
+#define PPU_OAM_TAM 0x800
 
 typedef struct _Ppu Ppu;
 
 struct _Ppu {
         // Memoria interna da ppu
-        uint8_t  memoria[PPU_MEMORIA_TAM];
+        uint8_t  oam[PPU_OAM_TAM];
         // último valor escrito na ppu
         uint8_t  ultimo_valor;
         uint16_t vram_incrementar;
         uint16_t nametable_endereco;
         uint16_t padrao_fundo_endereco;
         uint16_t padrao_sprite_endereco;
+        uint16_t oam_endereco;
 
         // PPUCTRL - $2000
         bool     flag_nmi;
@@ -63,3 +64,11 @@ void    ppu_mascara_escrever  (Ppu     *ppu,
 
 uint8_t ppu_estado_ler        (Ppu *ppu);
 
+void    oam_enderco_escrever  (Ppu     *ppu,
+                               uint8_t  valor);
+
+void    oam_dados_escrever    (Ppu     *ppu,
+                               uint8_t  valor);
+
+uint8_t oam_dados_ler         (Ppu     *ppu,
+                               uint8_t  valor);

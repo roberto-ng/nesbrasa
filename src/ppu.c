@@ -40,8 +40,8 @@ ppu_new (void)
   ppu->x = 0;
   ppu->w = 0;
 
-  for (int i = 0; i < PPU_MEMORIA_TAM; i++) {
-    ppu->memoria[i] = 0;
+  for (int i = 0; i < TAMANHO (ppu->oam); i++) {
+    ppu->oam[i] = 0;
   }
 
   return ppu;
@@ -123,3 +123,24 @@ ppu_estado_ler (Ppu *ppu)
   return v | s | o | ultimo;
 }
 
+void
+oam_enderco_escrever (Ppu     *ppu,
+                      uint8_t  valor)
+{
+  ppu->oam_endereco = valor;
+}
+
+void
+oam_dados_escrever (Ppu     *ppu,
+                    uint8_t  valor)
+{
+  ppu->oam[ppu->oam_endereco] = valor;
+  ppu->oam_endereco += 1;
+}
+
+uint8_t
+oam_dados_ler (Ppu     *ppu,
+               uint8_t  valor)
+{
+  return ppu->oam[ppu->oam_endereco];
+}

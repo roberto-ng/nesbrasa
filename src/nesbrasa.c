@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "nesbrasa.h"
+#include "util.h"
 
 Nes*
 nes_new (void)
@@ -27,7 +28,7 @@ nes_new (void)
   nes->cpu = cpu_new ();
   nes->ppu = ppu_new ();
 
-  for (int i = 0; i < NES_RAM_TAM; i++) {
+  for (int i = 0; i < TAMANHO (nes->ram); i++) {
     nes->ram[i] = 0;
   }
 
