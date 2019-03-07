@@ -7,5 +7,5 @@ buscar_bit(uint8_t byte, uint8_t pos)
   pos = pos % 8;
 
   const uint8_t tmp = byte & (1 << pos);
-  return (tmp >> pos) == 0;
+  return (tmp >> pos) != 0;
 }
