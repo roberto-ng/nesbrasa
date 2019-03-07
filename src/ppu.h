@@ -49,7 +49,7 @@ struct _Ppu {
         uint16_t v;
         uint16_t t;
         uint8_t  x;
-        uint8_t  w;
+        bool     w;
 };
 
 Ppu*    ppu_new               (void);
@@ -71,3 +71,9 @@ void    oam_dados_escrever    (Ppu     *ppu,
                                uint8_t  valor);
 
 uint8_t oam_dados_ler         (Ppu     *ppu);
+
+void    ppu_scroll_escrever   (Ppu     *ppu,
+                               uint8_t  valor);
+
+void    ppu_endereco_escrever (Ppu     *ppu,
+                               uint8_t  valor);

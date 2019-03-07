@@ -38,7 +38,7 @@ ppu_new (void)
   ppu->v = 0;
   ppu->t = 0;
   ppu->x = 0;
-  ppu->w = 0;
+  ppu->w = false;
 
   for (int i = 0; i < TAMANHO (ppu->oam); i++) {
     ppu->oam[i] = 0;
@@ -142,4 +142,70 @@ uint8_t
 oam_dados_ler (Ppu *ppu)
 {
   return ppu->oam[ppu->oam_endereco];
+}
+
+void
+ppu_scroll_escrever (Ppu     *ppu,
+                     uint8_t  valor)
+{
+  // se o valor de 'w' for 0, estamos na primeira escrita
+  // caso não seja, estamos na segunda escrita
+  if (ppu->w == false) {
+    // t: ....... ...HGFED = d: HGFED...
+    // x:              CBA = d: .....CBA
+    // w:                  = 1
+    ppu->t = (ppu->t & 0b1111111111100000) | (valor >> 3);
+    ppu->x = valor & 0b00000111;
+    ppu->w = true;
+  }
+  else {
+    // t: CBA..HG FED..... = d: HGFEDCBA
+    // w:                  = 0
+    ppu->t = ppu->t & 0b0000110000011111;
+
+    uint16_t cba = valor & 0b00000111;
+    cba <<= 12;
+
+    uint16_t hgfed = valor & 0b11111000;
+    hgfed <<= 2;
+
+    ppu->t = ppu->t | cba | hgfed;
+
+    ppu->w = false;
+  }
+}
+
+void
+ppu_endereco_escrever (Ppu     *ppu,
+                       uint8_t  valor)
+{
+  // se o valor de 'w' for 0, estamos na primeira escrita
+  // caso não seja, estamos na segunda escrita
+  if (ppu->w == false) {
+    // t: .FEDCBA ........ = d: ..FEDCBA
+    // t: X...... ........ = 0
+    // w:                  = 1
+
+    // mantem apenas os ultimos 8 bits ativos
+    ppu->t = ppu->t & 0b0000000011111111;
+
+    uint16_t fedcba = (valor & 0b00111111);
+    fedcba <<= 8;
+
+    ppu->t = ppu->t | fedcba;
+
+    ppu->w = true;
+  }
+  else {
+    // t: ....... HGFEDCBA = d: HGFEDCBA
+    // v                   = t
+    // w:                  = 0
+
+    // mantem apenas os primeiros 8 bits ativos
+    ppu->t = ppu->t & 0b1111111100000000;
+
+    ppu->t = ppu->t | (uint16_t)valor;
+
+    ppu->w = false;
+  }
 }
