@@ -23,6 +23,8 @@ struct _Cpu {
         uint8_t  n;  // flag de negativo
         uint8_t  i;  // flag de desabilitar interrupções
         uint8_t  b;  // flag da instrução break (break command flag)
+        uint16_t esperar;
+        uint32_t ciclos;
 };
 
 Cpu* cpu_new   (void);

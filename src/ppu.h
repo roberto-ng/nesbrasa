@@ -3,23 +3,24 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "nesbrasa.h"
+
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 
-#define PPU_OAM_TAM 0x800
-
+typedef struct _Nes Nes;
 typedef struct _Ppu Ppu;
 
 struct _Ppu {
-        // Memoria interna da ppu
-        uint8_t  oam[PPU_OAM_TAM];
-        // último valor escrito na ppu
-        uint8_t  ultimo_valor;
+        uint8_t  oam[0x100];
+        uint8_t  nametables[0x800];
+
+        uint8_t  ultimo_valor; // último valor escrito na ppu
         uint16_t vram_incrementar;
+        uint16_t oam_endereco;
         uint16_t nametable_endereco;
         uint16_t padrao_fundo_endereco;
         uint16_t padrao_sprite_endereco;
-        uint16_t oam_endereco;
 
         // PPUCTRL - $2000
         bool     flag_nmi;
@@ -56,24 +57,27 @@ Ppu*    ppu_new               (void);
 
 void    ppu_free              (Ppu *ppu);
 
-void    ppu_controle_escrever (Ppu     *ppu,
+void    ppu_controle_escrever (Nes     *nes,
                                uint8_t  valor);
 
-void    ppu_mascara_escrever  (Ppu     *ppu,
+void    ppu_mascara_escrever  (Nes     *nes,
                                uint8_t  valor);
 
-uint8_t ppu_estado_ler        (Ppu *ppu);
+uint8_t ppu_estado_ler        (Nes *nes);
 
-void    oam_enderco_escrever  (Ppu     *ppu,
+void    oam_enderco_escrever  (Nes     *nes,
                                uint8_t  valor);
 
-void    oam_dados_escrever    (Ppu     *ppu,
+void    oam_dados_escrever    (Nes     *nes,
                                uint8_t  valor);
 
-uint8_t oam_dados_ler         (Ppu     *ppu);
+uint8_t oam_dados_ler         (Nes *nes);
 
-void    ppu_scroll_escrever   (Ppu     *ppu,
+void    ppu_scroll_escrever   (Nes     *nes,
                                uint8_t  valor);
 
-void    ppu_endereco_escrever (Ppu     *ppu,
+void    ppu_endereco_escrever (Nes     *nes,
+                               uint8_t  valor);
+
+void    omd_dma_escrever      (Nes     *nes,
                                uint8_t  valor);

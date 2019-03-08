@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "ppu.h"
+#include "memoria.h"
 #include "util.h"
 
 Ppu*
@@ -10,6 +11,7 @@ ppu_new (void)
 
   ppu->ultimo_valor = 0;
   ppu->vram_incrementar = 0;
+  ppu->oam_endereco = 0;
   ppu->nametable_endereco = 0;
   ppu->padrao_fundo_endereco = 0;
   ppu->padrao_sprite_endereco = 0;
@@ -44,6 +46,10 @@ ppu_new (void)
     ppu->oam[i] = 0;
   }
 
+  for (int i = 0; i < TAMANHO (ppu->nametables); i++) {
+    ppu->nametables[i] = 0;
+  }
+
   return ppu;
 }
 
@@ -54,9 +60,11 @@ ppu_free (Ppu *ppu)
 }
 
 void
-ppu_controle_escrever (Ppu     *ppu,
+ppu_controle_escrever (Nes     *nes,
                        uint8_t  valor)
 {
+  Ppu *ppu = nes->ppu;
+
   ppu->flag_nmi = buscar_bit (valor, 7);
   ppu->flag_mestre_escravo = buscar_bit (valor, 6);
   ppu->flag_sprite_altura = buscar_bit (valor, 5);
@@ -93,9 +101,11 @@ ppu_controle_escrever (Ppu     *ppu,
 }
 
 void
-ppu_mascara_escrever (Ppu     *ppu,
+ppu_mascara_escrever (Nes     *nes,
                       uint8_t  valor)
 {
+  Ppu *ppu = nes->ppu;
+
   ppu->flag_enfase_b = buscar_bit (valor, 7);
   ppu->flag_enfase_g = buscar_bit (valor, 6);
   ppu->flag_enfase_r = buscar_bit (valor, 5);
@@ -107,9 +117,11 @@ ppu_mascara_escrever (Ppu     *ppu,
 }
 
 uint8_t
-ppu_estado_ler (Ppu *ppu)
+ppu_estado_ler (Nes *nes)
 {
-  // os 5 bits menos significativos do último valor escrito na PPU
+  Ppu *ppu = nes->ppu;
+
+  // os 5 ultimos bits do último valor escrito na PPU
   const uint8_t ultimo = ppu->ultimo_valor & 0b00011111;
 
   const uint8_t v = (uint8_t)ppu->flag_vblank << 7;
@@ -124,30 +136,34 @@ ppu_estado_ler (Ppu *ppu)
 }
 
 void
-oam_enderco_escrever (Ppu     *ppu,
+oam_enderco_escrever (Nes     *nes,
                       uint8_t  valor)
 {
-  ppu->oam_endereco = valor;
+  nes->ppu->oam_endereco = valor;
 }
 
 void
-oam_dados_escrever (Ppu     *ppu,
+oam_dados_escrever (Nes     *nes,
                     uint8_t  valor)
 {
+  Ppu *ppu = nes->ppu;
   ppu->oam[ppu->oam_endereco] = valor;
   ppu->oam_endereco += 1;
 }
 
 uint8_t
-oam_dados_ler (Ppu *ppu)
+oam_dados_ler (Nes *nes)
 {
+  Ppu *ppu = nes->ppu;
   return ppu->oam[ppu->oam_endereco];
 }
 
 void
-ppu_scroll_escrever (Ppu     *ppu,
+ppu_scroll_escrever (Nes     *nes,
                      uint8_t  valor)
 {
+  Ppu *ppu = nes->ppu;
+
   // se o valor de 'w' for 0, estamos na primeira escrita
   // caso não seja, estamos na segunda escrita
   if (ppu->w == false) {
@@ -176,9 +192,11 @@ ppu_scroll_escrever (Ppu     *ppu,
 }
 
 void
-ppu_endereco_escrever (Ppu     *ppu,
+ppu_endereco_escrever (Nes     *nes,
                        uint8_t  valor)
 {
+  Ppu *ppu = nes->ppu;
+
   // se o valor de 'w' for 0, estamos na primeira escrita
   // caso não seja, estamos na segunda escrita
   if (ppu->w == false) {
@@ -202,10 +220,30 @@ ppu_endereco_escrever (Ppu     *ppu,
     // w:                  = 0
 
     // mantem apenas os primeiros 8 bits ativos
-    ppu->t = ppu->t & 0b1111111100000000;
-
-    ppu->t = ppu->t | (uint16_t)valor;
+    ppu->t = (ppu->t & 0b1111111100000000) | (uint16_t)valor;
 
     ppu->w = false;
+  }
+}
+
+void
+omd_dma_escrever (Nes     *nes,
+                  uint8_t  valor)
+{
+  Ppu *ppu = nes->ppu;
+  uint16_t ponteiro = valor << 8;
+
+  for (int i = 0; i < TAMANHO (ppu->oam); i++) {
+    ppu->oam[ppu->oam_endereco] = ler_memoria (nes, ponteiro);
+    ppu->oam_endereco += 1;
+    ponteiro += 1;
+  }
+
+  // se o ciclo for impar
+  if ((nes->cpu->ciclos%2) != 0) {
+    nes->cpu->esperar = 514;
+  }
+  else {
+    nes->cpu->esperar = 513;
   }
 }

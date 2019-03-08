@@ -18,6 +18,7 @@ cpu_new (void)
   cpu->n = 0;
   cpu->i = 0;
   cpu->b = 0;
+  cpu->esperar = 0;
 
   return cpu;
 }
