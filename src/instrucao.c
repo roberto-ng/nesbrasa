@@ -37,8 +37,7 @@ buscar_endereco (Instrucao *instrucao,
                  Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
-  switch (instrucao->modo)
-  {
+  switch (instrucao->modo) {
   case MODO_ENDER_ACM:
     return 0;
 

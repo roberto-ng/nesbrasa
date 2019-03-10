@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "ppu.h"
+#include "rom.h"
 #include "memoria.h"
 #include "util.h"
 
@@ -9,6 +10,7 @@ ppu_new (void)
 {
   Ppu *ppu = malloc (sizeof (Ppu));
 
+  ppu->buffer_dados = 0;
   ppu->ultimo_valor = 0;
   ppu->vram_incrementar = 0;
   ppu->oam_endereco = 0;
@@ -57,6 +59,58 @@ void
 ppu_free (Ppu *ppu)
 {
   free (ppu);
+}
+
+uint8_t
+ppu_registrador_ler (Nes      *nes,
+         uint16_t  endereco)
+{
+  switch (endereco) {
+  case 0x2002:
+    return ppu_estado_ler (nes);
+
+  case 0x2004:
+    return oam_dados_ler (nes);
+
+  case 0x2007:
+    return ppu_dados_ler (nes);
+
+  default:
+    return 0;
+  }
+}
+
+void
+ppu_registrador_escrever (Nes      *nes,
+                          uint16_t  endereco,
+                          uint8_t   valor)
+{
+  switch (endereco) {
+  case 0x2000:
+    ppu_controle_escrever (nes, valor);
+    break;
+
+  case 0x2001:
+    ppu_mascara_escrever (nes, valor);
+    break;
+
+  case 0x2003:
+    oam_enderco_escrever (nes, valor);
+    break;
+
+  case 0x2005:
+    ppu_scroll_escrever (nes, valor);
+    break;
+
+  case 0x2006:
+    return ppu_endereco_escrever (nes, valor);
+
+  case 0x2007:
+    return ppu_dados_escrever (nes, valor);
+
+  default:
+    break;
+  }
 }
 
 void
@@ -246,4 +300,91 @@ omd_dma_escrever (Nes     *nes,
   else {
     nes->cpu->esperar = 513;
   }
+}
+
+uint8_t
+ppu_dados_ler (Nes *nes)
+{
+  Ppu *ppu = nes->ppu;
+
+  if (ppu->v < 0x3F00) {
+    const uint8_t dados = ppu->buffer_dados;
+    ppu->buffer_dados = ler_memoria (nes, ppu->v);
+    ppu->v += ppu->vram_incrementar;
+
+    return dados;
+  }
+  else {
+    const uint8_t valor = ler_memoria (nes, ppu->v);
+    ppu->buffer_dados = ler_memoria (nes, ppu->v - 0x1000);
+
+    return valor;
+  }
+}
+
+void
+ppu_dados_escrever (Nes     *nes,
+                    uint8_t  valor)
+{
+}
+
+uint16_t
+ppu_endereco_espelhado (Nes      *nes,
+                        uint16_t  endereco)
+{
+  uint16_t base = 0;
+  endereco = endereco & 0b10111111111111;
+
+  switch (nes->rom->espelhamento) {
+  case ESPELHAMENTO_HORIZONTAL:
+    if (endereco >= 0x2000 && endereco <0x2400) {
+      base = 0x2000;
+    }
+    else if (endereco >= 0x2400 && endereco < 0x2800) {
+      base = 0x2000;
+    }
+    else if (endereco >= 0x2800 && endereco < 0x2C00) {
+      base = 0x2400;
+    }
+    else {
+      base = 0x2400;
+    }
+    break;
+
+  case ESPELHAMENTO_VERTICAL:
+    if (endereco >= 0x2000 && endereco <0x2400) {
+      base = 0x2000;
+    }
+    else if (endereco >= 0x2400 && endereco < 0x2800) {
+      base = 0x2400;
+    }
+    else if (endereco >= 0x2800 && endereco < 0x2C00) {
+      base = 0x2000;
+    }
+    else {
+      base = 0x2400;
+    }
+    break;
+
+  case ESPELHAMENTO_TELA_UNICA:
+    base = 0x2000;
+    break;
+
+  case ESPELHAMENTO_4_TELAS:
+    if (endereco >= 0x2000 && endereco <0x2400) {
+      base = 0x2000;
+    }
+    else if (endereco >= 0x2400 && endereco < 0x2800) {
+      base = 0x2400;
+    }
+    else if (endereco >= 0x2800 && endereco < 0x2C00) {
+      base = 0x2800;
+    }
+    else {
+      base = 0x2C00;
+    }
+    break;
+  }
+
+  return base | (endereco & 0b0000001111111111);
 }
