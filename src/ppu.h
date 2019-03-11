@@ -59,6 +59,13 @@ Ppu*     ppu_new                   (void);
 
 void     ppu_free                  (Ppu *ppu);
 
+uint8_t  ppu_ler                   (Nes      *nes,
+                                    uint16_t  endereco);
+
+void     ppu_escrever              (Nes      *nes,
+                                    uint16_t  endereco,
+                                    uint8_t   valor);
+
 uint8_t  ppu_registrador_ler       (Nes      *nes,
                                    uint16_t  endereco);
 
