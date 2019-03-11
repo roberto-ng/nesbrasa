@@ -16,19 +16,22 @@ ler_memoria (Nes      *nes,
     return nes->ram[endereco % 0x0800];
   }
   else if (endereco >= 0x2000 && endereco <= 0x2007) {
-    // TODO: retornar registradores da PPU
-    return 0;
+    return ppu_registrador_ler (nes, endereco);
   }
   else if (endereco >= 0x2008 && endereco <= 0x3FFF) {
-    // TODO: espelhos dos registradores da PPU
-    return 0;
+    // endereço espelhado do registrador
+    uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
+    return ppu_registrador_ler (nes, ender_espelhado);
   }
   else if (endereco >= 0x4000 && endereco <= 0x4017) {
     // TODO: registradores da APU e de input/output
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
-    // TODO: espaço do cartucho
+    // originalmente usado apenas em modo de testes da CPU
     return 0;
+  }
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+    return nes->mapeador->ler (nes, endereco);
   }
 
   return 0;
@@ -66,5 +69,30 @@ escrever_memoria (Nes      *nes,
                   uint16_t  endereco,
                   uint8_t   valor)
 {
-  //TODO: implementar
+  if (endereco <= 0x07FF) {
+    nes->ram[endereco] = valor;
+  }
+  else if (endereco >= 0x0800 && endereco <=0x1FFF) {
+    // endereços nesta area são espelhos dos endereços
+    // localizados entre 0x0000 e 0x07FF
+    nes->ram[endereco % 0x0800] = valor;
+  }
+  else if (endereco >= 0x2000 && endereco <= 0x2007) {
+    ppu_registrador_escrever (nes, endereco, valor);
+  }
+  else if (endereco >= 0x2008 && endereco <= 0x3FFF) {
+    // endereço espelhado do registrador
+    uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
+    ppu_registrador_escrever (nes, ender_espelhado, valor);
+  }
+  else if (endereco >= 0x4000 && endereco <= 0x4017) {
+    // TODO: registradores da APU e de input/output
+  }
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+    // originalmente usado apenas em modo de testes da CPU
+    return;
+  }
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+    return nes->mapeador->escrever (nes, endereco, valor);
+  }
 }
