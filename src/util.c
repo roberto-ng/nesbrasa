@@ -1,11 +1,19 @@
 #include "util.h"
 
 inline bool
-buscar_bit(uint8_t byte, uint8_t pos)
+buscar_bit (uint8_t byte,
+            uint8_t pos)
 {
   // dar a volta quando a posição do bit for maior que 7
   pos = pos % 8;
 
   const uint8_t tmp = byte & (1 << pos);
   return (tmp >> pos) != 0;
+}
+
+inline bool
+comparar_paginas (uint16_t pagina_1,
+                  uint16_t pagina_2)
+{
+  return (pagina_1 & 0xFF00) != (pagina_2 & 0xFF00);
 }

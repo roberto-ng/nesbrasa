@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "cpu.h"
+#include "util.h"
 
 Cpu*
 cpu_new (void)
@@ -27,6 +28,18 @@ void
 cpu_free (Cpu *cpu)
 {
   free (cpu);
+}
+
+void
+cpu_branch_somar_ciclos (Cpu      *cpu,
+                         uint16_t  endereco)
+{
+  // somar 1 se os 2 endereços forem da mesma pagina,
+  // somar 2 se forem de paginas diferentes
+  if (comparar_paginas (cpu->pc, endereco))
+    cpu->ciclos += 1;
+  else
+    cpu->ciclos += 2;
 }
 
 void

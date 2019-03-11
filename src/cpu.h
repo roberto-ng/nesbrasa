@@ -14,6 +14,7 @@ struct _Cpu
 {
         uint16_t pc; // contador de programa
         uint8_t  sp; // ponteiro da stack
+
         uint8_t  a;  // registrador acumulador
         uint8_t  x;  // registrador de indice x
         uint8_t  y;  // registrador de indice y
@@ -24,20 +25,25 @@ struct _Cpu
         uint8_t  n;  // flag de negativo
         uint8_t  i;  // flag de desabilitar interrupções
         uint8_t  b;  // flag da instrução break (break command flag)
+                     //
         uint16_t esperar;
         uint32_t ciclos;
 };
 
-Cpu* cpu_new   (void);
+Cpu* cpu_new                 (void);
 
-void cpu_free  (Cpu *cpu);
+void cpu_free                (Cpu *cpu);
+
+/*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
+ \param endereco O endereço em que o branch sera realizado
+ */
+void cpu_branch_somar_ciclos (Cpu      *cpu,
+                              uint16_t  endereco);
 
 //! Ativa a flag de zero caso seja necessario
-void cpu_set_z (Cpu     *cpu,
-                uint8_t  valor);
+void cpu_set_z               (Cpu     *cpu,
+                              uint8_t  valor);
+
 //! Ativa a flag de valor negativo caso seja necessario
-void cpu_set_n (Cpu     *cpu,
-                uint8_t  valor);
-//! Ativa a flag de carregamento (carry flag) caso seja necessario
-void cpu_set_c (Cpu     *cpu,
-                int32_t  valor);
+void cpu_set_n               (Cpu     *cpu,
+                              uint8_t  valor);

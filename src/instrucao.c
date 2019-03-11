@@ -131,7 +131,7 @@ adc (Instrucao *instrucao,
 }
 
 /*!
-  Instrução AND com o acumulador
+  Instrução AND
   A AND M -> A
  */
 static void
@@ -186,4 +186,73 @@ asl (Instrucao *instrucao,
     cpu_set_n (nes->cpu, nes->cpu->a);
     cpu_set_z (nes->cpu, nes->cpu->a);
   }
+}
+
+/*! Branch se 'c' for 0
+ * Pula para o endereço indicado caso o valor de 'c' seja 0
+ */
+static void
+bcc (Instrucao *instrucao,
+     Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->c == 0)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+/*! Branch se 'c' não for 0
+ * Pula para o endereço indicado caso o valor de 'c' não seja 0
+ */
+static void
+bcs (Instrucao *instrucao,
+     Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->c != 0)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+/*! Branch se 'z' não for 0
+ * Pula para o endereço indicado caso o valor de 'z' não seja 0
+ */
+static void
+beq (Instrucao *instrucao,
+     Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->z != 0)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+/*! BIT
+  Busca um byte na memoria e depois salva a posição 7 do byte em 'n'
+  e a posição 6 do byte em 'v'.
+  A flag 'z' tambem é alterada sendo calculada com 'a' AND valor
+ */
+static void
+bit (Instrucao *instrucao,
+     Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  cpu->n = buscar_bit (valor, 7);
+  cpu->v = buscar_bit (valor, 6);
+  cpu->z = valor & cpu->a;
 }
