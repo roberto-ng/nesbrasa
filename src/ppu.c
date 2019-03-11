@@ -48,12 +48,8 @@ ppu_new (void)
     ppu->oam[i] = 0;
   }
 
-  for (int i = 0; i < TAMANHO (ppu->nametables); i++) {
-    ppu->nametables[i] = 0;
-  }
-
-  for (int i = 0; i < TAMANHO (ppu->paletas); i++) {
-    ppu->paletas[i] = 0;
+  for (int i = 0; i < TAMANHO (ppu->vram); i++) {
+    ppu->vram[i] = 0;
   }
 
   return ppu;
@@ -107,10 +103,12 @@ ppu_registrador_escrever (Nes      *nes,
     break;
 
   case 0x2006:
-    return ppu_endereco_escrever (nes, valor);
+    ppu_endereco_escrever (nes, valor);
+    break;
 
   case 0x2007:
-    return ppu_dados_escrever (nes, valor);
+    ppu_dados_escrever (nes, valor);
+    break;
 
   default:
     break;
@@ -126,10 +124,31 @@ ppu_ler (Nes      *nes,
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00) {
     uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
-    return nes->ppu->nametables[espelhado];
+    return nes->ppu->vram[espelhado];
   }
   else if (endereco >= 0x3F00 && endereco < 0x4000) {
-    //TODO: ler dados das paletas de cores
+    //ler dados das paletas de cores
+
+    if (endereco >= 0x3F20) {
+      // espelhar o endereço se necessario
+      endereco = (endereco%0x20) + 0x3F00;
+    }
+
+    if (endereco == 0x3F10) {
+      return nes->ppu->vram[0x3F00];
+    }
+    else if (endereco == 0x3F14) {
+      return nes->ppu->vram[0x3F04];
+    }
+    else if (endereco == 0x3F18) {
+      return nes->ppu->vram[0x3F08];
+    }
+    else if (endereco == 0x3F1C) {
+      return nes->ppu->vram[0x3F0C];
+    }
+    else {
+      return nes->ppu->vram[endereco];
+    }
   }
 
   return 0;
@@ -145,10 +164,31 @@ ppu_escrever (Nes      *nes,
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00) {
     uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
-    nes->ppu->nametables[espelhado] = valor;
+    nes->ppu->vram[espelhado] = valor;
   }
   else if (endereco >= 0x3F00 && endereco < 0x4000) {
-    //TODO: escrever nas paletas de cores
+    //escrever nas paletas de cores
+
+    if (endereco >= 0x3F20) {
+      // espelhar o endereço se necessario
+      endereco = (endereco%0x20) + 0x3F00;
+    }
+
+    if (endereco == 0x3F10) {
+      nes->ppu->vram[0x3F00] = valor;
+    }
+    else if (endereco == 0x3F14) {
+      nes->ppu->vram[0x3F04] = valor;
+    }
+    else if (endereco == 0x3F18) {
+      nes->ppu->vram[0x3F08] = valor;
+    }
+    else if (endereco == 0x3F1C) {
+      nes->ppu->vram[0x3F0C] = valor;
+    }
+    else {
+      nes->ppu->vram[endereco] = valor;
+    }
   }
 }
 
@@ -374,7 +414,7 @@ ppu_endereco_espelhado (Nes      *nes,
   uint16_t base = 0;
   switch (nes->rom->espelhamento) {
   case ESPELHAMENTO_HORIZONTAL:
-    if (endereco >= 0x2000 && endereco <0x2400) {
+    if (endereco >= 0x2000 && endereco < 0x2400) {
       base = 0x2000;
     }
     else if (endereco >= 0x2400 && endereco < 0x2800) {
@@ -389,7 +429,7 @@ ppu_endereco_espelhado (Nes      *nes,
     break;
 
   case ESPELHAMENTO_VERTICAL:
-    if (endereco >= 0x2000 && endereco <0x2400) {
+    if (endereco >= 0x2000 && endereco < 0x2400) {
       base = 0x2000;
     }
     else if (endereco >= 0x2400 && endereco < 0x2800) {
@@ -408,7 +448,7 @@ ppu_endereco_espelhado (Nes      *nes,
     break;
 
   case ESPELHAMENTO_4_TELAS:
-    if (endereco >= 0x2000 && endereco <0x2400) {
+    if (endereco >= 0x2000 && endereco < 0x2400) {
       base = 0x2000;
     }
     else if (endereco >= 0x2400 && endereco < 0x2800) {
