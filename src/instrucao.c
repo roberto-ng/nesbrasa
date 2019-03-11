@@ -110,9 +110,12 @@ adc (Instrucao *instrucao,
 
   nes->cpu->a = a + m + c;
 
-  cpu_set_c (nes->cpu, ((int32_t)a + (int32_t)m + (int32_t)c));
-  cpu_set_n (nes->cpu, nes->cpu->a);
-  cpu_set_z (nes->cpu, nes->cpu->a);
+  if (((int32_t)a + (int32_t)m + (int32_t)c) > 0xFF) {
+    nes->cpu->c = 1;
+  }
+  else {
+    nes->cpu->c = 0;
+  }
 
   // checa se houve um overflow/transbordamento
   // solução baseada em: https://stackoverflow.com/a/16861251
@@ -122,6 +125,9 @@ adc (Instrucao *instrucao,
   else {
     nes->cpu->v = 0;
   }
+
+  cpu_set_n (nes->cpu, nes->cpu->a);
+  cpu_set_z (nes->cpu, nes->cpu->a);
 }
 
 /*!

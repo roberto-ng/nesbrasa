@@ -54,15 +54,3 @@ cpu_set_n (Cpu     *cpu,
     cpu->n = 0;
   }
 }
-
-void
-cpu_set_c (Cpu     *cpu,
-           int32_t  valor)
-{
-  if (valor > 0xFF) {
-    cpu->c = 1;
-  }
-  else {
-    cpu->c = 0;
-  }
-}
