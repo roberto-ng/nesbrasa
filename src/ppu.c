@@ -405,6 +405,10 @@ void
 ppu_dados_escrever (Nes     *nes,
                     uint8_t  valor)
 {
+  Ppu *ppu = nes->ppu;
+
+  ppu_escrever (nes, ppu->v, valor);
+  ppu->v += ppu->vram_incrementar;
 }
 
 uint16_t
