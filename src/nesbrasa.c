@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "nesbrasa.h"
+#include "rom.h"
 #include "util.h"
 
 Nes*

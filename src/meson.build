@@ -7,6 +7,7 @@ nesbrasa_sources = [
     'memoria.c',
     'nesbrasa.c',
     'ppu.c',
+    'rom.c',
     'util.c',
 ]
 

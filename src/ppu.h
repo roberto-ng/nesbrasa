@@ -15,6 +15,7 @@ typedef struct _Ppu Ppu;
 struct _Ppu {
         uint8_t  oam[0x100];
         uint8_t  nametables[0x800];
+        uint8_t  paletas[0x20];
 
         uint8_t  buffer_dados;
         uint8_t  ultimo_valor; // último valor escrito na ppu

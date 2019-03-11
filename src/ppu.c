@@ -52,6 +52,10 @@ ppu_new (void)
     ppu->nametables[i] = 0;
   }
 
+  for (int i = 0; i < TAMANHO (ppu->paletas); i++) {
+    ppu->paletas[i] = 0;
+  }
+
   return ppu;
 }
 
@@ -63,7 +67,7 @@ ppu_free (Ppu *ppu)
 
 uint8_t
 ppu_registrador_ler (Nes      *nes,
-         uint16_t  endereco)
+                     uint16_t  endereco)
 {
   switch (endereco) {
   case 0x2002:
@@ -110,6 +114,41 @@ ppu_registrador_escrever (Nes      *nes,
 
   default:
     break;
+  }
+}
+
+uint8_t
+ppu_ler (Nes      *nes,
+         uint16_t  endereco)
+{
+  if (endereco < 0x2000) {
+    return nes->mapeador->ler (nes, endereco);
+  }
+  else if (endereco >= 0x2000 && endereco < 0x3F00) {
+    uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
+    return nes->ppu->nametables[espelhado];
+  }
+  else if (endereco >= 0x3F00 && endereco < 0x4000) {
+    //TODO: ler dados das paletas de cores
+  }
+
+  return 0;
+}
+
+void
+ppu_escrever (Nes      *nes,
+              uint16_t  endereco,
+              uint8_t   valor)
+{
+  if (endereco < 0x2000) {
+    nes->mapeador->escrever (nes, endereco, valor);
+  }
+  else if (endereco >= 0x2000 && endereco < 0x3F00) {
+    uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
+    nes->ppu->nametables[espelhado] = valor;
+  }
+  else if (endereco >= 0x3F00 && endereco < 0x4000) {
+    //TODO: escrever nas paletas de cores
   }
 }
 
@@ -333,8 +372,6 @@ ppu_endereco_espelhado (Nes      *nes,
                         uint16_t  endereco)
 {
   uint16_t base = 0;
-  endereco = endereco & 0b10111111111111;
-
   switch (nes->rom->espelhamento) {
   case ESPELHAMENTO_HORIZONTAL:
     if (endereco >= 0x2000 && endereco <0x2400) {

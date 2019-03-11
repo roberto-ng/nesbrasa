@@ -27,6 +27,7 @@
 
 typedef struct _Cpu Cpu;
 typedef struct _Ppu Ppu;
+typedef struct _Mapeador Mapeador;
 typedef struct _Nes Nes;
 
 struct _Nes {
