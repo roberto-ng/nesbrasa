@@ -37,7 +37,8 @@ buscar_endereco (Instrucao *instrucao,
                  Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
-  switch (instrucao->modo) {
+  switch (instrucao->modo)
+  {
   case MODO_ENDER_ACM:
     return 0;
 
@@ -110,19 +111,23 @@ adc (Instrucao *instrucao,
 
   nes->cpu->a = a + m + c;
 
-  if (((int32_t)a + (int32_t)m + (int32_t)c) > 0xFF) {
+  if (((int32_t)a + (int32_t)m + (int32_t)c) > 0xFF)
+  {
     nes->cpu->c = 1;
   }
-  else {
+  else
+  {
     nes->cpu->c = 0;
   }
 
   // checa se houve um overflow/transbordamento
   // solução baseada em: https://stackoverflow.com/a/16861251
-  if ((~(a ^ m)) & (a ^ c) & 0x80) {
+  if ((~(a ^ m)) & (a ^ c) & 0x80)
+  {
     nes->cpu->v = 1;
   }
-  else {
+  else
+  {
     nes->cpu->v = 0;
   }
 
@@ -157,12 +162,15 @@ static void
 asl (Instrucao *instrucao,
      Nes       *nes)
 {
-  if (instrucao->modo == MODO_ENDER_ACM) {
+  if (instrucao->modo == MODO_ENDER_ACM)
+  {
     // checa se o setimo bit do valor é '1'
-    if ((nes->cpu->a & 0b01000000) >> 7 == 1) {
+    if ((nes->cpu->a & 0b01000000) >> 7 == 1)
+    {
       nes->cpu->c = 1;
     }
-    else {
+    else
+    {
       nes->cpu->c = 0;
     }
 
@@ -176,10 +184,12 @@ asl (Instrucao *instrucao,
     uint8_t valor = ler_memoria (nes, endereco);
 
     // checa se o setimo bit do valor é '1'
-    if ((valor & 0b01000000) >> 7 == 1) {
+    if ((valor & 0b01000000) >> 7 == 1)
+    {
       nes->cpu->c = 1;
     }
-    else {
+    else
+    {
       nes->cpu->c = 0;
     }
 

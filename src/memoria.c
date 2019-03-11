@@ -7,30 +7,37 @@ uint8_t
 ler_memoria (Nes      *nes,
              uint16_t  endereco)
 {
-  if (endereco <= 0x07FF) {
+  if (endereco <= 0x07FF)
+  {
     return nes->ram[endereco];
   }
-  else if (endereco >= 0x0800 && endereco <=0x1FFF) {
+  else if (endereco >= 0x0800 && endereco <=0x1FFF)
+  {
     // endereços nesta area são espelhos dos endereços
     // localizados entre 0x0000 e 0x07FF
     return nes->ram[endereco % 0x0800];
   }
-  else if (endereco >= 0x2000 && endereco <= 0x2007) {
+  else if (endereco >= 0x2000 && endereco <= 0x2007)
+  {
     return ppu_registrador_ler (nes, endereco);
   }
-  else if (endereco >= 0x2008 && endereco <= 0x3FFF) {
+  else if (endereco >= 0x2008 && endereco <= 0x3FFF)
+  {
     // endereço espelhado do registrador
     uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
     return ppu_registrador_ler (nes, ender_espelhado);
   }
-  else if (endereco >= 0x4000 && endereco <= 0x4017) {
+  else if (endereco >= 0x4000 && endereco <= 0x4017)
+  {
     // TODO: registradores da APU e de input/output
   }
-  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF)
+  {
     // originalmente usado apenas em modo de testes da CPU
     return 0;
   }
-  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF)
+  {
     return nes->mapeador->ler (nes, endereco);
   }
 
@@ -54,10 +61,12 @@ ler_memoria_16_bits_bug (Nes      *nes,
   uint16_t menor = ler_memoria (nes, endereco);
   uint16_t maior = 0;
 
-  if ((endereco & 0x00FF) == 0x00FF) {
+  if ((endereco & 0x00FF) == 0x00FF)
+  {
     maior = ler_memoria (nes, endereco & 0xFF00);
   }
-  else {
+  else
+  {
     maior = ler_memoria (nes, endereco + 1);
   }
 
@@ -69,30 +78,37 @@ escrever_memoria (Nes      *nes,
                   uint16_t  endereco,
                   uint8_t   valor)
 {
-  if (endereco <= 0x07FF) {
+  if (endereco <= 0x07FF)
+  {
     nes->ram[endereco] = valor;
   }
-  else if (endereco >= 0x0800 && endereco <=0x1FFF) {
+  else if (endereco >= 0x0800 && endereco <=0x1FFF)
+  {
     // endereços nesta area são espelhos dos endereços
     // localizados entre 0x0000 e 0x07FF
     nes->ram[endereco % 0x0800] = valor;
   }
-  else if (endereco >= 0x2000 && endereco <= 0x2007) {
+  else if (endereco >= 0x2000 && endereco <= 0x2007)
+  {
     ppu_registrador_escrever (nes, endereco, valor);
   }
-  else if (endereco >= 0x2008 && endereco <= 0x3FFF) {
+  else if (endereco >= 0x2008 && endereco <= 0x3FFF)
+  {
     // endereço espelhado do registrador
     uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
     ppu_registrador_escrever (nes, ender_espelhado, valor);
   }
-  else if (endereco >= 0x4000 && endereco <= 0x4017) {
+  else if (endereco >= 0x4000 && endereco <= 0x4017)
+  {
     // TODO: registradores da APU e de input/output
   }
-  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF)
+  {
     // originalmente usado apenas em modo de testes da CPU
     return;
   }
-  else if (endereco >= 0x4020 && endereco <= 0xFFFF) {
+  else if (endereco >= 0x4020 && endereco <= 0xFFFF)
+  {
     return nes->mapeador->escrever (nes, endereco, valor);
   }
 }

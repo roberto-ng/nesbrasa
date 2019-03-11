@@ -12,7 +12,8 @@
 typedef struct _Nes Nes;
 typedef struct _Ppu Ppu;
 
-struct _Ppu {
+struct _Ppu
+{
         uint8_t  oam[0x100];
         uint8_t  vram[0x4000];
 

@@ -1,6 +1,7 @@
 #pragma once
 
-typedef enum {
+typedef enum
+{
   ESPELHAMENTO_HORIZONTAL,
   ESPELHAMENTO_VERTICAL,
   ESPELHAMENTO_TELA_UNICA,
@@ -9,7 +10,8 @@ typedef enum {
 
 typedef struct _Rom Rom;
 
-struct _Rom {
+struct _Rom
+{
         Espelhamento espelhamento;
 };
 

@@ -31,7 +31,8 @@ nes_new (void)
   nes->rom = rom_new ();
   nes->mapeador = mapeador_new ();
 
-  for (int i = 0; i < TAMANHO (nes->ram); i++) {
+  for (int i = 0; i < TAMANHO (nes->ram); i++)
+  {
     nes->ram[i] = 0;
   }
 

@@ -9,7 +9,8 @@
 // https://www.masswerk.at/6502/6502_instruction_set.html
 
 //! Modos de endereçamento das instruções
-typedef enum {
+typedef enum
+{
   MODO_ENDER_ACM,       // acumulador
   MODO_ENDER_ABS,       // absoluto
   MODO_ENDER_ABS_X,     // absoluto, indexado pelo registrador x
@@ -34,10 +35,13 @@ typedef void (*InstrucaoFunc) (Instrucao *instrucao,
                                Nes       *nes);
 
 //! Uma instrução da arquitetura 6502
-struct _Instrucao {
+struct _Instrucao
+{
         uint8_t       codigo;
         uint8_t       bytes;
         int           ciclos;
+
+        // ponteiros para funções
         InstrucaoModo modo;
         InstrucaoFunc funcao;
 };

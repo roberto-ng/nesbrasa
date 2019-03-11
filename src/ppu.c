@@ -44,11 +44,13 @@ ppu_new (void)
   ppu->x = 0;
   ppu->w = false;
 
-  for (int i = 0; i < TAMANHO (ppu->oam); i++) {
+  for (int i = 0; i < TAMANHO (ppu->oam); i++)
+  {
     ppu->oam[i] = 0;
   }
 
-  for (int i = 0; i < TAMANHO (ppu->vram); i++) {
+  for (int i = 0; i < TAMANHO (ppu->vram); i++)
+  {
     ppu->vram[i] = 0;
   }
 
@@ -65,7 +67,8 @@ uint8_t
 ppu_registrador_ler (Nes      *nes,
                      uint16_t  endereco)
 {
-  switch (endereco) {
+  switch (endereco)
+  {
   case 0x2002:
     return ppu_estado_ler (nes);
 
@@ -85,7 +88,8 @@ ppu_registrador_escrever (Nes      *nes,
                           uint16_t  endereco,
                           uint8_t   valor)
 {
-  switch (endereco) {
+  switch (endereco)
+  {
   case 0x2000:
     ppu_controle_escrever (nes, valor);
     break;
@@ -119,34 +123,43 @@ uint8_t
 ppu_ler (Nes      *nes,
          uint16_t  endereco)
 {
-  if (endereco < 0x2000) {
+  if (endereco < 0x2000)
+  {
     return nes->mapeador->ler (nes, endereco);
   }
-  else if (endereco >= 0x2000 && endereco < 0x3F00) {
+  else if (endereco >= 0x2000 && endereco < 0x3F00)
+  {
     uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
     return nes->ppu->vram[espelhado];
   }
-  else if (endereco >= 0x3F00 && endereco < 0x4000) {
+  else if (endereco >= 0x3F00 && endereco < 0x4000)
+  {
     //ler dados das paletas de cores
 
-    if (endereco >= 0x3F20) {
+    if (endereco >= 0x3F20)
+    {
       // espelhar o endereço se necessario
       endereco = (endereco%0x20) + 0x3F00;
     }
 
-    if (endereco == 0x3F10) {
+    if (endereco == 0x3F10)
+    {
       return nes->ppu->vram[0x3F00];
     }
-    else if (endereco == 0x3F14) {
+    else if (endereco == 0x3F14)
+    {
       return nes->ppu->vram[0x3F04];
     }
-    else if (endereco == 0x3F18) {
+    else if (endereco == 0x3F18)
+    {
       return nes->ppu->vram[0x3F08];
     }
-    else if (endereco == 0x3F1C) {
+    else if (endereco == 0x3F1C)
+    {
       return nes->ppu->vram[0x3F0C];
     }
-    else {
+    else
+    {
       return nes->ppu->vram[endereco];
     }
   }
@@ -159,34 +172,43 @@ ppu_escrever (Nes      *nes,
               uint16_t  endereco,
               uint8_t   valor)
 {
-  if (endereco < 0x2000) {
+  if (endereco < 0x2000)
+  {
     nes->mapeador->escrever (nes, endereco, valor);
   }
-  else if (endereco >= 0x2000 && endereco < 0x3F00) {
+  else if (endereco >= 0x2000 && endereco < 0x3F00)
+  {
     uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
     nes->ppu->vram[espelhado] = valor;
   }
-  else if (endereco >= 0x3F00 && endereco < 0x4000) {
+  else if (endereco >= 0x3F00 && endereco < 0x4000)
+  {
     //escrever nas paletas de cores
 
-    if (endereco >= 0x3F20) {
-      // espelhar o endereço se necessario
+    // espelhar o endereço se for necessario
+    if (endereco >= 0x3F20)
+    {
       endereco = (endereco%0x20) + 0x3F00;
     }
 
-    if (endereco == 0x3F10) {
+    if (endereco == 0x3F10)
+    {
       nes->ppu->vram[0x3F00] = valor;
     }
-    else if (endereco == 0x3F14) {
+    else if (endereco == 0x3F14)
+    {
       nes->ppu->vram[0x3F04] = valor;
     }
-    else if (endereco == 0x3F18) {
+    else if (endereco == 0x3F18)
+    {
       nes->ppu->vram[0x3F08] = valor;
     }
-    else if (endereco == 0x3F1C) {
+    else if (endereco == 0x3F1C)
+    {
       nes->ppu->vram[0x3F0C] = valor;
     }
-    else {
+    else
+    {
       nes->ppu->vram[endereco] = valor;
     }
   }
@@ -208,26 +230,20 @@ ppu_controle_escrever (Nes     *nes,
 
   ppu->nametable_endereco = 0x2000 + (0x400 * ppu->flag_nametable_base);
 
-  if (ppu->flag_incrementar) {
+  if (ppu->flag_incrementar)
     ppu->vram_incrementar = 32;
-  }
-  else {
+  else
     ppu->vram_incrementar = 1;
-  }
 
-  if (ppu->flag_padrao_sprite) {
+  if (ppu->flag_padrao_sprite)
     ppu->padrao_sprite_endereco = 0x1000;
-  }
-  else {
+  else
     ppu->padrao_sprite_endereco = 0x0000;
-  }
 
-  if (ppu->flag_padrao_fundo) {
+  if (ppu->flag_padrao_fundo)
     ppu->padrao_fundo_endereco = 0x1000;
-  }
-  else {
+  else
     ppu->padrao_fundo_endereco = 0x0000;
-  }
 
   // t: ...BA.. ........ = d: ......BA
   ppu->t = (ppu->t & 0b1111001111111111) | ((valor & 0b00000011) << 10);
@@ -299,7 +315,8 @@ ppu_scroll_escrever (Nes     *nes,
 
   // se o valor de 'w' for 0, estamos na primeira escrita
   // caso não seja, estamos na segunda escrita
-  if (ppu->w == false) {
+  if (ppu->w == false)
+  {
     // t: ....... ...HGFED = d: HGFED...
     // x:              CBA = d: .....CBA
     // w:                  = 1
@@ -307,7 +324,8 @@ ppu_scroll_escrever (Nes     *nes,
     ppu->x = valor & 0b00000111;
     ppu->w = true;
   }
-  else {
+  else
+  {
     // t: CBA..HG FED..... = d: HGFEDCBA
     // w:                  = 0
     ppu->t = ppu->t & 0b0000110000011111;
@@ -332,7 +350,8 @@ ppu_endereco_escrever (Nes     *nes,
 
   // se o valor de 'w' for 0, estamos na primeira escrita
   // caso não seja, estamos na segunda escrita
-  if (ppu->w == false) {
+  if (ppu->w == false)
+  {
     // t: .FEDCBA ........ = d: ..FEDCBA
     // t: X...... ........ = 0
     // w:                  = 1
@@ -347,7 +366,8 @@ ppu_endereco_escrever (Nes     *nes,
 
     ppu->w = true;
   }
-  else {
+  else
+  {
     // t: ....... HGFEDCBA = d: HGFEDCBA
     // v                   = t
     // w:                  = 0
@@ -366,19 +386,18 @@ omd_dma_escrever (Nes     *nes,
   Ppu *ppu = nes->ppu;
   uint16_t ponteiro = valor << 8;
 
-  for (int i = 0; i < TAMANHO (ppu->oam); i++) {
+  for (int i = 0; i < TAMANHO (ppu->oam); i++)
+  {
     ppu->oam[ppu->oam_endereco] = ler_memoria (nes, ponteiro);
     ppu->oam_endereco += 1;
     ponteiro += 1;
   }
 
   // se o ciclo for impar
-  if ((nes->cpu->ciclos%2) != 0) {
+  if ((nes->cpu->ciclos%2) != 0)
     nes->cpu->esperar = 514;
-  }
-  else {
+  else
     nes->cpu->esperar = 513;
-  }
 }
 
 uint8_t
@@ -386,14 +405,16 @@ ppu_dados_ler (Nes *nes)
 {
   Ppu *ppu = nes->ppu;
 
-  if (ppu->v < 0x3F00) {
+  if (ppu->v < 0x3F00)
+  {
     const uint8_t dados = ppu->buffer_dados;
     ppu->buffer_dados = ler_memoria (nes, ppu->v);
     ppu->v += ppu->vram_incrementar;
 
     return dados;
   }
-  else {
+  else
+  {
     const uint8_t valor = ler_memoria (nes, ppu->v);
     ppu->buffer_dados = ler_memoria (nes, ppu->v - 0x1000);
 
@@ -416,33 +437,42 @@ ppu_endereco_espelhado (Nes      *nes,
                         uint16_t  endereco)
 {
   uint16_t base = 0;
-  switch (nes->rom->espelhamento) {
+  switch (nes->rom->espelhamento)
+  {
   case ESPELHAMENTO_HORIZONTAL:
-    if (endereco >= 0x2000 && endereco < 0x2400) {
+    if (endereco >= 0x2000 && endereco < 0x2400)
+    {
       base = 0x2000;
     }
-    else if (endereco >= 0x2400 && endereco < 0x2800) {
+    else if (endereco >= 0x2400 && endereco < 0x2800)
+    {
       base = 0x2000;
     }
-    else if (endereco >= 0x2800 && endereco < 0x2C00) {
+    else if (endereco >= 0x2800 && endereco < 0x2C00)
+    {
       base = 0x2400;
     }
-    else {
+    else
+    {
       base = 0x2400;
     }
     break;
 
   case ESPELHAMENTO_VERTICAL:
-    if (endereco >= 0x2000 && endereco < 0x2400) {
+    if (endereco >= 0x2000 && endereco < 0x2400)
+    {
       base = 0x2000;
     }
-    else if (endereco >= 0x2400 && endereco < 0x2800) {
+    else if (endereco >= 0x2400 && endereco < 0x2800)
+    {
       base = 0x2400;
     }
-    else if (endereco >= 0x2800 && endereco < 0x2C00) {
+    else if (endereco >= 0x2800 && endereco < 0x2C00)
+    {
       base = 0x2000;
     }
-    else {
+    else
+    {
       base = 0x2400;
     }
     break;
@@ -452,16 +482,20 @@ ppu_endereco_espelhado (Nes      *nes,
     break;
 
   case ESPELHAMENTO_4_TELAS:
-    if (endereco >= 0x2000 && endereco < 0x2400) {
+    if (endereco >= 0x2000 && endereco < 0x2400)
+    {
       base = 0x2000;
     }
-    else if (endereco >= 0x2400 && endereco < 0x2800) {
+    else if (endereco >= 0x2400 && endereco < 0x2800)
+    {
       base = 0x2400;
     }
-    else if (endereco >= 0x2800 && endereco < 0x2C00) {
+    else if (endereco >= 0x2800 && endereco < 0x2C00)
+    {
       base = 0x2800;
     }
-    else {
+    else
+    {
       base = 0x2C00;
     }
     break;

@@ -13,7 +13,8 @@ typedef void    (*MapeadorEscreverFunc) (Nes      *nes,
 
 typedef struct _Mapeador Mapeador;
 
-struct _Mapeador {
+struct _Mapeador
+{
         MapeadorLerFunc      ler;
         MapeadorEscreverFunc escrever;
 };

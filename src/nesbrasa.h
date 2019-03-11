@@ -30,8 +30,10 @@ typedef struct _Ppu Ppu;
 typedef struct _Mapeador Mapeador;
 typedef struct _Nes Nes;
 
-struct _Nes {
+struct _Nes
+{
         uint8_t   ram[0x800];
+
         Cpu      *cpu;
         Ppu      *ppu;
         Rom      *rom;
