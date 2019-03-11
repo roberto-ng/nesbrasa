@@ -4,6 +4,7 @@
 #include "instrucao.h"
 #include "memoria.h"
 #include "nesbrasa.h"
+#include "util.h"
 
 Instrucao*
 instrucao_new (uint8_t       codigo,
@@ -111,26 +112,20 @@ adc (Instrucao *instrucao,
 
   nes->cpu->a = a + m + c;
 
+  // atualiza a flag c
   if (((int32_t)a + (int32_t)m + (int32_t)c) > 0xFF)
-  {
     nes->cpu->c = 1;
-  }
   else
-  {
     nes->cpu->c = 0;
-  }
 
-  // checa se houve um overflow/transbordamento
+  // checa se houve um overflow/transbordamento e atualiza a flag v
   // solução baseada em: https://stackoverflow.com/a/16861251
   if ((~(a ^ m)) & (a ^ c) & 0x80)
-  {
     nes->cpu->v = 1;
-  }
   else
-  {
     nes->cpu->v = 0;
-  }
 
+  // atualiza as flags z e n
   cpu_set_n (nes->cpu, nes->cpu->a);
   cpu_set_z (nes->cpu, nes->cpu->a);
 }
@@ -156,7 +151,8 @@ and (Instrucao *instrucao,
 }
 
 /*!
-  Instrução shift para a esquerda com a memoria ou com o acumulador
+  Instrução shift para a esquerda.
+  Utiliza a memoria ou o acumulador
  */
 static void
 asl (Instrucao *instrucao,
@@ -164,36 +160,28 @@ asl (Instrucao *instrucao,
 {
   if (instrucao->modo == MODO_ENDER_ACM)
   {
-    // checa se o setimo bit do valor é '1'
-    if ((nes->cpu->a & 0b01000000) >> 7 == 1)
-    {
-      nes->cpu->c = 1;
-    }
+    // checa se a posição 7 do byte é '1' ou '0'
+    if (buscar_bit (nes->cpu->a, 7) == true)
+      nes->cpu->c = 7;
     else
-    {
       nes->cpu->c = 0;
-    }
 
     nes->cpu->a <<= 1;
 
     cpu_set_n (nes->cpu, nes->cpu->a);
     cpu_set_z (nes->cpu, nes->cpu->a);
   }
-  else {
+  else
+  {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     uint8_t valor = ler_memoria (nes, endereco);
-
-    // checa se o setimo bit do valor é '1'
-    if ((valor & 0b01000000) >> 7 == 1)
-    {
-      nes->cpu->c = 1;
-    }
-    else
-    {
-      nes->cpu->c = 0;
-    }
-
     escrever_memoria (nes, endereco, valor << 1);
+
+    // checa se a posição 7 do byte é '1' ou '0'
+    if (buscar_bit (valor, 7) == true)
+      nes->cpu->c = 1;
+    else
+      nes->cpu->c = 0;
 
     cpu_set_n (nes->cpu, nes->cpu->a);
     cpu_set_z (nes->cpu, nes->cpu->a);
