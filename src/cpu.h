@@ -47,3 +47,18 @@ void cpu_set_z               (Cpu     *cpu,
 //! Ativa a flag de valor negativo caso seja necessario
 void cpu_set_n               (Cpu     *cpu,
                               uint8_t  valor);
+
+
+//! Empurra um valor na stack
+void     stack_push         (Nes    *nes,
+                             uint8_t valor);
+
+//! Empurra um valor na stack
+void     stack_push_16_bits (Nes      *nes,
+                             uint16_t  valor);
+
+//! Puxa um valor da stack
+uint8_t  stack_pull         (Nes *nes);
+
+//! Puxa um valor da stack
+uint16_t stack_pull_16_bits (Nes *nes);

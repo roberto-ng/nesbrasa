@@ -63,3 +63,41 @@ cpu_set_n (Cpu     *cpu,
   else
     cpu->n = 0;
 }
+
+void
+stack_push (Nes    *nes,
+            uint8_t valor)
+{
+  uint16_t endereco = 0x0100 | nes->cpu->sp;
+  escrever_memoria (nes, endereco, valor);
+
+  nes->cpu->sp -= 1;
+}
+
+void
+stack_push_16_bits (Nes      *nes,
+                    uint16_t  valor)
+{
+  uint8_t menor = ler_memoria (nes, valor & 0x00FF);
+  uint8_t maior = ler_memoria (nes, (valor & 0xFF00) >> 8);
+
+  stack_push (nes, maior);
+  stack_push (nes, menor);
+}
+
+uint8_t
+stack_pull (Nes *nes)
+{
+  nes->cpu->sp += 1;
+  uint16_t endereco = 0x0100 | nes->cpu->sp;
+  return ler_memoria (nes, endereco);
+}
+
+uint16_t
+stack_pull_16_bits (Nes *nes)
+{
+  uint8_t menor = stack_pull (nes);
+  uint8_t maior = stack_pull (nes);
+
+  return (maior << 8) | menor;
+}
