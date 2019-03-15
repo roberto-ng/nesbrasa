@@ -100,8 +100,8 @@ buscar_endereco (Instrucao *instrucao,
   A + M + C -> A, C
  */
 static void
-adc (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_adc (Instrucao *instrucao,
+               Nes       *nes)
 {
   uint16_t endereco = buscar_endereco (instrucao, nes);
   uint8_t valor = ler_memoria (nes, endereco);
@@ -135,8 +135,8 @@ adc (Instrucao *instrucao,
   A AND M -> A
  */
 static void
-and (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_and (Instrucao *instrucao,
+               Nes       *nes)
 {
   uint16_t endereco = buscar_endereco (instrucao, nes);
   uint8_t valor = ler_memoria (nes, endereco);
@@ -155,8 +155,8 @@ and (Instrucao *instrucao,
   Utiliza a memoria ou o acumulador
  */
 static void
-asl (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_asl (Instrucao *instrucao,
+               Nes       *nes)
 {
   if (instrucao->modo == MODO_ENDER_ACM)
   {
@@ -192,8 +192,8 @@ asl (Instrucao *instrucao,
  * Pula para o endereço indicado caso o valor de 'c' seja 0
  */
 static void
-bcc (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_bcc (Instrucao *instrucao,
+               Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
@@ -209,8 +209,8 @@ bcc (Instrucao *instrucao,
  * Pula para o endereço indicado caso o valor de 'c' não seja 0
  */
 static void
-bcs (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_bcs (Instrucao *instrucao,
+               Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
@@ -226,8 +226,8 @@ bcs (Instrucao *instrucao,
  * Pula para o endereço indicado caso o valor de 'z' não seja 0
  */
 static void
-beq (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_beq (Instrucao *instrucao,
+               Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
@@ -245,8 +245,8 @@ beq (Instrucao *instrucao,
   A flag 'z' tambem é alterada sendo calculada com 'a' AND valor
  */
 static void
-bit (Instrucao *instrucao,
-     Nes       *nes)
+instrucao_bit (Instrucao *instrucao,
+               Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
   uint16_t endereco = buscar_endereco (instrucao, nes);
@@ -256,3 +256,56 @@ bit (Instrucao *instrucao,
   cpu->v = buscar_bit (valor, 6);
   cpu->z = valor & cpu->a;
 }
+
+/*! Branch se 'n' não for 0
+ * Pula para o endereço indicado caso o valor de 'n' não seja 0
+ */
+static void
+instrucao_bmi (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->n != 0)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+/*! Branch se 'z' não for 0
+ * Pula para o endereço indicado caso o valor de 'n' não seja 0
+ */
+static void
+instrucao_bne (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->z != 0)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+/*! Branch se 'n' for 0
+ * Pula para o endereço indicado caso o valor de 'n' seja 0
+ */
+static void
+instrucao_bpl (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->n == 0)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+
