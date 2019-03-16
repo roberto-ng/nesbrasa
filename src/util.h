@@ -16,3 +16,6 @@ bool buscar_bit       (uint8_t byte,
 //! Checa se dois endereços da memoria estão na mesma pagina
 bool comparar_paginas (uint16_t pagina_1,
                        uint16_t pagina_2);
+
+//! Uma alternativa segura ao 'sprintf'
+char* formatar_str    (char *fmt, ...);
