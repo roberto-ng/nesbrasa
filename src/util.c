@@ -23,7 +23,7 @@ comparar_paginas (uint16_t pagina_1,
   return (pagina_1 & 0xFF00) != (pagina_2 & 0xFF00);
 }
 
-inline char*
+char*
 formatar_str (char *fmt, ...)
 {
   va_list args;
