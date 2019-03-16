@@ -304,3 +304,65 @@ instrucao_brk (Instrucao *instrucao,
   cpu->b = 1;
   cpu->pc = ler_memoria_16_bits (nes, 0xFFFE);
 }
+
+//! Pula para o endereço indicado se a flag 'v' não estiver ativa
+static void
+instrucao_bvc (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->n == false)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+//! Pula para o endereço indicado se a flag 'v' estiver ativa
+static void
+instrucao_bvs (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  if (cpu->n == true)
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    cpu_branch_somar_ciclos (cpu, endereco);
+    cpu->pc = endereco;
+  }
+}
+
+//! Limpa a flag 'c'
+static void
+instrucao_clc (Instrucao *instrucao,
+               Nes       *nes)
+{
+  nes->cpu->c = false;
+}
+
+//! Limpa a flag 'd'
+static void
+instrucao_cld (Instrucao *instrucao,
+               Nes       *nes)
+{
+  nes->cpu->d = false;
+}
+
+//! Limpa a flag 'i'
+static void
+instrucao_cli (Instrucao *instrucao,
+               Nes       *nes)
+{
+  nes->cpu->i = false;
+}
+
+//! Limpa a flag 'v'
+static void
+instrucao_clv (Instrucao *instrucao,
+               Nes       *nes)
+{
+  nes->cpu->v = false;
+}
