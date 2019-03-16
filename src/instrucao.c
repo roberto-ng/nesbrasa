@@ -161,11 +161,7 @@ instrucao_asl (Instrucao *instrucao,
   if (instrucao->modo == MODO_ENDER_ACM)
   {
     // checa se a posição 7 do byte é '1' ou '0'
-    if (buscar_bit (nes->cpu->a, 7) == true)
-      nes->cpu->c = 7;
-    else
-      nes->cpu->c = 0;
-
+    nes->cpu->c = buscar_bit (nes->cpu->a, 7);
     nes->cpu->a <<= 1;
 
     cpu_n_escrever (nes->cpu, nes->cpu->a);
@@ -178,26 +174,23 @@ instrucao_asl (Instrucao *instrucao,
     escrever_memoria (nes, endereco, valor << 1);
 
     // checa se a posição 7 do byte é '1' ou '0'
-    if (buscar_bit (valor, 7) == true)
-      nes->cpu->c = 1;
-    else
-      nes->cpu->c = 0;
+    nes->cpu->c = buscar_bit (valor, 7);
+
+    escrever_memoria (nes, endereco, (valor << 1));
 
     cpu_n_escrever (nes->cpu, nes->cpu->a);
     cpu_z_escrever (nes->cpu, nes->cpu->a);
   }
 }
 
-/*! Branch se 'c' for 0
- * Pula para o endereço indicado caso o valor de 'c' seja 0
- */
+//! Pula para o endereço indicado se a flag 'c' não estiver ativa
 static void
 instrucao_bcc (Instrucao *instrucao,
                Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
-  if (cpu->c == 0)
+  if (cpu->c == false)
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     cpu_branch_somar_ciclos (cpu, endereco);
@@ -205,16 +198,14 @@ instrucao_bcc (Instrucao *instrucao,
   }
 }
 
-/*! Branch se 'c' não for 0
- * Pula para o endereço indicado caso o valor de 'c' não seja 0
- */
+//! Pula para o endereço indicado se a flag 'c' estiver ativa
 static void
 instrucao_bcs (Instrucao *instrucao,
                Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
-  if (cpu->c != 0)
+  if (cpu->c == true)
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     cpu_branch_somar_ciclos (cpu, endereco);
@@ -222,16 +213,14 @@ instrucao_bcs (Instrucao *instrucao,
   }
 }
 
-/*! Branch se 'z' não for 0
- * Pula para o endereço indicado caso o valor de 'z' não seja 0
- */
+//! Pula para o endereço indicado se a flag 'z' estiver ativa
 static void
 instrucao_beq (Instrucao *instrucao,
                Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
-  if (cpu->z != 0)
+  if (cpu->z == true)
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     cpu_branch_somar_ciclos (cpu, endereco);
@@ -257,16 +246,14 @@ instrucao_bit (Instrucao *instrucao,
   cpu->z = valor & cpu->a;
 }
 
-/*! Branch se 'n' não for 0
- * Pula para o endereço indicado caso o valor de 'n' não seja 0
- */
+//! Pula para o endereço indicado se a flag 'n' estiver ativa
 static void
 instrucao_bmi (Instrucao *instrucao,
                Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
-  if (cpu->n != 0)
+  if (cpu->n == true)
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     cpu_branch_somar_ciclos (cpu, endereco);
@@ -274,16 +261,14 @@ instrucao_bmi (Instrucao *instrucao,
   }
 }
 
-/*! Branch se 'z' não for 0
- * Pula para o endereço indicado caso o valor de 'n' não seja 0
- */
+//! Pula para o endereço indicado se a flag 'z' não estiver ativa
 static void
 instrucao_bne (Instrucao *instrucao,
                Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
-  if (cpu->z != 0)
+  if (cpu->z == true)
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     cpu_branch_somar_ciclos (cpu, endereco);
@@ -291,16 +276,14 @@ instrucao_bne (Instrucao *instrucao,
   }
 }
 
-/*! Branch se 'n' for 0
- * Pula para o endereço indicado caso o valor de 'n' seja 0
- */
+//! Pula para o endereço indicado se a flag 'n' não estiver ativa
 static void
 instrucao_bpl (Instrucao *instrucao,
                Nes       *nes)
 {
   Cpu *cpu = nes->cpu;
 
-  if (cpu->n == 0)
+  if (cpu->n == false)
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     cpu_branch_somar_ciclos (cpu, endereco);

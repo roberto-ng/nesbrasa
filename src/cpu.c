@@ -12,13 +12,13 @@ cpu_new (void)
   cpu->a = 0;
   cpu->x = 0;
   cpu->y = 0;
-  cpu->c = 0;
-  cpu->z = 0;
-  cpu->d = 0;
-  cpu->v = 0;
-  cpu->n = 0;
-  cpu->i = 0;
-  cpu->b = 0;
+  cpu->c = false;
+  cpu->z = false;
+  cpu->i = false;
+  cpu->d = false;
+  cpu->b = false;
+  cpu->v = false;
+  cpu->n = false;
   cpu->esperar = 0;
 
   return cpu;
@@ -79,9 +79,9 @@ cpu_z_escrever (Cpu     *cpu,
 {
   // checa se um valor é '0'
   if (valor == 0)
-    cpu->z = 0;
+    cpu->z = false;
   else
-    cpu->z = 1;
+    cpu->z = true;
 }
 
 void
@@ -90,9 +90,9 @@ cpu_n_escrever (Cpu     *cpu,
 {
   // o valor é negativo se o bit mais significativo não for '0'
   if ((valor & 0b10000000) != 0)
-    cpu->n = 1;
+    cpu->n = true;
   else
-    cpu->n = 0;
+    cpu->n = false;
 }
 
 void

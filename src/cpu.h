@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "nesbrasa.h"
 #include "memoria.h"
@@ -16,16 +17,17 @@ struct _Cpu
         uint16_t pc; // contador de programa
         uint8_t  sp; // ponteiro da stack
 
-        uint8_t  a;  // registrador acumulador
-        uint8_t  x;  // registrador de indice x
-        uint8_t  y;  // registrador de indice y
-        uint8_t  c;  // flag de carregamento (carry flag)
-        uint8_t  z;  // flag zero
-        uint8_t  d;  // flag decimal
-        uint8_t  v;  // flag de transbordamento (overflow flag)
-        uint8_t  n;  // flag de negativo
-        uint8_t  i;  // flag de desabilitar interrupções
-        uint8_t  b;  // flag da instrução break (break command flag)
+        uint8_t a; // registrador acumulador
+        uint8_t x; // registrador de indice x
+        uint8_t y; // registrador de indice y
+
+        bool c; // flag de carregamento (carry flag)
+        bool z; // flag zero
+        bool i; // flag de desabilitar interrupções
+        bool d; // flag decimal
+        bool b; // flag da instrução break (break command flag)
+        bool v; // flag de transbordamento (overflow flag)
+        bool n; // flag de negativo
 
         uint16_t esperar;
         uint32_t ciclos;
