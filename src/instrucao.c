@@ -366,3 +366,100 @@ instrucao_clv (Instrucao *instrucao,
 {
   nes->cpu->v = false;
 }
+
+//! Compara o acumulador com um valor
+static void
+instrucao_cmp (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  if (cpu->a >= valor)
+    cpu->c = true;
+  else
+    cpu->c = false;
+
+  uint8_t resultado = cpu->a - valor;
+  cpu_n_escrever (cpu, resultado);
+  cpu_z_escrever (cpu, resultado);
+}
+
+//! Compara o indice X com um valor
+static void
+instrucao_cpx (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  if (cpu->x >= valor)
+    cpu->c = true;
+  else
+    cpu->c = false;
+
+  uint8_t resultado = cpu->x - valor;
+  cpu_n_escrever (cpu, resultado);
+  cpu_z_escrever (cpu, resultado);
+}
+
+//! Compara o indice Y com um valor
+static void
+instrucao_cpy (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  if (cpu->y >= valor)
+    cpu->c = true;
+  else
+    cpu->c = false;
+
+  uint8_t resultado = cpu->y - valor;
+  cpu_n_escrever (cpu, resultado);
+  cpu_z_escrever (cpu, resultado);
+}
+
+//! Diminui um valor na memoria por 1
+static void
+instrucao_dec (Instrucao *instrucao,
+               Nes       *nes)
+{
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  valor -= 1;
+
+  // atualizar o valor na memoria
+  escrever_memoria (nes, endereco, valor);
+  cpu_n_escrever (nes->cpu, valor);
+  cpu_z_escrever (nes->cpu, valor);
+}
+
+//! Diminui o valor do indice X por 1
+static void
+instrucao_dex (Instrucao *instrucao,
+               Nes       *nes)
+{
+  nes->cpu->x -= 1;
+
+  // atualizar flags
+  cpu_n_escrever (nes->cpu, nes->cpu->x);
+  cpu_z_escrever (nes->cpu, nes->cpu->x);
+}
+
+//! Diminui o valor do indice Y por 1
+static void
+instrucao_dey (Instrucao *instrucao,
+               Nes       *nes)
+{
+  nes->cpu->y -= 1;
+
+  // atualizar flags
+  cpu_n_escrever (nes->cpu, nes->cpu->y);
+  cpu_z_escrever (nes->cpu, nes->cpu->y);
+}
