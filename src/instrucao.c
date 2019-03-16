@@ -146,6 +146,7 @@ instrucao_and (Instrucao *instrucao,
 
   nes->cpu->a = a & m;
 
+  // atualizar flags
   cpu_n_escrever (nes->cpu, nes->cpu->a);
   cpu_z_escrever (nes->cpu, nes->cpu->a);
 }
@@ -164,6 +165,7 @@ instrucao_asl (Instrucao *instrucao,
     nes->cpu->c = buscar_bit (nes->cpu->a, 7);
     nes->cpu->a <<= 1;
 
+    // atualizar flags
     cpu_n_escrever (nes->cpu, nes->cpu->a);
     cpu_z_escrever (nes->cpu, nes->cpu->a);
   }
@@ -171,15 +173,17 @@ instrucao_asl (Instrucao *instrucao,
   {
     uint16_t endereco = buscar_endereco (instrucao, nes);
     uint8_t valor = ler_memoria (nes, endereco);
-    escrever_memoria (nes, endereco, valor << 1);
 
     // checa se a posição 7 do byte é '1' ou '0'
     nes->cpu->c = buscar_bit (valor, 7);
 
-    escrever_memoria (nes, endereco, (valor << 1));
+    valor <<= 1;
 
-    cpu_n_escrever (nes->cpu, nes->cpu->a);
-    cpu_z_escrever (nes->cpu, nes->cpu->a);
+    escrever_memoria (nes, endereco, valor);
+
+    // atualizar flags
+    cpu_n_escrever (nes->cpu, valor);
+    cpu_z_escrever (nes->cpu, valor);
   }
 }
 
@@ -382,6 +386,8 @@ instrucao_cmp (Instrucao *instrucao,
     cpu->c = false;
 
   uint8_t resultado = cpu->a - valor;
+
+  // atualizar flags
   cpu_n_escrever (cpu, resultado);
   cpu_z_escrever (cpu, resultado);
 }
@@ -401,6 +407,8 @@ instrucao_cpx (Instrucao *instrucao,
     cpu->c = false;
 
   uint8_t resultado = cpu->x - valor;
+
+  // atualizar flags
   cpu_n_escrever (cpu, resultado);
   cpu_z_escrever (cpu, resultado);
 }
@@ -436,6 +444,8 @@ instrucao_dec (Instrucao *instrucao,
 
   // atualizar o valor na memoria
   escrever_memoria (nes, endereco, valor);
+
+  // atualizar flags
   cpu_n_escrever (nes->cpu, valor);
   cpu_z_escrever (nes->cpu, valor);
 }
@@ -462,4 +472,176 @@ instrucao_dey (Instrucao *instrucao,
   // atualizar flags
   cpu_n_escrever (nes->cpu, nes->cpu->y);
   cpu_z_escrever (nes->cpu, nes->cpu->y);
+}
+
+//! OR exclusivo de um valor na memoria com o acumulador
+static void
+instrucao_eor (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  cpu->a = cpu->a ^ valor;
+
+  //atualizar flags
+  cpu_n_escrever (cpu, cpu->a);
+  cpu_z_escrever (cpu, cpu->a);
+}
+
+//! Incrementa um valor na memoria por 1
+static void
+instrucao_inc (Instrucao *instrucao,
+               Nes       *nes)
+{
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  valor += 1;
+
+  // atualizar o valor na memoria
+  escrever_memoria (nes, endereco, valor);
+
+  // atualizar flags
+  cpu_n_escrever (nes->cpu, valor);
+  cpu_z_escrever (nes->cpu, valor);
+}
+
+//! Incrementa o valor do indice X por 1
+static void
+instrucao_inx (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  cpu->x += 1;
+
+  // atualizar flags
+  cpu_n_escrever (cpu, cpu->x);
+  cpu_z_escrever (cpu, cpu->x);
+}
+
+//! Incrementa o valor do indice Y por 1
+static void
+instrucao_iny (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  cpu->y += 1;
+
+  // atualizar flags
+  cpu_n_escrever (cpu, cpu->y);
+  cpu_z_escrever (cpu, cpu->y);
+}
+
+//! Pula o programa para o endereço indicado
+static void
+instrucao_jmp (Instrucao *instrucao,
+               Nes       *nes)
+{
+  // muda o endereço
+  nes->cpu->pc = buscar_endereco (instrucao, nes);
+}
+
+//! Chama uma função/subrotina
+static void
+instrucao_jsr (Instrucao *instrucao,
+               Nes       *nes)
+{
+  // salva o endereço para o qual a função deve retornar
+  stack_push_16_bits (nes, nes->cpu->pc - 1);
+
+  // muda o endereço para o da função
+  nes->cpu->pc = buscar_endereco (instrucao, nes);
+}
+
+//! Carrega um valor da memoria no acumulador
+static void
+instrucao_lda (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+
+  cpu->a = ler_memoria (nes, endereco);
+
+  // atualizar flags
+  cpu_n_escrever (cpu, cpu->a);
+  cpu_z_escrever (cpu, cpu->a);
+}
+
+
+//! Carrega um valor da memoria no indice X
+static void
+instrucao_ldx (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+
+  cpu->x = ler_memoria (nes, endereco);
+
+  // atualizar flags
+  cpu_n_escrever (cpu, cpu->x);
+  cpu_z_escrever (cpu, cpu->x);
+}
+
+//! Carrega um valor da memoria no acumulador
+static void
+instrucao_ldy (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+
+  cpu->y = ler_memoria (nes, endereco);
+
+  // atualizar flags
+  cpu_n_escrever (cpu, cpu->y);
+  cpu_z_escrever (cpu, cpu->y);
+}
+
+/*!
+  Instrução shift para a direita.
+  Utiliza a memoria ou o acumulador
+ */
+static void
+instrucao_lsr (Instrucao *instrucao,
+               Nes       *nes)
+{
+  if (instrucao->modo == MODO_ENDER_ACM)
+  {
+    // checa se a posição 0 do byte é '1' ou '0'
+    nes->cpu->c = buscar_bit (nes->cpu->a, 0);
+    nes->cpu->a >>= 1;
+
+    // atualizar flags
+    cpu_n_escrever (nes->cpu, nes->cpu->a);
+    cpu_z_escrever (nes->cpu, nes->cpu->a);
+  }
+  else
+  {
+    uint16_t endereco = buscar_endereco (instrucao, nes);
+    uint8_t valor = ler_memoria (nes, endereco);
+
+    // checa se a posição 0 do byte é '1' ou '0'
+    nes->cpu->c = buscar_bit (valor, 0);
+
+    valor >>= 1;
+
+    escrever_memoria (nes, endereco, valor);
+
+    // atualizar flags
+    cpu_n_escrever (nes->cpu, valor);
+    cpu_z_escrever (nes->cpu, valor);
+  }
+}
+
+//! Não fazer nada
+static void
+instrucao_nop (Instrucao *instrucao,
+               Nes       *nes)
+{
 }
