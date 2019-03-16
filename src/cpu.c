@@ -42,9 +42,40 @@ cpu_branch_somar_ciclos (Cpu      *cpu,
     cpu->ciclos += 2;
 }
 
+uint8_t
+cpu_estado_ler (Cpu *cpu)
+{
+  uint8_t flags = 0;
+
+  const uint8_t c = cpu->c;
+  const uint8_t z = cpu->z << 1;
+  const uint8_t i = cpu->i << 2;
+  const uint8_t d = cpu->d << 3;
+  const uint8_t b = cpu->b << 4;
+  const uint8_t v = cpu->v << 6;
+  const uint8_t n = cpu->n << 7;
+  // o bit na posiçao 5 sempre está ativo
+  const uint8_t bit_5 = 1 << 5;
+
+  return flags | c | z | i | d | b | bit_5 | v | n;
+}
+
 void
-cpu_set_z (Cpu     *cpu,
-           uint8_t  valor)
+cpu_estado_escrever (Cpu     *cpu,
+                     uint8_t  valor)
+{
+  cpu->c = buscar_bit (valor, 0);
+  cpu->z = buscar_bit (valor, 1);
+  cpu->i = buscar_bit (valor, 2);
+  cpu->d = buscar_bit (valor, 3);
+  cpu->b = buscar_bit (valor, 4);
+  cpu->v = buscar_bit (valor, 6);
+  cpu->n = buscar_bit (valor, 7);
+}
+
+void
+cpu_z_escrever (Cpu     *cpu,
+                uint8_t  valor)
 {
   // checa se um valor é '0'
   if (valor == 0)
@@ -54,8 +85,8 @@ cpu_set_z (Cpu     *cpu,
 }
 
 void
-cpu_set_n (Cpu     *cpu,
-           uint8_t  valor)
+cpu_n_escrever (Cpu     *cpu,
+                uint8_t  valor)
 {
   // o valor é negativo se o bit mais significativo não for '0'
   if ((valor & 0b10000000) != 0)

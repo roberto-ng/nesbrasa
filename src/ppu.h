@@ -56,18 +56,19 @@ struct _Ppu
         bool     w;
 };
 
-Ppu*     ppu_new                   (void);
+Ppu*     ppu_new  (void);
 
-void     ppu_free                  (Ppu *ppu);
+void     ppu_free (Ppu *ppu);
 
-uint8_t  ppu_ler                   (Nes      *nes,
-                                    uint16_t  endereco);
 
-void     ppu_escrever              (Nes      *nes,
-                                    uint16_t  endereco,
-                                    uint8_t   valor);
+uint8_t  ppu_ler                  (Nes      *nes,
+                                   uint16_t  endereco);
 
-uint8_t  ppu_registrador_ler       (Nes      *nes,
+void     ppu_escrever             (Nes      *nes,
+                                   uint16_t  endereco,
+                                   uint8_t   valor);
+
+uint8_t  ppu_registrador_ler      (Nes      *nes,
                                    uint16_t  endereco);
 
 void     ppu_registrador_escrever (Nes      *nes,
@@ -104,5 +105,6 @@ uint8_t  ppu_dados_ler            (Nes *nes);
 void     ppu_dados_escrever       (Nes     *nes,
                                   uint8_t  valor);
 
-uint16_t ppu_endereco_espelhado   (Nes      *nes,
-                                   uint16_t  endereco);
+
+uint16_t ppu_endereco_espelhado (Nes      *nes,
+                                 uint16_t  endereco);

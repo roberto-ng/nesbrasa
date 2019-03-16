@@ -8,6 +8,7 @@
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
 
+typedef struct _Nes Nes;
 typedef struct _Cpu Cpu;
 
 struct _Cpu
@@ -25,14 +26,15 @@ struct _Cpu
         uint8_t  n;  // flag de negativo
         uint8_t  i;  // flag de desabilitar interrupções
         uint8_t  b;  // flag da instrução break (break command flag)
-                     //
+
         uint16_t esperar;
         uint32_t ciclos;
 };
 
-Cpu* cpu_new                 (void);
+Cpu* cpu_new  (void);
 
-void cpu_free                (Cpu *cpu);
+void cpu_free (Cpu *cpu);
+
 
 /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
  \param endereco O endereço em que o branch sera realizado
@@ -40,12 +42,18 @@ void cpu_free                (Cpu *cpu);
 void cpu_branch_somar_ciclos (Cpu      *cpu,
                               uint16_t  endereco);
 
+
+uint8_t cpu_estado_ler       (Cpu *cpu);
+
+void    cpu_estado_escrever  (Cpu     *cpu,
+                              uint8_t  valor);
+
 //! Ativa a flag de zero caso seja necessario
-void cpu_set_z               (Cpu     *cpu,
+void    cpu_z_escrever       (Cpu     *cpu,
                               uint8_t  valor);
 
 //! Ativa a flag de valor negativo caso seja necessario
-void cpu_set_n               (Cpu     *cpu,
+void    cpu_n_escrever       (Cpu     *cpu,
                               uint8_t  valor);
 
 

@@ -126,8 +126,8 @@ instrucao_adc (Instrucao *instrucao,
     nes->cpu->v = 0;
 
   // atualiza as flags z e n
-  cpu_set_n (nes->cpu, nes->cpu->a);
-  cpu_set_z (nes->cpu, nes->cpu->a);
+  cpu_n_escrever (nes->cpu, nes->cpu->a);
+  cpu_z_escrever (nes->cpu, nes->cpu->a);
 }
 
 /*!
@@ -146,8 +146,8 @@ instrucao_and (Instrucao *instrucao,
 
   nes->cpu->a = a & m;
 
-  cpu_set_n (nes->cpu, nes->cpu->a);
-  cpu_set_z (nes->cpu, nes->cpu->a);
+  cpu_n_escrever (nes->cpu, nes->cpu->a);
+  cpu_z_escrever (nes->cpu, nes->cpu->a);
 }
 
 /*!
@@ -168,8 +168,8 @@ instrucao_asl (Instrucao *instrucao,
 
     nes->cpu->a <<= 1;
 
-    cpu_set_n (nes->cpu, nes->cpu->a);
-    cpu_set_z (nes->cpu, nes->cpu->a);
+    cpu_n_escrever (nes->cpu, nes->cpu->a);
+    cpu_z_escrever (nes->cpu, nes->cpu->a);
   }
   else
   {
@@ -183,8 +183,8 @@ instrucao_asl (Instrucao *instrucao,
     else
       nes->cpu->c = 0;
 
-    cpu_set_n (nes->cpu, nes->cpu->a);
-    cpu_set_z (nes->cpu, nes->cpu->a);
+    cpu_n_escrever (nes->cpu, nes->cpu->a);
+    cpu_z_escrever (nes->cpu, nes->cpu->a);
   }
 }
 
@@ -308,4 +308,16 @@ instrucao_bpl (Instrucao *instrucao,
   }
 }
 
+//! Instrução BRK
+static void
+instrucao_brk (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
 
+  stack_push_16_bits (nes, cpu->pc);
+  stack_push (nes, cpu_estado_ler (cpu));
+
+  cpu->b = 1;
+  cpu->pc = ler_memoria_16_bits (nes, 0xFFFE);
+}
