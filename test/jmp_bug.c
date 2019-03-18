@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "nesbrasa.h"
 
 int
@@ -12,9 +14,11 @@ main ()
   uint16_t valor = ler_memoria_16_bits_bug (nes, 0x0FFF);
   nes_free (nes);
 
-  if (valor != 0xF305) {
-    return 1;
+  if (valor != 0xF305)
+  {
+    // retornar erro
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

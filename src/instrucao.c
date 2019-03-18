@@ -1,3 +1,21 @@
+/* instrucao.c
+ *
+ * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdlib.h>
 
 #include "cpu.h"
@@ -163,6 +181,7 @@ instrucao_asl (Instrucao *instrucao,
   {
     // checa se a posição 7 do byte é '1' ou '0'
     nes->cpu->c = buscar_bit (nes->cpu->a, 7);
+
     nes->cpu->a <<= 1;
 
     // atualizar flags
@@ -615,6 +634,7 @@ instrucao_lsr (Instrucao *instrucao,
   {
     // checa se a posição 0 do byte é '1' ou '0'
     nes->cpu->c = buscar_bit (nes->cpu->a, 0);
+
     nes->cpu->a >>= 1;
 
     // atualizar flags
@@ -644,4 +664,21 @@ static void
 instrucao_nop (Instrucao *instrucao,
                Nes       *nes)
 {
+}
+
+//! Operanção OR entre um valor na memoria e o acumulador
+static void
+instrucao_ora (Instrucao *instrucao,
+               Nes       *nes)
+{
+  Cpu *cpu = nes->cpu;
+
+  uint16_t endereco = buscar_endereco (instrucao, nes);
+  uint8_t valor = ler_memoria (nes, endereco);
+
+  cpu->a = cpu->a | valor;
+
+  //atualizar flags
+  cpu_n_escrever (cpu, cpu->a);
+  cpu_z_escrever (cpu, cpu->a);
 }
