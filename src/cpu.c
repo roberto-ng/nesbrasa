@@ -114,8 +114,8 @@ cpu_n_escrever (Cpu     *cpu,
 }
 
 void
-stack_push (Nes    *nes,
-            uint8_t valor)
+stack_empurrar (Nes    *nes,
+                uint8_t valor)
 {
   uint16_t endereco = 0x0100 | nes->cpu->sp;
   escrever_memoria (nes, endereco, valor);
@@ -124,18 +124,18 @@ stack_push (Nes    *nes,
 }
 
 void
-stack_push_16_bits (Nes      *nes,
-                    uint16_t  valor)
+stack_empurrar_16_bits (Nes      *nes,
+                        uint16_t  valor)
 {
   uint8_t menor = ler_memoria (nes, valor & 0x00FF);
   uint8_t maior = ler_memoria (nes, (valor & 0xFF00) >> 8);
 
-  stack_push (nes, maior);
-  stack_push (nes, menor);
+  stack_empurrar (nes, maior);
+  stack_empurrar (nes, menor);
 }
 
 uint8_t
-stack_pull (Nes *nes)
+stack_puxar (Nes *nes)
 {
   nes->cpu->sp += 1;
   uint16_t endereco = 0x0100 | nes->cpu->sp;
@@ -143,10 +143,10 @@ stack_pull (Nes *nes)
 }
 
 uint16_t
-stack_pull_16_bits (Nes *nes)
+stack_puxar_16_bits (Nes *nes)
 {
-  uint8_t menor = stack_pull (nes);
-  uint8_t maior = stack_pull (nes);
+  uint8_t menor = stack_puxar (nes);
+  uint8_t maior = stack_puxar (nes);
 
   return (maior << 8) | menor;
 }

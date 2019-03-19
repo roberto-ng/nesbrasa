@@ -78,15 +78,15 @@ void    cpu_n_escrever       (Cpu     *cpu,
 
 
 //! Empurra um valor na stack
-void     stack_push         (Nes    *nes,
-                             uint8_t valor);
+void     stack_empurrar         (Nes    *nes,
+                                 uint8_t valor);
 
 //! Empurra um valor na stack
-void     stack_push_16_bits (Nes      *nes,
-                             uint16_t  valor);
+void     stack_empurrar_16_bits (Nes      *nes,
+                                 uint16_t  valor);
 
 //! Puxa um valor da stack
-uint8_t  stack_pull         (Nes *nes);
+uint8_t  stack_puxar            (Nes *nes);
 
 //! Puxa um valor da stack
-uint16_t stack_pull_16_bits (Nes *nes);
+uint16_t stack_puxar_16_bits    (Nes *nes);

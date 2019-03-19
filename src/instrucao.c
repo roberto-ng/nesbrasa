@@ -305,8 +305,8 @@ static void
 instrucao_brk (Instrucao *instrucao,
                Nes       *nes)
 {
-  stack_push_16_bits (nes, nes->cpu->pc);
-  stack_push (nes, cpu_estado_ler (nes->cpu));
+  stack_empurrar_16_bits (nes, nes->cpu->pc);
+  stack_empurrar (nes, cpu_estado_ler (nes->cpu));
 
   nes->cpu->b = 1;
   nes->cpu->pc = ler_memoria_16_bits (nes, 0xFFFE);
@@ -544,7 +544,7 @@ instrucao_jsr (Instrucao *instrucao,
   // salva o endereço da próxima instrução subtraído por 1 na stack,
   // o endereço será usado para retornar da função quando o opcode 'rts'
   // for usado
-  stack_push_16_bits (nes, nes->cpu->pc - 1);
+  stack_empurrar_16_bits (nes, nes->cpu->pc - 1);
 
   // muda o endereço para o da função
   nes->cpu->pc = buscar_endereco (instrucao, nes);
@@ -652,41 +652,41 @@ instrucao_ora (Instrucao *instrucao,
   cpu_z_escrever (nes->cpu, nes->cpu->a);
 }
 
-//! Usa a operação 'push' com o acumulador
+//! Empurra o valor do acumulador na stack
 static void
 instrucao_pha (Instrucao *instrucao,
                Nes       *nes)
 {
-  stack_push (nes, nes->cpu->a);
+  stack_empurrar (nes, nes->cpu->a);
 }
 
-//! Usa a operação 'push' com o estado do processador
+//! Empurra o valor do estado do processador na stack
 static void
 instrucao_php (Instrucao *instrucao,
                Nes       *nes)
 {
   const uint8_t estado = cpu_estado_ler (nes->cpu);
-  stack_push (nes, estado);
+  stack_empurrar (nes, estado);
 }
 
-//! Usa a operação 'pull' com o acumulador
+//! Puxa um valor da stack e salva esse valor no acumulador
 static void
 instrucao_pla (Instrucao *instrucao,
                Nes       *nes)
 {
-  nes->cpu->a = stack_pull (nes);
+  nes->cpu->a = stack_puxar (nes);
 
   // atualizar flags
   cpu_n_escrever (nes->cpu, nes->cpu->a);
   cpu_z_escrever (nes->cpu, nes->cpu->a);
 }
 
-//! Usa a operação 'pull' com o estado do processador
+//! Puxa um valor da stack e salva esse valor no estado do processador
 static void
 instrucao_plp (Instrucao *instrucao,
                Nes       *nes)
 {
-  const uint8_t estado = stack_pull (nes);
+  const uint8_t estado = stack_puxar (nes);
   cpu_estado_escrever (nes->cpu, estado);
 }
 
@@ -765,10 +765,10 @@ static void
 instrucao_rti (Instrucao *instrucao,
                Nes       *nes)
 {
-  const uint8_t estado = stack_pull (nes);
+  const uint8_t estado = stack_puxar (nes);
   cpu_estado_escrever (nes->cpu, estado);
 
-  nes->cpu->pc = stack_pull_16_bits (nes);
+  nes->cpu->pc = stack_puxar_16_bits (nes);
 }
 
 //! Retorna de uma função/sub-rotina
@@ -776,5 +776,5 @@ static void
 instrucao_rts (Instrucao *instrucao,
                Nes       *nes)
 {
-  nes->cpu->pc = stack_pull_16_bits (nes) + 1;
+  nes->cpu->pc = stack_puxar_16_bits (nes) + 1;
 }
