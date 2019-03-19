@@ -258,7 +258,7 @@ instrucao_bit (Instrucao *instrucao,
 
   nes->cpu->n = buscar_bit (valor, 7);
   nes->cpu->v = buscar_bit (valor, 6);
-  nes->cpu->z = valor & cpu->a;
+  nes->cpu->z = valor & nes->cpu->a;
 }
 
 //! Pula para o endereço indicado se a flag 'n' estiver ativa
