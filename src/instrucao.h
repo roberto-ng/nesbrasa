@@ -54,9 +54,9 @@ typedef void (*InstrucaoFunc)(Instrucao *instrucao, Nes *nes);
 //! Uma instrução da arquitetura 6502
 struct _Instrucao
 {
-        uint8_t codigo;
-        uint8_t bytes;
-        int32_t ciclos;
+        char    *nome;
+        uint8_t  bytes;
+        int32_t  ciclos;
 
         // quantidade de ciclos adicionais que devem ocorrer quando a
         // página da memoria for alterada durante a leitura do endereço
@@ -67,11 +67,13 @@ struct _Instrucao
         InstrucaoFunc funcao;
 };
 
-Instrucao* instrucao_new(uint8_t       codigo,
-                         uint8_t       bytes,
-                         int32_t       ciclos,
-                         int32_t       ciclos_pag_alterada,
-                         InstrucaoModo modo,
-                         InstrucaoFunc funcao);
+Instrucao* instrucao_new(char          *nome,
+                         uint8_t        bytes,
+                         int32_t        ciclos,
+                         int32_t        ciclos_pag_alterada,
+                         InstrucaoModo  modo,
+                         InstrucaoFunc  funcao);
 
-void instrucao_free(Instrucao *instr);
+void instrucao_free(Instrucao *instrucao);
+
+Instrucao** carregar_instrucoes(void);

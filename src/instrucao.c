@@ -17,6 +17,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "cpu.h"
 #include "instrucao.h"
@@ -24,15 +25,15 @@
 #include "nesbrasa.h"
 #include "util.h"
 
-Instrucao* instrucao_new(uint8_t       codigo,
-                         uint8_t       bytes,
-                         int32_t       ciclos,
-                         int32_t       ciclos_pag_alterada,
-                         InstrucaoModo modo,
-                         InstrucaoFunc funcao)
+Instrucao* instrucao_new(char          *nome,
+                         uint8_t        bytes,
+                         int32_t        ciclos,
+                         int32_t        ciclos_pag_alterada,
+                         InstrucaoModo  modo,
+                         InstrucaoFunc  funcao)
 {
   Instrucao *instr = malloc(sizeof(Instrucao));
-  instr->codigo = codigo;
+  instr->nome = strdup(nome);
   instr->bytes = bytes;
   instr->ciclos = ciclos;
   instr->modo = modo;
@@ -42,9 +43,10 @@ Instrucao* instrucao_new(uint8_t       codigo,
 }
 
 void
-instrucao_free (Instrucao *instr)
+instrucao_free(Instrucao *instrucao)
 {
-  free(instr);
+  free(instrucao->nome);
+  free(instrucao);
 }
 
 /*!
@@ -837,4 +839,26 @@ static void instrucao_tya(Instrucao *isntrucao, Nes *nes)
   // atualizar flags
   cpu_n_escrever(nes->cpu, nes->cpu->a);
   cpu_z_escrever(nes->cpu, nes->cpu->a);
+}
+
+Instrucao** carregar_instrucoes(void)
+{
+  // cria um array com 0x100 (256 em decimal) ponteiros para instruções
+  Instrucao **instrucoes = malloc(sizeof(Instrucao*) * 0x100);
+  for (int i = 0; i < 0x100; i++)
+  {
+    instrucoes[i] = NULL;
+  }
+
+  // modos da instrução ADC
+  instrucoes[0x69] = instrucao_new("ADC", 2, 2, 0, MODO_ENDER_IMED, instrucao_adc);
+  instrucoes[0x65] = instrucao_new("ADC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_adc);
+  instrucoes[0x75] = instrucao_new("ADC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_adc);
+  instrucoes[0x6D] = instrucao_new("ADC", 3, 4, 0, MODO_ENDER_ABS, instrucao_adc);
+  instrucoes[0x7D] = instrucao_new("ADC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_adc);
+  instrucoes[0x79] = instrucao_new("ADC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_adc);
+  instrucoes[0x61] = instrucao_new("ADC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_adc);
+  instrucoes[0x71] = instrucao_new("ADC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_adc);
+
+  return instrucoes;
 }
