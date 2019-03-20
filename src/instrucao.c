@@ -737,3 +737,84 @@ static void instrucao_sei(Instrucao *instrucao, Nes *nes)
 {
   nes->cpu->i = true;
 }
+
+//! Guarda o valor do acumulador na memoria
+static void instrucao_sta(Instrucao *instrucao, Nes *nes)
+{
+  uint16_t endereco = buscar_endereco(instrucao, nes);
+  escrever_memoria(nes, endereco, nes->cpu->a);
+}
+
+//! Guarda o valor do registrador 'x' na memoria
+static void instrucao_stx(Instrucao *instrucao, Nes *nes)
+{
+  uint16_t endereco = buscar_endereco(instrucao, nes);
+  escrever_memoria(nes, endereco, nes->cpu->x);
+}
+
+//! Guarda o valor do registrador 'y' na memoria
+static void instrucao_sty(Instrucao *instrucao, Nes *nes)
+{
+  uint16_t endereco = buscar_endereco(instrucao, nes);
+  escrever_memoria(nes, endereco, nes->cpu->y);
+}
+
+//! Atribui o valor do acumulador ao registrador 'x'
+static void instrucao_tax(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->x = nes->cpu->a;
+
+  // atualizar flags
+  cpu_n_escrever(nes->cpu, nes->cpu->x);
+  cpu_z_escrever(nes->cpu, nes->cpu->x);
+}
+
+//! Atribui o valor do acumulador ao registrador 'y'
+static void instrucao_tay(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->y = nes->cpu->a;
+
+  // atualizar flags
+  cpu_n_escrever(nes->cpu, nes->cpu->y);
+  cpu_z_escrever(nes->cpu, nes->cpu->y);
+}
+
+//! Atribui o valor do ponteiro da stack ao registrador 'x'
+static void instrucao_tsx(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->x = nes->cpu->sp;
+
+  // atualizar flags
+  cpu_n_escrever(nes->cpu, nes->cpu->x);
+  cpu_z_escrever(nes->cpu, nes->cpu->x);
+}
+
+//! Atribui o valor do registrador 'x' ao acumulador
+static void instrucao_txa(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->a = nes->cpu->x;
+
+  // atualizar flags
+  cpu_n_escrever(nes->cpu, nes->cpu->a);
+  cpu_z_escrever(nes->cpu, nes->cpu->a);
+}
+
+//! Atribui o valor do registrador 'x' ao ponteiro da stack
+static void instrucao_txs(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->sp = nes->cpu->x;
+
+  // atualizar flags
+  cpu_n_escrever(nes->cpu, nes->cpu->sp);
+  cpu_z_escrever(nes->cpu, nes->cpu->sp);
+}
+
+//! Atribui o valor do registrador 'y' ao acumulador
+static void instrucao_tya(Instrucao *isntrucao, Nes *nes)
+{
+  nes->cpu->a = nes->cpu->y;
+
+  // atualizar flags
+  cpu_n_escrever(nes->cpu, nes->cpu->a);
+  cpu_z_escrever(nes->cpu, nes->cpu->a);
+}
