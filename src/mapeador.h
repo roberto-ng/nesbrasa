@@ -24,7 +24,7 @@ typedef struct _Nes Nes;
 
 typedef uint8_t (*MapeadorLerFunc)(Nes *nes, uint16_t  endereco);
 
-typedef void (*MapeadorEscreverFunc)(Nes      *nes,
+typedef void (*MapeadorEscreverFunc)(Nes *nes,
                                      uint16_t  endereco,
                                      uint8_t   valor);
 

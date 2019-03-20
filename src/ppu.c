@@ -83,17 +83,17 @@ uint8_t ppu_registrador_ler(Nes *nes, uint16_t endereco)
 {
   switch (endereco)
   {
-  case 0x2002:
-    return ppu_estado_ler(nes);
+    case 0x2002:
+      return ppu_estado_ler(nes);
 
-  case 0x2004:
-    return oam_dados_ler(nes);
+    case 0x2004:
+      return oam_dados_ler(nes);
 
-  case 0x2007:
-    return ppu_dados_ler(nes);
+    case 0x2007:
+      return ppu_dados_ler(nes);
 
-  default:
-    return 0;
+    default:
+      return 0;
   }
 }
 
@@ -101,36 +101,36 @@ void ppu_registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   switch (endereco)
   {
-  case 0x2000:
-    ppu_controle_escrever (nes, valor);
-    break;
+    case 0x2000:
+      ppu_controle_escrever(nes, valor);
+      break;
 
-  case 0x2001:
-    ppu_mascara_escrever (nes, valor);
-    break;
+    case 0x2001:
+      ppu_mascara_escrever(nes, valor);
+      break;
 
-  case 0x2003:
-    oam_enderco_escrever (nes, valor);
-    break;
+    case 0x2003:
+      oam_enderco_escrever(nes, valor);
+      break;
 
-  case 0x2005:
-    ppu_scroll_escrever (nes, valor);
-    break;
+    case 0x2005:
+      ppu_scroll_escrever(nes, valor);
+      break;
 
-  case 0x2006:
-    ppu_endereco_escrever (nes, valor);
-    break;
+    case 0x2006:
+      ppu_endereco_escrever(nes, valor);
+      break;
 
-  case 0x2007:
-    ppu_dados_escrever (nes, valor);
-    break;
+    case 0x2007:
+      ppu_dados_escrever(nes, valor);
+      break;
 
-  default:
-    break;
+    default:
+      break;
   }
 }
 
-uint8_t ppu_ler (Nes *nes, uint16_t endereco)
+uint8_t ppu_ler(Nes *nes, uint16_t endereco)
 {
   if (endereco < 0x2000)
   {
@@ -424,66 +424,66 @@ uint16_t ppu_endereco_espelhado(Nes *nes, uint16_t endereco)
   uint16_t base = 0;
   switch (nes->rom->espelhamento)
   {
-  case ESPELHAMENTO_HORIZONTAL:
-    if (endereco >= 0x2000 && endereco < 0x2400)
-    {
-      base = 0x2000;
-    }
-    else if (endereco >= 0x2400 && endereco < 0x2800)
-    {
-      base = 0x2000;
-    }
-    else if (endereco >= 0x2800 && endereco < 0x2C00)
-    {
-      base = 0x2400;
-    }
-    else
-    {
-      base = 0x2400;
-    }
-    break;
+    case ESPELHAMENTO_HORIZONTAL:
+      if (endereco >= 0x2000 && endereco < 0x2400)
+      {
+        base = 0x2000;
+      }
+      else if (endereco >= 0x2400 && endereco < 0x2800)
+      {
+        base = 0x2000;
+      }
+      else if (endereco >= 0x2800 && endereco < 0x2C00)
+      {
+        base = 0x2400;
+      }
+      else
+      {
+        base = 0x2400;
+      }
+      break;
 
-  case ESPELHAMENTO_VERTICAL:
-    if (endereco >= 0x2000 && endereco < 0x2400)
-    {
-      base = 0x2000;
-    }
-    else if (endereco >= 0x2400 && endereco < 0x2800)
-    {
-      base = 0x2400;
-    }
-    else if (endereco >= 0x2800 && endereco < 0x2C00)
-    {
-      base = 0x2000;
-    }
-    else
-    {
-      base = 0x2400;
-    }
-    break;
+    case ESPELHAMENTO_VERTICAL:
+      if (endereco >= 0x2000 && endereco < 0x2400)
+      {
+        base = 0x2000;
+      }
+      else if (endereco >= 0x2400 && endereco < 0x2800)
+      {
+        base = 0x2400;
+      }
+      else if (endereco >= 0x2800 && endereco < 0x2C00)
+      {
+        base = 0x2000;
+      }
+      else
+      {
+        base = 0x2400;
+      }
+      break;
 
-  case ESPELHAMENTO_TELA_UNICA:
-    base = 0x2000;
-    break;
-
-  case ESPELHAMENTO_4_TELAS:
-    if (endereco >= 0x2000 && endereco < 0x2400)
-    {
+    case ESPELHAMENTO_TELA_UNICA:
       base = 0x2000;
-    }
-    else if (endereco >= 0x2400 && endereco < 0x2800)
-    {
-      base = 0x2400;
-    }
-    else if (endereco >= 0x2800 && endereco < 0x2C00)
-    {
-      base = 0x2800;
-    }
-    else
-    {
-      base = 0x2C00;
-    }
-    break;
+      break;
+
+    case ESPELHAMENTO_4_TELAS:
+      if (endereco >= 0x2000 && endereco < 0x2400)
+      {
+        base = 0x2000;
+      }
+      else if (endereco >= 0x2400 && endereco < 0x2800)
+      {
+        base = 0x2400;
+      }
+      else if (endereco >= 0x2800 && endereco < 0x2C00)
+      {
+        base = 0x2800;
+      }
+      else
+      {
+        base = 0x2C00;
+      }
+      break;
   }
 
   return base | (endereco & 0b0000001111111111);

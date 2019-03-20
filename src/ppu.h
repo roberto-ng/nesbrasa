@@ -32,8 +32,8 @@ typedef struct _Ppu Ppu;
 
 struct _Ppu
 {
-        uint8_t  oam[0x100];
-        uint8_t  vram[0x4000];
+        uint8_t oam[0x100];
+        uint8_t vram[0x4000];
 
         uint8_t  buffer_dados;
         uint8_t  ultimo_valor; // último valor escrito na ppu
@@ -44,28 +44,28 @@ struct _Ppu
         uint16_t padrao_sprite_endereco;
 
         // PPUCTRL - $2000
-        bool     flag_nmi;
-        bool     flag_mestre_escravo;
-        bool     flag_sprite_altura;
-        bool     flag_padrao_fundo;
-        bool     flag_padrao_sprite;
-        bool     flag_incrementar;
-        uint8_t  flag_nametable_base;
+        bool    flag_nmi;
+        bool    flag_mestre_escravo;
+        bool    flag_sprite_altura;
+        bool    flag_padrao_fundo;
+        bool    flag_padrao_sprite;
+        bool    flag_incrementar;
+        uint8_t flag_nametable_base;
 
         // PPUMASK - $2001
-        bool     flag_enfase_b;
-        bool     flag_enfase_g;
-        bool     flag_enfase_r;
-        bool     flag_sprite_habilitar;
-        bool     flag_fundo_habilitar;
-        bool     flag_sprite_habilitar_col_esquerda;
-        bool     flag_fundo_habilitar_col_esquerda;
-        bool     flag_escala_cinza;
+        bool flag_enfase_b;
+        bool flag_enfase_g;
+        bool flag_enfase_r;
+        bool flag_sprite_habilitar;
+        bool flag_fundo_habilitar;
+        bool flag_sprite_habilitar_col_esquerda;
+        bool flag_fundo_habilitar_col_esquerda;
+        bool flag_escala_cinza;
 
         // PPUSTATUS - $2002
-        bool     flag_vblank;
-        bool     flag_sprite_zero;
-        bool     flag_sprite_transbordamento;
+        bool flag_vblank;
+        bool flag_sprite_zero;
+        bool flag_sprite_transbordamento;
 
         // registradores internos
         uint16_t v;

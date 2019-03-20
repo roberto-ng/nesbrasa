@@ -56,7 +56,7 @@ struct _Instrucao
 {
         uint8_t codigo;
         uint8_t bytes;
-        int     ciclos;
+        int32_t ciclos;
 
         // ponteiros para funções
         InstrucaoModo modo;
@@ -65,7 +65,7 @@ struct _Instrucao
 
 Instrucao* instrucao_new(uint8_t       codigo,
                          uint8_t       bytes,
-                         int           ciclos,
+                         int32_t       ciclos,
                          InstrucaoModo modo,
                          InstrucaoFunc funcao);
 

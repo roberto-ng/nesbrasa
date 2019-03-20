@@ -46,7 +46,7 @@ void cpu_free(Cpu *cpu)
   free(cpu);
 }
 
-void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t  endereco)
+void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t endereco)
 {
   // somar 1 se os 2 endereços forem da mesma pagina,
   // somar 2 se forem de paginas diferentes
@@ -56,7 +56,7 @@ void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t  endereco)
     cpu->ciclos += 2;
 }
 
-uint8_t cpu_estado_ler (Cpu *cpu)
+uint8_t cpu_estado_ler(Cpu *cpu)
 {
   uint8_t flags = 0;
 

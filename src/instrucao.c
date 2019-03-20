@@ -54,55 +54,55 @@ static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
 {
   switch (instrucao->modo)
   {
-  case MODO_ENDER_ACM:
-    return 0;
+    case MODO_ENDER_ACM:
+      return 0;
 
-  case MODO_ENDER_IMPL:
-    return 0;
+    case MODO_ENDER_IMPL:
+      return 0;
 
-  case MODO_ENDER_IMED:
-    return nes->cpu->pc + 1;
+    case MODO_ENDER_IMED:
+      return nes->cpu->pc + 1;
 
-  case MODO_ENDER_P_ZERO:
-    return ler_memoria(nes, (nes->cpu->pc + 1)%0xFF);
+    case MODO_ENDER_P_ZERO:
+      return ler_memoria(nes, (nes->cpu->pc + 1)%0xFF);
 
-  case MODO_ENDER_P_ZERO_X:
-    return ler_memoria(nes, (nes->cpu->pc + 1 + nes->cpu->x)%0xFF);
+    case MODO_ENDER_P_ZERO_X:
+      return ler_memoria(nes, (nes->cpu->pc + 1 + nes->cpu->x)%0xFF);
 
-  case MODO_ENDER_P_ZERO_Y:
-    return ler_memoria(nes, (nes->cpu->pc + 1 + nes->cpu->y)%0xFF);
+    case MODO_ENDER_P_ZERO_Y:
+      return ler_memoria(nes, (nes->cpu->pc + 1 + nes->cpu->y)%0xFF);
 
-  case MODO_ENDER_ABS:
-    return ler_memoria_16_bits(nes, nes->cpu->pc + 1);
+    case MODO_ENDER_ABS:
+      return ler_memoria_16_bits(nes, nes->cpu->pc + 1);
 
-  case MODO_ENDER_ABS_X:
-    return ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->x);
+    case MODO_ENDER_ABS_X:
+      return ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->x);
 
-  case MODO_ENDER_ABS_Y:
-    return ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->y);
+    case MODO_ENDER_ABS_Y:
+      return ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->y);
 
-  case MODO_ENDER_IND:
+    case MODO_ENDER_IND:
     {
-      const uint16_t valor = ler_memoria_16_bits(nes, nes->cpu->pc+1);
-      return ler_memoria_16_bits_bug(nes, valor);
+        const uint16_t valor = ler_memoria_16_bits(nes, nes->cpu->pc+1);
+        return ler_memoria_16_bits_bug(nes, valor);
     }
 
-  case MODO_ENDER_INDEX_IND:
+    case MODO_ENDER_INDEX_IND:
     {
-      const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-      return ler_memoria_16_bits_bug(nes, valor + nes->cpu->x);
+        const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
+        return ler_memoria_16_bits_bug(nes, valor + nes->cpu->x);
     }
 
-  case MODO_ENDER_IND_INDEX:
+    case MODO_ENDER_IND_INDEX:
     {
-      const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-      return ler_memoria_16_bits_bug(nes, valor + nes->cpu->y);
+        const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
+        return ler_memoria_16_bits_bug(nes, valor + nes->cpu->y);
     }
 
-  case MODO_ENDER_REL:
+    case MODO_ENDER_REL:
     {
-      const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-      return nes->cpu->pc + 2 + valor - ((valor < 0x80) ? 0 : 0x100);
+        const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
+        return nes->cpu->pc + 2 + valor - ((valor < 0x80) ? 0 : 0x100);
     }
   }
 
