@@ -83,26 +83,26 @@ static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
 
     case MODO_ENDER_IND:
     {
-        const uint16_t valor = ler_memoria_16_bits(nes, nes->cpu->pc+1);
-        return ler_memoria_16_bits_bug(nes, valor);
+      const uint16_t valor = ler_memoria_16_bits(nes, nes->cpu->pc+1);
+      return ler_memoria_16_bits_bug(nes, valor);
     }
 
     case MODO_ENDER_INDEX_IND:
     {
-        const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-        return ler_memoria_16_bits_bug(nes, valor + nes->cpu->x);
+      const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
+      return ler_memoria_16_bits_bug(nes, valor + nes->cpu->x);
     }
 
     case MODO_ENDER_IND_INDEX:
     {
-        const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-        return ler_memoria_16_bits_bug(nes, valor + nes->cpu->y);
+      const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
+      return ler_memoria_16_bits_bug(nes, valor + nes->cpu->y);
     }
 
     case MODO_ENDER_REL:
     {
-        const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-        return nes->cpu->pc + 2 + valor - ((valor < 0x80) ? 0 : 0x100);
+      const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
+      return nes->cpu->pc + 2 + valor - ((valor < 0x80) ? 0 : 0x100);
     }
   }
 
@@ -119,20 +119,20 @@ static void instrucao_adc(Instrucao *instrucao, Nes *nes)
   uint8_t valor = ler_memoria(nes, endereco);
 
   const uint8_t a = nes->cpu->a;
-  const uint8_t m = valor;
-  const uint8_t c = nes->cpu->c;
+  const uint8_t c = (nes->cpu->c) ? 1 : 0;
 
-  nes->cpu->a = a + m + c;
+  nes->cpu->a = a + valor + c;
 
   // atualiza a flag c
-  if (((int32_t)a + (int32_t)m + (int32_t)c) > 0xFF)
+  int32_t soma_total = (int32_t)a + (int32_t)valor + (int32_t)c;
+  if (soma_total > 0xFF)
     nes->cpu->c = 1;
   else
     nes->cpu->c = 0;
 
   // checa se houve um overflow/transbordamento e atualiza a flag v
   // solução baseada em: https://stackoverflow.com/a/16861251
-  if ((~(a ^ m)) & (a ^ c) & 0x80)
+  if ((~(a ^ valor)) & (a ^ c) & 0x80)
     nes->cpu->v = 1;
   else
     nes->cpu->v = 0;
@@ -688,4 +688,52 @@ static void instrucao_rti(Instrucao *instrucao, Nes *nes)
 static void instrucao_rts(Instrucao *instrucao, Nes *nes)
 {
   nes->cpu->pc = stack_puxar_16_bits(nes) + 1;
+}
+
+//! Subtrai um valor da memoria usando o acumulador
+static void instrucao_sbc(Instrucao *instrucao, Nes *nes)
+{
+ uint16_t endereco = buscar_endereco(instrucao, nes);
+  uint8_t valor = ler_memoria(nes, endereco);
+
+  const uint8_t a = nes->cpu->a;
+  const uint8_t c = (nes->cpu->c) ? 1 : 0;
+
+  nes->cpu->a = a - valor - 1 - c;
+
+  // atualiza a flag c
+  int32_t subtracao_total = (int32_t)a - (int32_t)valor - 1 - (int32_t)c;
+  if (subtracao_total >= 0)
+    nes->cpu->c = 1;
+  else
+    nes->cpu->c = 0;
+
+  // checa se houve um overflow/transbordamento e atualiza a flag v
+  // solução baseada em: https://stackoverflow.com/a/16861251
+  if ((~(a ^ (valor*-1 - 1))) & (a ^ c) & 0x80)
+    nes->cpu->v = 1;
+  else
+    nes->cpu->v = 0;
+
+  // atualiza as flags z e n
+  cpu_n_escrever(nes->cpu, nes->cpu->a);
+  cpu_z_escrever(nes->cpu, nes->cpu->a);
+}
+
+//! Ativa a flag 'c'
+static void instrucao_sec(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->c = true;
+}
+
+//! Ativa a flag 'd'
+static void instrucao_sed(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->d = true;
+}
+
+//! Ativa a flag 'i'
+static void instrucao_sei(Instrucao *instrucao, Nes *nes)
+{
+  nes->cpu->i = true;
 }
