@@ -118,7 +118,11 @@ static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
     case MODO_ENDER_REL:
     {
       const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-      return nes->cpu->pc + 2 + valor - ((valor < 0x80) ? 0 : 0x100);
+
+      if (valor < 0x80)
+        return nes->cpu->pc + 2 + valor;
+      else
+        return nes->cpu->pc + 2 + valor - 0x100;
     }
   }
 
