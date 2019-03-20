@@ -36,8 +36,8 @@ typedef enum
   MODO_ENDER_IMED,      // imediato
   MODO_ENDER_IMPL,      // implicado
   MODO_ENDER_IND,       // indireto
-  MODO_ENDER_INDEX_IND, // indexado indireto
-  MODO_ENDER_IND_INDEX, // indireto indexado
+  MODO_ENDER_IND_X,     // indireto indexado por x
+  MODO_ENDER_IND_Y,     // indireto indexado por y
   MODO_ENDER_REL,       // relativo
   MODO_ENDER_P_ZERO,    // página 0
   MODO_ENDER_P_ZERO_X,  // página 0, indexado pelo registrador x
@@ -58,6 +58,10 @@ struct _Instrucao
         uint8_t bytes;
         int32_t ciclos;
 
+        // quantidade de ciclos adicionais que devem ocorrer quando a
+        // página da memoria for alterada durante a leitura do endereço
+        int32_t ciclos_pag_alterada;
+
         // ponteiros para funções
         InstrucaoModo modo;
         InstrucaoFunc funcao;
@@ -66,6 +70,7 @@ struct _Instrucao
 Instrucao* instrucao_new(uint8_t       codigo,
                          uint8_t       bytes,
                          int32_t       ciclos,
+                         int32_t       ciclos_pag_alterada,
                          InstrucaoModo modo,
                          InstrucaoFunc funcao);
 

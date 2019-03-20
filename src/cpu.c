@@ -37,6 +37,7 @@ Cpu* cpu_new(void)
   cpu->v = false;
   cpu->n = false;
   cpu->esperar = 0;
+  cpu->pag_alterada = false;
 
   return cpu;
 }

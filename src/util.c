@@ -34,7 +34,7 @@ inline bool buscar_bit(uint8_t byte, uint8_t pos)
 
 inline bool comparar_paginas(uint16_t pagina_1, uint16_t pagina_2)
 {
-  return (pagina_1 & 0xFF00) != (pagina_2 & 0xFF00);
+  return (pagina_1 & 0xFF00) == (pagina_2 & 0xFF00);
 }
 
 char* formatar_str(char *fmt, ...)

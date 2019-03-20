@@ -49,6 +49,7 @@ struct _Cpu
 
         uint16_t esperar;
         uint32_t ciclos;
+        bool     pag_alterada;
 };
 
 Cpu* cpu_new(void);

@@ -27,6 +27,7 @@
 Instrucao* instrucao_new(uint8_t       codigo,
                          uint8_t       bytes,
                          int32_t       ciclos,
+                         int32_t       ciclos_pag_alterada,
                          InstrucaoModo modo,
                          InstrucaoFunc funcao)
 {
@@ -52,6 +53,8 @@ instrucao_free (Instrucao *instr)
  */
 static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
 {
+  nes->cpu->pag_alterada = false;
+
   switch (instrucao->modo)
   {
     case MODO_ENDER_ACM:
@@ -76,10 +79,20 @@ static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
       return ler_memoria_16_bits(nes, nes->cpu->pc + 1);
 
     case MODO_ENDER_ABS_X:
-      return ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->x);
+    {
+      uint16_t endereco = ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->x);
+      nes->cpu->pag_alterada = !comparar_paginas(endereco - nes->cpu->x, endereco);
+
+      return endereco;
+    }
 
     case MODO_ENDER_ABS_Y:
-      return ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->y);
+    {
+      uint16_t endereco =  ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->y);
+      nes->cpu->pag_alterada = !comparar_paginas(endereco - nes->cpu->y, endereco);
+
+      return endereco;
+    }
 
     case MODO_ENDER_IND:
     {
@@ -87,16 +100,19 @@ static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
       return ler_memoria_16_bits_bug(nes, valor);
     }
 
-    case MODO_ENDER_INDEX_IND:
+    case MODO_ENDER_IND_X:
     {
       const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
       return ler_memoria_16_bits_bug(nes, valor + nes->cpu->x);
     }
 
-    case MODO_ENDER_IND_INDEX:
+    case MODO_ENDER_IND_Y:
     {
       const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
-      return ler_memoria_16_bits_bug(nes, valor + nes->cpu->y);
+      uint16_t endereco = ler_memoria_16_bits_bug(nes, valor) + nes->cpu->y;
+      nes->cpu->pag_alterada = !comparar_paginas(endereco - nes->cpu->y, endereco);
+
+      return endereco;
     }
 
     case MODO_ENDER_REL:
