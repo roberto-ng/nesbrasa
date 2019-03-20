@@ -23,10 +23,9 @@
 #include "memoria.h"
 #include "util.h"
 
-Ppu*
-ppu_new (void)
+Ppu* ppu_new(void)
 {
-  Ppu *ppu = malloc (sizeof (Ppu));
+  Ppu *ppu = malloc(sizeof(Ppu));
 
   ppu->buffer_dados = 0;
   ppu->ultimo_valor = 0;
@@ -62,12 +61,12 @@ ppu_new (void)
   ppu->x = 0;
   ppu->w = false;
 
-  for (int i = 0; i < TAMANHO (ppu->oam); i++)
+  for (int i = 0; i < TAMANHO(ppu->oam); i++)
   {
     ppu->oam[i] = 0;
   }
 
-  for (int i = 0; i < TAMANHO (ppu->vram); i++)
+  for (int i = 0; i < TAMANHO(ppu->vram); i++)
   {
     ppu->vram[i] = 0;
   }
@@ -75,36 +74,30 @@ ppu_new (void)
   return ppu;
 }
 
-void
-ppu_free (Ppu *ppu)
+void ppu_free(Ppu *ppu)
 {
-  free (ppu);
+  free(ppu);
 }
 
-uint8_t
-ppu_registrador_ler (Nes      *nes,
-                     uint16_t  endereco)
+uint8_t ppu_registrador_ler(Nes *nes, uint16_t endereco)
 {
   switch (endereco)
   {
   case 0x2002:
-    return ppu_estado_ler (nes);
+    return ppu_estado_ler(nes);
 
   case 0x2004:
-    return oam_dados_ler (nes);
+    return oam_dados_ler(nes);
 
   case 0x2007:
-    return ppu_dados_ler (nes);
+    return ppu_dados_ler(nes);
 
   default:
     return 0;
   }
 }
 
-void
-ppu_registrador_escrever (Nes      *nes,
-                          uint16_t  endereco,
-                          uint8_t   valor)
+void ppu_registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   switch (endereco)
   {
@@ -137,17 +130,15 @@ ppu_registrador_escrever (Nes      *nes,
   }
 }
 
-uint8_t
-ppu_ler (Nes      *nes,
-         uint16_t  endereco)
+uint8_t ppu_ler (Nes *nes, uint16_t endereco)
 {
   if (endereco < 0x2000)
   {
-    return nes->mapeador->ler (nes, endereco);
+    return nes->mapeador->ler(nes, endereco);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
-    uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
+    uint16_t espelhado = ppu_endereco_espelhado(nes, endereco);
     return nes->ppu->vram[espelhado];
   }
   else if (endereco >= 0x3F00 && endereco < 0x4000)
@@ -185,18 +176,15 @@ ppu_ler (Nes      *nes,
   return 0;
 }
 
-void
-ppu_escrever (Nes      *nes,
-              uint16_t  endereco,
-              uint8_t   valor)
+void ppu_escrever(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   if (endereco < 0x2000)
   {
-    nes->mapeador->escrever (nes, endereco, valor);
+    nes->mapeador->escrever(nes, endereco, valor);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
-    uint16_t espelhado = ppu_endereco_espelhado (nes, endereco);
+    uint16_t espelhado = ppu_endereco_espelhado(nes, endereco);
     nes->ppu->vram[espelhado] = valor;
   }
   else if (endereco >= 0x3F00 && endereco < 0x4000)
@@ -232,18 +220,16 @@ ppu_escrever (Nes      *nes,
   }
 }
 
-void
-ppu_controle_escrever (Nes     *nes,
-                       uint8_t  valor)
+void ppu_controle_escrever (Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
 
-  ppu->flag_nmi = buscar_bit (valor, 7);
-  ppu->flag_mestre_escravo = buscar_bit (valor, 6);
-  ppu->flag_sprite_altura = buscar_bit (valor, 5);
-  ppu->flag_padrao_fundo = buscar_bit (valor, 4);
-  ppu->flag_padrao_sprite = buscar_bit (valor, 3);
-  ppu->flag_incrementar = buscar_bit (valor, 2);
+  ppu->flag_nmi = buscar_bit(valor, 7);
+  ppu->flag_mestre_escravo = buscar_bit(valor, 6);
+  ppu->flag_sprite_altura = buscar_bit(valor, 5);
+  ppu->flag_padrao_fundo = buscar_bit(valor, 4);
+  ppu->flag_padrao_sprite = buscar_bit(valor, 3);
+  ppu->flag_incrementar = buscar_bit(valor, 2);
   ppu->flag_nametable_base = valor & 0b00000011;
 
   ppu->nametable_endereco = 0x2000 + (0x400 * ppu->flag_nametable_base);
@@ -267,24 +253,21 @@ ppu_controle_escrever (Nes     *nes,
   ppu->t = (ppu->t & 0b1111001111111111) | ((valor & 0b00000011) << 10);
 }
 
-void
-ppu_mascara_escrever (Nes     *nes,
-                      uint8_t  valor)
+void ppu_mascara_escrever(Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
 
-  ppu->flag_enfase_b = buscar_bit (valor, 7);
-  ppu->flag_enfase_g = buscar_bit (valor, 6);
-  ppu->flag_enfase_r = buscar_bit (valor, 5);
-  ppu->flag_sprite_habilitar = buscar_bit (valor, 4);
-  ppu->flag_fundo_habilitar = buscar_bit (valor, 3);
-  ppu->flag_sprite_habilitar_col_esquerda = buscar_bit (valor, 2);
-  ppu->flag_fundo_habilitar_col_esquerda = buscar_bit (valor, 1);
-  ppu->flag_escala_cinza = buscar_bit (valor, 0);
+  ppu->flag_enfase_b = buscar_bit(valor, 7);
+  ppu->flag_enfase_g = buscar_bit(valor, 6);
+  ppu->flag_enfase_r = buscar_bit(valor, 5);
+  ppu->flag_sprite_habilitar = buscar_bit(valor, 4);
+  ppu->flag_fundo_habilitar = buscar_bit(valor, 3);
+  ppu->flag_sprite_habilitar_col_esquerda = buscar_bit(valor, 2);
+  ppu->flag_fundo_habilitar_col_esquerda = buscar_bit(valor, 1);
+  ppu->flag_escala_cinza = buscar_bit(valor, 0);
 }
 
-uint8_t
-ppu_estado_ler (Nes *nes)
+uint8_t ppu_estado_ler(Nes *nes)
 {
   Ppu *ppu = nes->ppu;
 
@@ -302,32 +285,25 @@ ppu_estado_ler (Nes *nes)
   return v | s | o | ultimo;
 }
 
-void
-oam_enderco_escrever (Nes     *nes,
-                      uint8_t  valor)
+void oam_enderco_escrever(Nes *nes, uint8_t valor)
 {
   nes->ppu->oam_endereco = valor;
 }
 
-void
-oam_dados_escrever (Nes     *nes,
-                    uint8_t  valor)
+void oam_dados_escrever(Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
   ppu->oam[ppu->oam_endereco] = valor;
   ppu->oam_endereco += 1;
 }
 
-uint8_t
-oam_dados_ler (Nes *nes)
+uint8_t oam_dados_ler(Nes *nes)
 {
   Ppu *ppu = nes->ppu;
   return ppu->oam[ppu->oam_endereco];
 }
 
-void
-ppu_scroll_escrever (Nes     *nes,
-                     uint8_t  valor)
+void ppu_scroll_escrever(Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
 
@@ -360,9 +336,7 @@ ppu_scroll_escrever (Nes     *nes,
   }
 }
 
-void
-ppu_endereco_escrever (Nes     *nes,
-                       uint8_t  valor)
+void ppu_endereco_escrever (Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
 
@@ -397,16 +371,14 @@ ppu_endereco_escrever (Nes     *nes,
   }
 }
 
-void
-omd_dma_escrever (Nes     *nes,
-                  uint8_t  valor)
+void omd_dma_escrever(Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
   uint16_t ponteiro = valor << 8;
 
-  for (int i = 0; i < TAMANHO (ppu->oam); i++)
+  for (int i = 0; i < TAMANHO(ppu->oam); i++)
   {
-    ppu->oam[ppu->oam_endereco] = ler_memoria (nes, ponteiro);
+    ppu->oam[ppu->oam_endereco] = ler_memoria(nes, ponteiro);
     ppu->oam_endereco += 1;
     ponteiro += 1;
   }
@@ -418,41 +390,36 @@ omd_dma_escrever (Nes     *nes,
     nes->cpu->esperar = 513;
 }
 
-uint8_t
-ppu_dados_ler (Nes *nes)
+uint8_t ppu_dados_ler(Nes *nes)
 {
   Ppu *ppu = nes->ppu;
 
   if (ppu->v < 0x3F00)
   {
     const uint8_t dados = ppu->buffer_dados;
-    ppu->buffer_dados = ler_memoria (nes, ppu->v);
+    ppu->buffer_dados = ler_memoria(nes, ppu->v);
     ppu->v += ppu->vram_incrementar;
 
     return dados;
   }
   else
   {
-    const uint8_t valor = ler_memoria (nes, ppu->v);
-    ppu->buffer_dados = ler_memoria (nes, ppu->v - 0x1000);
+    const uint8_t valor = ler_memoria(nes, ppu->v);
+    ppu->buffer_dados = ler_memoria(nes, ppu->v - 0x1000);
 
     return valor;
   }
 }
 
-void
-ppu_dados_escrever (Nes     *nes,
-                    uint8_t  valor)
+void ppu_dados_escrever(Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
 
-  ppu_escrever (nes, ppu->v, valor);
+  ppu_escrever(nes, ppu->v, valor);
   ppu->v += ppu->vram_incrementar;
 }
 
-uint16_t
-ppu_endereco_espelhado (Nes      *nes,
-                        uint16_t  endereco)
+uint16_t ppu_endereco_espelhado(Nes *nes, uint16_t endereco)
 {
   uint16_t base = 0;
   switch (nes->rom->espelhamento)

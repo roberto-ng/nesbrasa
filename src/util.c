@@ -23,9 +23,7 @@
 
 #include "util.h"
 
-inline bool
-buscar_bit (uint8_t byte,
-            uint8_t pos)
+inline bool buscar_bit(uint8_t byte, uint8_t pos)
 {
   // dar a volta quando a posição do bit for maior que 7
   pos = pos % 8;
@@ -34,15 +32,12 @@ buscar_bit (uint8_t byte,
   return (tmp >> pos) != 0;
 }
 
-inline bool
-comparar_paginas (uint16_t pagina_1,
-                  uint16_t pagina_2)
+inline bool comparar_paginas(uint16_t pagina_1, uint16_t pagina_2)
 {
   return (pagina_1 & 0xFF00) != (pagina_2 & 0xFF00);
 }
 
-char*
-formatar_str (char *fmt, ...)
+char* formatar_str(char *fmt, ...)
 {
   va_list args;
   va_list args_copia;

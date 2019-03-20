@@ -40,6 +40,6 @@ struct _Nes
         Mapeador *mapeador;
 };
 
-Nes* nes_new  (void);
+Nes* nes_new(void);
 
-void nes_free (Nes *nes);
+void nes_free(Nes *nes);

@@ -21,9 +21,7 @@
 
 typedef struct _Nes Nes;
 
-uint8_t
-ler_memoria (Nes      *nes,
-             uint16_t  endereco)
+uint8_t ler_memoria(Nes *nes, uint16_t  endereco)
 {
   if (endereco <= 0x07FF)
   {
@@ -37,13 +35,13 @@ ler_memoria (Nes      *nes,
   }
   else if (endereco >= 0x2000 && endereco <= 0x2007)
   {
-    return ppu_registrador_ler (nes, endereco);
+    return ppu_registrador_ler(nes, endereco);
   }
   else if (endereco >= 0x2008 && endereco <= 0x3FFF)
   {
     // endereço espelhado do registrador
     uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
-    return ppu_registrador_ler (nes, ender_espelhado);
+    return ppu_registrador_ler(nes, ender_espelhado);
   }
   else if (endereco >= 0x4000 && endereco <= 0x4017)
   {
@@ -56,45 +54,38 @@ ler_memoria (Nes      *nes,
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    return nes->mapeador->ler (nes, endereco);
+    return nes->mapeador->ler(nes, endereco);
   }
 
   return 0;
 }
 
-uint16_t
-ler_memoria_16_bits (Nes      *nes,
-                     uint16_t  endereco)
+uint16_t ler_memoria_16_bits(Nes *nes, uint16_t endereco)
 {
-  uint16_t menor = ler_memoria (nes, endereco);
-  uint16_t maior = ler_memoria (nes, endereco + 1);
+  uint16_t menor = ler_memoria(nes, endereco);
+  uint16_t maior = ler_memoria(nes, endereco + 1);
 
   return (maior << 8) | menor;
 }
 
-uint16_t
-ler_memoria_16_bits_bug (Nes      *nes,
-                         uint16_t  endereco)
+uint16_t ler_memoria_16_bits_bug(Nes *nes, uint16_t endereco)
 {
-  uint16_t menor = ler_memoria (nes, endereco);
+  uint16_t menor = ler_memoria(nes, endereco);
   uint16_t maior = 0;
 
   if ((endereco & 0x00FF) == 0x00FF)
   {
-    maior = ler_memoria (nes, endereco & 0xFF00);
+    maior = ler_memoria(nes, endereco & 0xFF00);
   }
   else
   {
-    maior = ler_memoria (nes, endereco + 1);
+    maior = ler_memoria(nes, endereco + 1);
   }
 
   return (maior << 8) | menor;
 }
 
-void
-escrever_memoria (Nes      *nes,
-                  uint16_t  endereco,
-                  uint8_t   valor)
+void escrever_memoria(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   if (endereco <= 0x07FF)
   {
@@ -108,13 +99,13 @@ escrever_memoria (Nes      *nes,
   }
   else if (endereco >= 0x2000 && endereco <= 0x2007)
   {
-    ppu_registrador_escrever (nes, endereco, valor);
+    ppu_registrador_escrever(nes, endereco, valor);
   }
   else if (endereco >= 0x2008 && endereco <= 0x3FFF)
   {
     // endereço espelhado do registrador
     uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
-    ppu_registrador_escrever (nes, ender_espelhado, valor);
+    ppu_registrador_escrever(nes, ender_espelhado, valor);
   }
   else if (endereco >= 0x4000 && endereco <= 0x4017)
   {
@@ -127,6 +118,6 @@ escrever_memoria (Nes      *nes,
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    return nes->mapeador->escrever (nes, endereco, valor);
+    return nes->mapeador->escrever(nes, endereco, valor);
   }
 }

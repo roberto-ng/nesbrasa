@@ -33,6 +33,6 @@ struct _Rom
         Espelhamento espelhamento;
 };
 
-Rom* rom_new  (void);
+Rom* rom_new(void);
 
-void rom_free (Rom *rom);
+void rom_free(Rom *rom);

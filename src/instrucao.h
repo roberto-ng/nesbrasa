@@ -49,25 +49,24 @@ typedef struct _Instrucao Instrucao;
 /*! Ponteiro para uma fução de alto nivel que
    sera usada para reimplementar uma instrução
    da arquitetura 6502 */
-typedef void (*InstrucaoFunc) (Instrucao *instrucao,
-                               Nes       *nes);
+typedef void (*InstrucaoFunc)(Instrucao *instrucao, Nes *nes);
 
 //! Uma instrução da arquitetura 6502
 struct _Instrucao
 {
-        uint8_t       codigo;
-        uint8_t       bytes;
-        int           ciclos;
+        uint8_t codigo;
+        uint8_t bytes;
+        int     ciclos;
 
         // ponteiros para funções
         InstrucaoModo modo;
         InstrucaoFunc funcao;
 };
 
-Instrucao* instrucao_new  (uint8_t       codigo,
-                           uint8_t       bytes,
-                           int           ciclos,
-                           InstrucaoModo modo,
-                           InstrucaoFunc funcao);
+Instrucao* instrucao_new(uint8_t       codigo,
+                         uint8_t       bytes,
+                         int           ciclos,
+                         InstrucaoModo modo,
+                         InstrucaoFunc funcao);
 
-void       instrucao_free (Instrucao *instr);
+void instrucao_free(Instrucao *instr);

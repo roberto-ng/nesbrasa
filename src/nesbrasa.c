@@ -22,16 +22,15 @@
 #include "rom.h"
 #include "util.h"
 
-Nes*
-nes_new (void)
+Nes* nes_new(void)
 {
-  Nes *nes = malloc (sizeof (Nes));
-  nes->cpu = cpu_new ();
-  nes->ppu = ppu_new ();
-  nes->rom = rom_new ();
-  nes->mapeador = mapeador_new ();
+  Nes *nes = malloc(sizeof (Nes));
+  nes->cpu = cpu_new();
+  nes->ppu = ppu_new();
+  nes->rom = rom_new();
+  nes->mapeador = mapeador_new();
 
-  for (int i = 0; i < TAMANHO (nes->ram); i++)
+  for (int i = 0; i < TAMANHO(nes->ram); i++)
   {
     nes->ram[i] = 0;
   }
@@ -39,11 +38,11 @@ nes_new (void)
   return nes;
 }
 
-void nes_free (Nes *nes)
+void nes_free(Nes *nes)
 {
-  cpu_free (nes->cpu);
-  ppu_free (nes->ppu);
-  rom_free (nes->rom);
-  mapeador_free (nes->mapeador);
-  free (nes);
+  cpu_free(nes->cpu);
+  ppu_free(nes->ppu);
+  rom_free(nes->rom);
+  mapeador_free(nes->mapeador);
+  free(nes);
 }

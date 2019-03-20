@@ -22,12 +22,11 @@
 
 typedef struct _Nes Nes;
 
-typedef uint8_t (*MapeadorLerFunc)      (Nes      *nes,
-                                         uint16_t  endereco);
+typedef uint8_t (*MapeadorLerFunc)(Nes *nes, uint16_t  endereco);
 
-typedef void    (*MapeadorEscreverFunc) (Nes      *nes,
-                                         uint16_t  endereco,
-                                         uint8_t   valor);
+typedef void (*MapeadorEscreverFunc)(Nes      *nes,
+                                     uint16_t  endereco,
+                                     uint8_t   valor);
 
 typedef struct _Mapeador Mapeador;
 
@@ -37,7 +36,7 @@ struct _Mapeador
         MapeadorEscreverFunc escrever;
 };
 
-Mapeador* mapeador_new  ();
+Mapeador* mapeador_new();
 
-void      mapeador_free (Mapeador *mapeador);
+void mapeador_free(Mapeador *mapeador);
 

@@ -20,17 +20,15 @@
 
 #include "rom.h"
 
-Rom*
-rom_new (void)
+Rom* rom_new(void)
 {
-  Rom *rom = malloc (sizeof (Rom));
+  Rom *rom = malloc(sizeof(Rom));
   rom->espelhamento = ESPELHAMENTO_TELA_UNICA;
 
   return rom;
 }
 
-void
-rom_free (Rom *rom)
+void rom_free(Rom *rom)
 {
-  free (rom);
+  free(rom);
 }
