@@ -860,5 +860,15 @@ Instrucao** carregar_instrucoes(void)
   instrucoes[0x61] = instrucao_new("ADC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_adc);
   instrucoes[0x71] = instrucao_new("ADC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_adc);
 
+  // modos da instrução AND
+  instrucoes[0x29] = instrucao_new("AND", 2, 2, 0, MODO_ENDER_IMED, instrucao_and);
+  instrucoes[0x25] = instrucao_new("AND", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_and);
+  instrucoes[0x35] = instrucao_new("AND", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_and);
+  instrucoes[0x2D] = instrucao_new("AND", 3, 4, 0, MODO_ENDER_ABS, instrucao_and);
+  instrucoes[0x3D] = instrucao_new("AND", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_and);
+  instrucoes[0x39] = instrucao_new("AND", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_and);
+  instrucoes[0x21] = instrucao_new("AND", 2, 6, 0, MODO_ENDER_IND_X, instrucao_and);
+  instrucoes[0x21] = instrucao_new("AND", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_and);
+
   return instrucoes;
 }
