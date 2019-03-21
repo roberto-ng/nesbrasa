@@ -168,7 +168,7 @@ static void instrucao_adc(Instrucao *instrucao, Nes *nes)
   Instrução AND
   A AND M -> A
  */
-static void instrucao_and (Instrucao *instrucao, Nes *nes)
+static void instrucao_and(Instrucao *instrucao, Nes *nes)
 {
   uint16_t endereco = buscar_endereco(instrucao, nes);
   uint8_t valor = ler_memoria(nes, endereco);
@@ -869,6 +869,56 @@ Instrucao** carregar_instrucoes(void)
   instrucoes[0x39] = instrucao_new("AND", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_and);
   instrucoes[0x21] = instrucao_new("AND", 2, 6, 0, MODO_ENDER_IND_X, instrucao_and);
   instrucoes[0x21] = instrucao_new("AND", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_and);
+
+  // modos da instrução ASL
+  instrucoes[0x0A] = instrucao_new("ASL", 1, 2, 0, MODO_ENDER_ACM, instrucao_asl);
+  instrucoes[0x06] = instrucao_new("ASL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_asl);
+  instrucoes[0x16] = instrucao_new("ASL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_asl);
+  instrucoes[0x0E] = instrucao_new("ASL", 3, 6, 0, MODO_ENDER_ABS, instrucao_asl);
+  instrucoes[0x1E] = instrucao_new("ASL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_asl);
+
+  // modos da instrução BCC
+  instrucoes[0x90] = instrucao_new("BCC", 2, 2, 0, MODO_ENDER_REL, instrucao_bcc);
+
+  // modos da instrução BCS
+  instrucoes[0xB0] = instrucao_new("BCS", 2, 2, 0, MODO_ENDER_REL, instrucao_bcs);
+
+  // modos da instrução BEQ
+  instrucoes[0xF0] = instrucao_new("BEQ", 2, 2, 0, MODO_ENDER_REL, instrucao_beq);
+
+  // modos da instrução BIT
+  instrucoes[0x24] = instrucao_new("BIT", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_bit);
+  instrucoes[0x2C] = instrucao_new("BIT", 3, 4, 0, MODO_ENDER_ABS, instrucao_bit);
+
+  // modos da instrução BMI
+  instrucoes[0x30] = instrucao_new("BIM", 2, 2, 0, MODO_ENDER_REL, instrucao_bmi);
+
+  // modos da instrução BNE
+  instrucoes[0xD0] = instrucao_new("BNE", 2, 2, 0, MODO_ENDER_REL, instrucao_bne);
+
+  // modos da instrução BPL
+  instrucoes[0x10] = instrucao_new("BPL", 2, 2, 0, MODO_ENDER_REL, instrucao_bpl);
+
+  // modos da instrução BRK
+  instrucoes[0x00] = instrucao_new("BRK", 1, 7, 0, MODO_ENDER_IMPL, instrucao_brk);
+
+  // modos da instrução BVC
+  instrucoes[0x50] = instrucao_new("BVC", 2, 2, 0, MODO_ENDER_REL, instrucao_bvc);
+
+  // modos da instrução BVS
+  instrucoes[0x70] = instrucao_new("BVS", 2, 2, 0, MODO_ENDER_REL, instrucao_bvs);
+
+  // modos da instrução CLC
+  instrucoes[0x18] = instrucao_new("CLC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clc);
+
+  // modos da instrução CLD
+  instrucoes[0xD8] = instrucao_new("CLD", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cld);
+
+  // modos da instrução CLI
+  instrucoes[0x58] = instrucao_new("CLI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cli);
+
+  // modos da instrução CLV
+  instrucoes[0xB8] = instrucao_new("CLV", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clv);
 
   return instrucoes;
 }
