@@ -336,7 +336,7 @@ void ppu_scroll_escrever(Nes *nes, uint8_t valor)
   }
 }
 
-void ppu_endereco_escrever (Nes *nes, uint8_t valor)
+void ppu_endereco_escrever(Nes *nes, uint8_t valor)
 {
   Ppu *ppu = nes->ppu;
 

@@ -999,11 +999,11 @@ Instrucao** carregar_instrucoes(void)
   instrucoes[0xBE] = instrucao_new("LDX", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ldx);
 
   // modos da instrução LDY
-  instrucoes[0xA0] = instrucao_new("LDY", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldx);
-  instrucoes[0xA4] = instrucao_new("LDY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldx);
-  instrucoes[0xB4] = instrucao_new("LDY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ldx);
-  instrucoes[0xAC] = instrucao_new("LDY", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldx);
-  instrucoes[0xBC] = instrucao_new("LDY", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ldx);
+  instrucoes[0xA0] = instrucao_new("LDY", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldy);
+  instrucoes[0xA4] = instrucao_new("LDY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldy);
+  instrucoes[0xB4] = instrucao_new("LDY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ldy);
+  instrucoes[0xAC] = instrucao_new("LDY", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldy);
+  instrucoes[0xBC] = instrucao_new("LDY", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ldy);
 
   // modos da instrução LSR
   instrucoes[0x4A] = instrucao_new("LSR", 1, 2, 0, MODO_ENDER_ACM, instrucao_lsr);
@@ -1095,6 +1095,23 @@ Instrucao** carregar_instrucoes(void)
   instrucoes[0x94] = instrucao_new("STY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sty);
   instrucoes[0x8C] = instrucao_new("STY", 3, 4, 0, MODO_ENDER_ABS, instrucao_sty);
 
+  // modos da instrução TAX
+  instrucoes[0xAA] = instrucao_new("TAX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tax);
+
+  // modos da instrução TAY
+  instrucoes[0xA8] = instrucao_new("TAY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tay);
+
+  // modos da instrução TSX
+  instrucoes[0xBA] = instrucao_new("TSX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tsx);
+
+  // modos da instrução TXA
+  instrucoes[0x8A] = instrucao_new("TXA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txa);
+
+  // modos da instrução TXS
+  instrucoes[0x9A] = instrucao_new("TXS", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txs);
+
+  // modos da instrução TYA
+  instrucoes[0x98] = instrucao_new("TYA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tya);
 
   return instrucoes;
 }
