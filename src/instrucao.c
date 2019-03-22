@@ -1057,5 +1057,44 @@ Instrucao** carregar_instrucoes(void)
   // modos da instrução RTS
   instrucoes[0x60] = instrucao_new("RTS", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rts);
 
+  // modos da instrução SBC
+  instrucoes[0xE9] = instrucao_new("SBC", 2, 2, 0, MODO_ENDER_IMED, instrucao_sbc);
+  instrucoes[0xE5] = instrucao_new("SBC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sbc);
+  instrucoes[0xF5] = instrucao_new("SBC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sbc);
+  instrucoes[0xED] = instrucao_new("SBC", 3, 4, 0, MODO_ENDER_ABS, instrucao_sbc);
+  instrucoes[0xFD] = instrucao_new("SBC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_sbc);
+  instrucoes[0xF9] = instrucao_new("SBC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_sbc);
+  instrucoes[0xE1] = instrucao_new("SBC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sbc);
+  instrucoes[0xF1] = instrucao_new("SBC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_sbc);
+
+  // modos da instrução SEC
+  instrucoes[0x38] = instrucao_new("SEC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sec);
+
+  // modos da instrução SED
+  instrucoes[0xF8] = instrucao_new("SED", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sed);
+
+  // modos da instrução SEI
+  instrucoes[0x78] = instrucao_new("SEI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sei);
+
+  // modos da instrução STA
+  instrucoes[0x85] = instrucao_new("STA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sta);
+  instrucoes[0x95] = instrucao_new("STA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sta);
+  instrucoes[0x8D] = instrucao_new("STA", 3, 4, 0, MODO_ENDER_ABS, instrucao_sta);
+  instrucoes[0x9D] = instrucao_new("STA", 3, 5, 0, MODO_ENDER_ABS_X, instrucao_sta);
+  instrucoes[0x99] = instrucao_new("STA", 3, 5, 0, MODO_ENDER_ABS_Y, instrucao_sta);
+  instrucoes[0x81] = instrucao_new("STA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sta);
+  instrucoes[0x91] = instrucao_new("STA", 2, 6, 0, MODO_ENDER_IND_Y, instrucao_sta);
+
+  // modos da instrução STX
+  instrucoes[0x86] = instrucao_new("STX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_stx);
+  instrucoes[0x96] = instrucao_new("STX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_stx);
+  instrucoes[0x8E] = instrucao_new("STX", 3, 4, 0, MODO_ENDER_ABS, instrucao_stx);
+
+  // modos da instrução STY
+  instrucoes[0x84] = instrucao_new("STY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sty);
+  instrucoes[0x94] = instrucao_new("STY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sty);
+  instrucoes[0x8C] = instrucao_new("STY", 3, 4, 0, MODO_ENDER_ABS, instrucao_sty);
+
+
   return instrucoes;
 }
