@@ -1005,5 +1005,57 @@ Instrucao** carregar_instrucoes(void)
   instrucoes[0xAC] = instrucao_new("LDY", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldx);
   instrucoes[0xBC] = instrucao_new("LDY", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ldx);
 
+  // modos da instrução LSR
+  instrucoes[0x4A] = instrucao_new("LSR", 1, 2, 0, MODO_ENDER_ACM, instrucao_lsr);
+  instrucoes[0x46] = instrucao_new("LSR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_lsr);
+  instrucoes[0x56] = instrucao_new("LSR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_lsr);
+  instrucoes[0x4E] = instrucao_new("LSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_lsr);
+  instrucoes[0x5E] = instrucao_new("LSR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_lsr);
+
+  // modos da instrução NOP
+  instrucoes[0xEA] = instrucao_new("NOP", 1, 2, 0, MODO_ENDER_IMPL, instrucao_nop);
+
+  // modos da instrução ORA
+  instrucoes[0x09] = instrucao_new("ORA", 2, 2, 0, MODO_ENDER_IMED, instrucao_ora);
+  instrucoes[0x05] = instrucao_new("ORA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ora);
+  instrucoes[0x15] = instrucao_new("ORA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ora);
+  instrucoes[0x0D] = instrucao_new("ORA", 3, 4, 0, MODO_ENDER_ABS, instrucao_ora);
+  instrucoes[0x1D] = instrucao_new("ORA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ora);
+  instrucoes[0x19] = instrucao_new("ORA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ora);
+  instrucoes[0x01] = instrucao_new("ORA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_ora);
+  instrucoes[0x11] = instrucao_new("ORA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_ora);
+
+  // modos da instrução PHA
+  instrucoes[0x48] = instrucao_new("PHA", 1, 3, 0, MODO_ENDER_IMPL, instrucao_pha);
+
+  // modos da instrução PHP
+  instrucoes[0x08] = instrucao_new("PHP", 1, 3, 0, MODO_ENDER_IMPL, instrucao_php);
+
+  // modos da instrução PLA
+  instrucoes[0x68] = instrucao_new("PLA", 1, 4, 0, MODO_ENDER_IMPL, instrucao_pla);
+
+  // modos da instrução PLP
+  instrucoes[0x28] = instrucao_new("PLP", 1, 4, 0, MODO_ENDER_IMPL, instrucao_plp);
+
+  // modos da instrução ROL
+  instrucoes[0x2A] = instrucao_new("ROL", 1, 2, 0, MODO_ENDER_ACM, instrucao_rol);
+  instrucoes[0x26] = instrucao_new("ROL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_rol);
+  instrucoes[0x36] = instrucao_new("ROL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_rol);
+  instrucoes[0x2E] = instrucao_new("ROL", 3, 6, 0, MODO_ENDER_ABS, instrucao_rol);
+  instrucoes[0x3E] = instrucao_new("ROL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_rol);
+
+  // modos da instrução ROR
+  instrucoes[0x6A] = instrucao_new("ROR", 1, 2, 0, MODO_ENDER_ACM, instrucao_ror);
+  instrucoes[0x66] = instrucao_new("ROR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_ror);
+  instrucoes[0x76] = instrucao_new("ROR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_ror);
+  instrucoes[0x6E] = instrucao_new("ROR", 3, 6, 0, MODO_ENDER_ABS, instrucao_ror);
+  instrucoes[0x7E] = instrucao_new("ROR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_ror);
+
+  // modos da instrução RTI
+  instrucoes[0x40] = instrucao_new("RTI", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rti);
+
+  // modos da instrução RTS
+  instrucoes[0x60] = instrucao_new("RTS", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rts);
+
   return instrucoes;
 }
