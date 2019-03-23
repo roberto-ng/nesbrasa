@@ -49,11 +49,7 @@ instrucao_free(Instrucao *instrucao)
   free(instrucao);
 }
 
-/*!
-  Busca o endereço que vai ser usado pela instrução de
-  acordo com o modo de endereçamento da CPU
- */
-static uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
+uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes)
 {
   nes->cpu->pag_alterada = false;
 

@@ -76,4 +76,10 @@ Instrucao* instrucao_new(char          *nome,
 
 void instrucao_free(Instrucao *instrucao);
 
+/*!
+  Busca o endereço que vai ser usado por uma instrução de
+  acordo com o modo de endereçamento da CPU
+ */
+uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes);
+
 Instrucao** carregar_instrucoes(void);
