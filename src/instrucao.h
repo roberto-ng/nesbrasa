@@ -49,7 +49,7 @@ typedef struct _Instrucao Instrucao;
 /*! Ponteiro para uma fução de alto nivel que
    sera usada para reimplementar uma instrução
    da arquitetura 6502 */
-typedef void (*InstrucaoFunc)(Instrucao *instrucao, Nes *nes);
+typedef void (*InstrucaoFunc)(Instrucao *instrucao, Nes *nes, uint16_t endereco);
 
 //! Uma instrução da arquitetura 6502
 struct _Instrucao
