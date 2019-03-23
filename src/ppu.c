@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 #include "ppu.h"
-#include "rom.h"
+#include "cartucho.h"
 #include "memoria.h"
 #include "util.h"
 
@@ -134,7 +134,7 @@ uint8_t ppu_ler(Nes *nes, uint16_t endereco)
 {
   if (endereco < 0x2000)
   {
-    return nes->mapeador->ler(nes, endereco);
+    return nes->cartucho->mapeador->ler(nes, endereco);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
@@ -180,7 +180,7 @@ void ppu_escrever(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   if (endereco < 0x2000)
   {
-    nes->mapeador->escrever(nes, endereco, valor);
+    nes->cartucho->mapeador->escrever(nes, endereco, valor);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
@@ -422,7 +422,7 @@ void ppu_dados_escrever(Nes *nes, uint8_t valor)
 uint16_t ppu_endereco_espelhado(Nes *nes, uint16_t endereco)
 {
   uint16_t base = 0;
-  switch (nes->rom->espelhamento)
+  switch (nes->cartucho->espelhamento)
   {
     case ESPELHAMENTO_HORIZONTAL:
       if (endereco >= 0x2000 && endereco < 0x2400)

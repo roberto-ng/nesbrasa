@@ -22,12 +22,12 @@
 
 #include "cpu.h"
 #include "ppu.h"
-#include "rom.h"
+#include "cartucho.h"
 #include "mapeador.h"
 
 typedef struct _Cpu Cpu;
 typedef struct _Ppu Ppu;
-typedef struct _Mapeador Mapeador;
+typedef struct _Cartucho Cartucho;
 typedef struct _Nes Nes;
 
 struct _Nes
@@ -36,8 +36,7 @@ struct _Nes
 
         Cpu      *cpu;
         Ppu      *ppu;
-        Rom      *rom;
-        Mapeador *mapeador;
+        Cartucho *cartucho;
 };
 
 Nes* nes_new(void);

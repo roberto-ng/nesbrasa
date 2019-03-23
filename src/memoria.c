@@ -54,7 +54,7 @@ uint8_t ler_memoria(Nes *nes, uint16_t  endereco)
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    return nes->mapeador->ler(nes, endereco);
+    return nes->cartucho->mapeador->ler(nes, endereco);
   }
 
   return 0;
@@ -113,11 +113,11 @@ void escrever_memoria(Nes *nes, uint16_t endereco, uint8_t valor)
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    // originalmente usado apenas em modo de testes da CPU
+    // originalmente usado apenas no modo de testes da CPU
     return;
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    return nes->mapeador->escrever(nes, endereco, valor);
+    nes->cartucho->mapeador->escrever(nes, endereco, valor);
   }
 }

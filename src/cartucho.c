@@ -1,4 +1,4 @@
-/* rom.h
+/* cartucho.c
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *
@@ -16,23 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <stdlib.h>
 
-typedef enum
+#include "cartucho.h"
+
+Cartucho* cartucho_new(void)
 {
-  ESPELHAMENTO_HORIZONTAL,
-  ESPELHAMENTO_VERTICAL,
-  ESPELHAMENTO_TELA_UNICA,
-  ESPELHAMENTO_4_TELAS,
-} Espelhamento;
+  Cartucho *cartucho = malloc(sizeof(Cartucho));
+  cartucho->espelhamento = ESPELHAMENTO_TELA_UNICA;
+  cartucho->mapeador = mapeador_new();
+  cartucho->prg = NULL;
+  cartucho->chr = NULL;
+  cartucho->sram = NULL;
+  cartucho->rom_carregada = false;
 
-typedef struct _Rom Rom;
+  return cartucho;
+}
 
-struct _Rom
+void cartucho_free(Cartucho *cartucho)
 {
-        Espelhamento espelhamento;
-};
-
-Rom* rom_new(void);
-
-void rom_free(Rom *rom);
+  free(cartucho);
+}

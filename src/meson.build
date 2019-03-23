@@ -1,24 +1,24 @@
 api_version = '0.1'
 
 nesbrasa_sources = [
+    'cartucho.c',
     'cpu.c',
     'instrucao.c',
     'mapeador.c',
     'memoria.c',
     'nesbrasa.c',
     'ppu.c',
-    'rom.c',
     'util.c',
 ]
 
 nesbrasa_headers = [
+  'cartucho.h',
   'cpu.h',
   'instrucao.h',
   'mapeador.h',
   'memoria.h',
   'nesbrasa.h',
   'ppu.h',
-  'rom.h',
   'util.h',
 ]
 

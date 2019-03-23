@@ -22,6 +22,7 @@
 #include <stdbool.h>
 
 #include "nesbrasa.h"
+#include "instrucao.h"
 #include "memoria.h"
 
 // referencias utilizadas:
@@ -29,6 +30,7 @@
 
 typedef struct _Nes Nes;
 typedef struct _Cpu Cpu;
+typedef struct _Instrucao Instrucao;
 
 struct _Cpu
 {
@@ -50,11 +52,15 @@ struct _Cpu
         uint16_t esperar;
         uint32_t ciclos;
         bool     pag_alterada;
+
+        Instrucao **instrucoes;
 };
 
 Cpu* cpu_new(void);
 
 void cpu_free(Cpu *cpu);
+
+void ciclo_cpu(Nes *nes);
 
 /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
  \param endereco O endereço em que o branch sera realizado

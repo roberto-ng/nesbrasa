@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 #include "nesbrasa.h"
-#include "rom.h"
+#include "cartucho.h"
 #include "util.h"
 
 Nes* nes_new(void)
@@ -27,8 +27,7 @@ Nes* nes_new(void)
   Nes *nes = malloc(sizeof (Nes));
   nes->cpu = cpu_new();
   nes->ppu = ppu_new();
-  nes->rom = rom_new();
-  nes->mapeador = mapeador_new();
+  nes->cartucho = cartucho_new();
 
   for (int i = 0; i < TAMANHO(nes->ram); i++)
   {
@@ -42,7 +41,6 @@ void nes_free(Nes *nes)
 {
   cpu_free(nes->cpu);
   ppu_free(nes->ppu);
-  rom_free(nes->rom);
-  mapeador_free(nes->mapeador);
+  cartucho_free(nes->cartucho);
   free(nes);
 }

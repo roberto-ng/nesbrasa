@@ -44,6 +44,7 @@ typedef enum
   MODO_ENDER_P_ZERO_Y,  // página 0, indexado pelo registrador y
 } InstrucaoModo;
 
+typedef struct _Nes Nes;
 typedef struct _Instrucao Instrucao;
 
 /*! Ponteiro para uma fução de alto nivel que

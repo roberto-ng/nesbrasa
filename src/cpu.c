@@ -38,13 +38,19 @@ Cpu* cpu_new(void)
   cpu->n = false;
   cpu->esperar = 0;
   cpu->pag_alterada = false;
+  cpu->instrucoes = carregar_instrucoes();
 
   return cpu;
 }
 
 void cpu_free(Cpu *cpu)
 {
+  free(cpu->instrucoes);
   free(cpu);
+}
+
+void ciclo_cpu(Nes *nes)
+{
 }
 
 void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t endereco)
