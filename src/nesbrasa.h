@@ -23,7 +23,6 @@
 #include "cpu.h"
 #include "ppu.h"
 #include "cartucho.h"
-#include "mapeador.h"
 
 typedef struct _Cpu Cpu;
 typedef struct _Ppu Ppu;

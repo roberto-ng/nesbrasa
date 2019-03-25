@@ -134,7 +134,7 @@ uint8_t ppu_ler(Nes *nes, uint16_t endereco)
 {
   if (endereco < 0x2000)
   {
-    return nes->cartucho->mapeador->ler(nes, endereco);
+    return cartucho_mapeador_ler(nes->cartucho, endereco);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
@@ -180,7 +180,7 @@ void ppu_escrever(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   if (endereco < 0x2000)
   {
-    nes->cartucho->mapeador->escrever(nes, endereco, valor);
+    cartucho_mapeador_escrever(nes->cartucho, endereco, valor);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {

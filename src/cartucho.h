@@ -19,8 +19,8 @@
 #pragma once
 
 #include <stdint.h>
-
-#include "mapeador.h"
+#include <stdlib.h>
+#include <stdbool.h>
 
 typedef enum
 {
@@ -30,22 +30,37 @@ typedef enum
   ESPELHAMENTO_4_TELAS,
 } Espelhamento;
 
+typedef enum
+{
+  MAPEADOR_NROM = 0,
+  MAPEADOR_MMC1 = 1,
+  MAPEADOR_DESCONHECIDO,
+} MapeadorTipo;
+
 typedef struct _Cartucho Cartucho;
-typedef struct _Mapeador Mapeador;
 
 struct _Cartucho
 {
         uint8_t *prg;
         uint8_t *chr;
-        uint8_t *sram;
+        uint8_t  sram[0x2000];
 
+        uint8_t prg_quantidade;
+        uint8_t chr_quantidade;
+
+        MapeadorTipo mapeador_tipo;
         Espelhamento espelhamento;
 
-        Mapeador *mapeador;
-
         bool rom_carregada;
+        bool possui_sram;
 };
 
 Cartucho* cartucho_new(void);
 
 void cartucho_free(Cartucho *cartucho);
+
+int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam);
+
+uint8_t cartucho_mapeador_ler(Cartucho *cartucho, uint16_t endereco);
+
+void cartucho_mapeador_escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
