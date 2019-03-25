@@ -138,7 +138,7 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
 
   cartucho->possui_sram = buscar_bit(rom[6], 1);
 
-  //TODO: Terminar implementação
+  //TODO: Completar suporte a ROMs no formato NES 2.0
   return 0;
 }
 
