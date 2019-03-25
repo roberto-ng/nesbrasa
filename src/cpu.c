@@ -49,8 +49,29 @@ void cpu_free(Cpu *cpu)
   free(cpu);
 }
 
-void ciclo_cpu(Nes *nes)
+void cpu_ciclo(Cpu* cpu, Nes *nes)
 {
+  if (cpu->esperar > 0)
+  {
+    cpu->esperar -= 1;
+    return;
+  }
+
+  uint8_t opcode = ler_memoria(nes, cpu->pc);
+  Instrucao *instrucao = cpu->instrucoes[opcode];
+
+  if (instrucao == NULL)
+    return;
+
+  uint16_t endereco = buscar_endereco(instrucao, nes);
+
+  cpu->pc += instrucao->bytes;
+  cpu->ciclos += instrucao->ciclos;
+
+  if (cpu->pag_alterada)
+    cpu->ciclos += instrucao->ciclos_pag_alterada;
+
+  instrucao->funcao(instrucao, nes, endereco);
 }
 
 void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t endereco)

@@ -60,7 +60,7 @@ Cpu* cpu_new(void);
 
 void cpu_free(Cpu *cpu);
 
-void ciclo_cpu(Nes *nes);
+void cpu_ciclo(Cpu* cpu, Nes *nes);
 
 /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
  \param endereco O endereço em que o branch sera realizado

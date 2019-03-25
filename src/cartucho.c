@@ -153,7 +153,6 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
     }
   }
 
-
   //TODO: Completar suporte a ROMs no formato NES 2.0
   return 0;
 }
