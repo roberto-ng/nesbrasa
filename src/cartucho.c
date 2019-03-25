@@ -17,6 +17,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "cartucho.h"
 #include "mapeadores/nrom.h"
@@ -85,8 +86,20 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
   cartucho->prg_quantidade = rom[4];
   cartucho->chr_quantidade = rom[5];
 
-  cartucho->prg = malloc(cartucho->prg_quantidade * 0x4000);
-  cartucho->chr = malloc(cartucho->chr_quantidade * 0x2000);
+  const uint32_t prg_tamanho = cartucho->prg_quantidade * 0x4000;
+  const uint32_t chr_tamanho = cartucho->chr_quantidade * 0x2000;
+
+  cartucho->prg = malloc(prg_tamanho);
+  cartucho->chr = malloc(chr_tamanho);
+
+  bool contem_trainer = buscar_bit(rom[6], 2);
+  int offset = 16 + ((contem_trainer) ? 512 : 0);
+
+  // Copia os dados referentes à ROM PRG do arquivo para o array
+  memcpy(cartucho->prg, &rom[offset], prg_tamanho);
+
+  // Copia os dados referentes à ROM CHR do arquivo para o array
+  memcpy(cartucho->chr, &rom[offset+prg_tamanho], chr_tamanho);
 
   uint8_t mapeador_byte_menor = (rom[6] & 0xFF00) >> 8;
   uint8_t mapeador_byte_maior = (rom[7] & 0xFF00) >> 8;
@@ -107,11 +120,23 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
       break;
   }
 
-  if (buscar_bit(rom[6], 0) == false)
-    cartucho->espelhamento = ESPELHAMENTO_VERTICAL;
+  if (buscar_bit(rom[6], 3) == true)
+  {
+    cartucho->espelhamento = ESPELHAMENTO_4_TELAS;
+  }
   else
-    cartucho->espelhamento = ESPELHAMENTO_HORIZONTAL;
+  {
+    if (buscar_bit(rom[6], 0) == false)
+    {
+      cartucho->espelhamento = ESPELHAMENTO_VERTICAL;
+    }
+    else
+    {
+      cartucho->espelhamento = ESPELHAMENTO_HORIZONTAL;
+    }
+  }
 
+  cartucho->possui_sram = buscar_bit(rom[6], 1);
 
   //TODO: Terminar implementação
   return 0;
