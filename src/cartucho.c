@@ -83,6 +83,8 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
     return -1;
   }
 
+  cartucho->possui_sram = buscar_bit(rom[6], 1);
+
   cartucho->prg_quantidade = rom[4];
   cartucho->chr_quantidade = rom[5];
 
@@ -92,8 +94,23 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
   cartucho->prg = malloc(prg_tamanho);
   cartucho->chr = malloc(chr_tamanho);
 
+  for (int i = 0; i < prg_tamanho; i++) {
+    cartucho->prg[i] = 0;
+  }
+
+  for (int i = 0; i < chr_tamanho; i++) {
+    cartucho->chr[i] = 0;
+  }
+
   bool contem_trainer = buscar_bit(rom[6], 2);
   int offset = 16 + ((contem_trainer) ? 512 : 0);
+
+  // checa o tamanho do arquivo
+  if (rom_tam < (offset + prg_tamanho + chr_tamanho))
+  {
+    // formato inválido
+    return -1;
+  }
 
   // Copia os dados referentes à ROM PRG do arquivo para o array
   memcpy(cartucho->prg, &rom[offset], prg_tamanho);
@@ -136,7 +153,6 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
     }
   }
 
-  cartucho->possui_sram = buscar_bit(rom[6], 1);
 
   //TODO: Completar suporte a ROMs no formato NES 2.0
   return 0;
