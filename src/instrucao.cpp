@@ -41,7 +41,7 @@ Instrucao::Instrucao(
   this->funcao = funcao;
 }
 
-uint16_t buscar_endereco(Instrucao* instrucao, Nes& nes)
+uint16_t Instrucao::buscar_endereco(Nes& nes)
 {
   nes.cpu.pag_alterada = false;
 
@@ -123,7 +123,7 @@ uint16_t buscar_endereco(Instrucao* instrucao, Nes& nes)
   Instrução ADC
   A + M + C -> A, C
  */
-static void instrucao_adc(Instrucao* instrucao, Nes& nes, uint16_t endereco)
+static void instrucao_adc(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
@@ -155,7 +155,7 @@ static void instrucao_adc(Instrucao* instrucao, Nes& nes, uint16_t endereco)
   Instrução AND
   A AND M -> A
  */
-static void instrucao_and(Instrucao* instrucao, Nes& nes, uint16_t endereco)
+static void instrucao_and(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
@@ -173,9 +173,9 @@ static void instrucao_and(Instrucao* instrucao, Nes& nes, uint16_t endereco)
   Instrução shift para a esquerda.
   Utiliza a memoria ou o acumulador
  */
-static void instrucao_asl(Instrucao* instrucao, Nes& nes, uint16_t endereco)
+static void instrucao_asl(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao.modo == MODO_ENDER_ACM)
   {
     // checa se a posição 7 do byte é '1' ou '0'
     nes.cpu.c = buscar_bit(nes.cpu.a, 7);
@@ -183,8 +183,8 @@ static void instrucao_asl(Instrucao* instrucao, Nes& nes, uint16_t endereco)
     nes.cpu.a <<= 1;
 
     // atualizar flags
-    cpu_n_escrever(nes.cpu, nes.cpu.a);
-    cpu_z_escrever(nes.cpu, nes.cpu.a);
+    cpu_n_escrever(&nes.cpu, nes.cpu.a);
+    cpu_z_escrever(&nes.cpu, nes.cpu.a);
   }
   else
   {
@@ -198,13 +198,13 @@ static void instrucao_asl(Instrucao* instrucao, Nes& nes, uint16_t endereco)
     escrever_memoria(nes, endereco, valor);
 
     // atualizar flags
-    cpu_n_escrever(nescpu, valor);
-    cpu_z_escrever(nescpu, valor);
+    cpu_n_escrever(&nes.cpu, valor);
+    cpu_z_escrever(&nes.cpu, valor);
   }
 }
 
 //! Pula para o endereço indicado se a flag 'c' não estiver ativa
-static void instrucao_bcc(Instrucao* instrucao, Nes& nes, uint16_t endereco)
+static void instrucao_bcc(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   if (nes.cpu.c == false)
   {
@@ -214,22 +214,22 @@ static void instrucao_bcc(Instrucao* instrucao, Nes& nes, uint16_t endereco)
 }
 
 //! Pula para o endereço indicado se a flag 'c' estiver ativa
-static void instrucao_bcs(Instrucao* instrucao, Nes& nes, uint16_t endereco)
+static void instrucao_bcs(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   if (nes.cpu.c == true)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(&nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
 //! Pula para o endereço indicado se a flag 'z' estiver ativa
-static void instrucao_beq(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_beq(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (nes->cpu->z == true)
+  if (nes.cpu.z == true)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(&nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
@@ -238,150 +238,150 @@ static void instrucao_beq(Instrucao *instrucao, Nes *nes, uint16_t endereco)
   e a posição 6 do byte em 'v'.
   A flag 'z' tambem é alterada sendo calculada com 'a' AND valor
  */
-static void instrucao_bit(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_bit(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  nes->cpu->n = buscar_bit(valor, 7);
-  nes->cpu->v = buscar_bit(valor, 6);
-  nes->cpu->z = valor & nes->cpu->a;
+  nes.cpu.n = buscar_bit(valor, 7);
+  nes.cpu.v = buscar_bit(valor, 6);
+  nes.cpu.z = valor & nes.cpu.a;
 }
 
 //! Pula para o endereço indicado se a flag 'n' estiver ativa
-static void instrucao_bmi(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_bmi(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (nes->cpu->n == true)
+  if (nes.cpu.n == true)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(&nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
 //! Pula para o endereço indicado se a flag 'z' não estiver ativa
-static void instrucao_bne(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_bne(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (nes->cpu->z == true)
+  if (nes.cpu.z == true)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(&nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
 //! Pula para o endereço indicado se a flag 'n' não estiver ativa
-static void instrucao_bpl(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_bpl(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (nes->cpu->n == false)
+  if (nes.cpu.n == false)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
 //! Instrução BRK
-static void instrucao_brk(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_brk(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  stack_empurrar_16_bits(nes, nes->cpu->pc);
-  stack_empurrar(nes, cpu_estado_ler(nes->cpu));
+  stack_empurrar_16_bits(&nes, nes.cpu.pc);
+  stack_empurrar(&nes, cpu_estado_ler(&nes.cpu));
 
-  nes->cpu->b = 1;
-  nes->cpu->pc = ler_memoria_16_bits(nes, 0xFFFE);
+  nes.cpu.b = 1;
+  nes.cpu.pc = ler_memoria_16_bits(nes, 0xFFFE);
 }
 
 //! Pula para o endereço indicado se a flag 'v' não estiver ativa
-static void instrucao_bvc (Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_bvc (Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (nes->cpu->n == false)
+  if (nes.cpu.n == false)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(&nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
 //! Pula para o endereço indicado se a flag 'v' estiver ativa
-static void instrucao_bvs(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_bvs(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (nes->cpu->n == true)
+  if (nes.cpu.n == true)
   {
-    cpu_branch_somar_ciclos(nes->cpu, endereco);
-    nes->cpu->pc = endereco;
+    cpu_branch_somar_ciclos(nes.cpu, endereco);
+    nes.cpu.pc = endereco;
   }
 }
 
 //! Limpa a flag 'c'
-static void instrucao_clc(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_clc(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->c = false;
+  nes.cpu.c = false;
 }
 
 //! Limpa a flag 'd'
-static void instrucao_cld(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_cld(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->d = false;
+  nes.cpu.d = false;
 }
 
 //! Limpa a flag 'i'
-static void instrucao_cli(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_cli(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->i = false;
+  nes.cpu.i = false;
 }
 
 //! Limpa a flag 'v'
-static void instrucao_clv(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_clv(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->v = false;
+  nes.cpu.v = false;
 }
 
 //! Compara o acumulador com um valor
-static void instrucao_cmp(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_cmp(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  if (nes->cpu->a >= valor)
-    nes->cpu->c = true;
+  if (nes.cpu.a >= valor)
+    nes.cpu.c = true;
   else
-    nes->cpu->c = false;
+    nes.cpu.c = false;
 
-  uint8_t resultado = nes->cpu->a - valor;
+  uint8_t resultado = nes.cpu.a - valor;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, resultado);
-  cpu_z_escrever(nes->cpu, resultado);
+  cpu_n_escrever(&nes.cpu, resultado);
+  cpu_z_escrever(&nes.cpu, resultado);
 }
 
 //! Compara o indice X com um valor
-static void instrucao_cpx(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_cpx(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  if (nes->cpu->x >= valor)
-    nes->cpu->c = true;
+  if (nes.cpu.x >= valor)
+    nes.cpu.c = true;
   else
-    nes->cpu->c = false;
+    nes.cpu.c = false;
 
-  uint8_t resultado = nes->cpu->x - valor;
+  uint8_t resultado = nes.cpu.x - valor;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, resultado);
-  cpu_z_escrever(nes->cpu, resultado);
+  cpu_n_escrever(&nes.cpu, resultado);
+  cpu_z_escrever(&nes.cpu, resultado);
 }
 
 //! Compara o indice Y com um valor
-static void instrucao_cpy(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_cpy(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  if (nes->cpu->y >= valor)
-    nes->cpu->c = true;
+  if (nes.cpu.y >= valor)
+    nes.cpu.c = true;
   else
-    nes->cpu->c = false;
+    nes.cpu.c = false;
 
-  uint8_t resultado = nes->cpu->y - valor;
-  cpu_n_escrever (nes->cpu, resultado);
-  cpu_z_escrever (nes->cpu, resultado);
+  uint8_t resultado = nes.cpu.y - valor;
+  cpu_n_escrever (&nes.cpu, resultado);
+  cpu_z_escrever (&nes.cpu, resultado);
 }
 
 //! Diminui um valor na memoria por 1
-static void instrucao_dec(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_dec(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
@@ -391,44 +391,44 @@ static void instrucao_dec(Instrucao *instrucao, Nes *nes, uint16_t endereco)
   escrever_memoria(nes, endereco, valor);
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, valor);
-  cpu_z_escrever(nes->cpu, valor);
+  cpu_n_escrever(&nes.cpu, valor);
+  cpu_z_escrever(&nes.cpu, valor);
 }
 
 //! Diminui o valor do indice X por 1
-static void instrucao_dex(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_dex(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->x -= 1;
+  nes.cpu.x -= 1;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->x);
-  cpu_z_escrever(nes->cpu, nes->cpu->x);
+  cpu_n_escrever(&nes.cpu, nes.cpu.x);
+  cpu_z_escrever(&nes.cpu, nes.cpu.x);
 }
 
 //! Diminui o valor do indice Y por 1
-static void instrucao_dey(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_dey(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->y -= 1;
+  nes.cpu.y -= 1;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->y);
-  cpu_z_escrever(nes->cpu, nes->cpu->y);
+  cpu_n_escrever(&nes.cpu, nes.cpu.y);
+  cpu_z_escrever(&nes.cpu, nes.cpu.y);
 }
 
 //! OR exclusivo de um valor na memoria com o acumulador
-static void instrucao_eor(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_eor(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  nes->cpu->a = nes->cpu->a ^ valor;
+  nes.cpu.a = nes.cpu.a ^ valor;
 
   //atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 //! Incrementa um valor na memoria por 1
-static void instrucao_inc(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_inc(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
@@ -438,181 +438,181 @@ static void instrucao_inc(Instrucao *instrucao, Nes *nes, uint16_t endereco)
   escrever_memoria(nes, endereco, valor);
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, valor);
-  cpu_z_escrever(nes->cpu, valor);
+  cpu_n_escrever(&nes.cpu, valor);
+  cpu_z_escrever(&nes.cpu, valor);
 }
 
 //! Incrementa o valor do indice X por 1
-static void instrucao_inx(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_inx(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->x += 1;
+  nes.cpu.x += 1;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->x);
-  cpu_z_escrever(nes->cpu, nes->cpu->x);
+  cpu_n_escrever(&nes.cpu, nes.cpu.x);
+  cpu_z_escrever(&nes.cpu, nes.cpu.x);
 }
 
 //! Incrementa o valor do indice Y por 1
-static void instrucao_iny(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_iny(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->y += 1;
+  nes.cpu.y += 1;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->y);
-  cpu_z_escrever(nes->cpu, nes->cpu->y);
+  cpu_n_escrever(&nes.cpu, nes.cpu.y);
+  cpu_z_escrever(&nes.cpu, nes.cpu.y);
 }
 
 //! Pula o programa para o endereço indicado
-static void instrucao_jmp(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_jmp(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   // muda o endereço
-  nes->cpu->pc = endereco;
+  nes.cpu.pc = endereco;
 }
 
 //! Chama uma função/subrotina
-static void instrucao_jsr(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_jsr(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   // Salva o endereço da próxima instrução subtraído por 1 na stack.
   // O endereço guardado vai ser usado para retornar da função quando
   // o opcode 'rts' for usado
-  stack_empurrar_16_bits(nes, nes->cpu->pc - 1);
+  stack_empurrar_16_bits(nes, nes.cpu.pc - 1);
 
   // muda o endereço atual do programa para o da função indicada
-  nes->cpu->pc = endereco;
+  nes.cpu.pc = endereco;
 }
 
 //! Carrega um valor da memoria no acumulador
-static void instrucao_lda(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_lda(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->a = ler_memoria(nes, endereco);
+  nes.cpu.a = ler_memoria(nes, endereco);
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 
 //! Carrega um valor da memoria no indice X
-static void instrucao_ldx(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_ldx(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->x = ler_memoria(nes, endereco);
+  nes.cpu.x = ler_memoria(nes, endereco);
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->x);
-  cpu_z_escrever(nes->cpu, nes->cpu->x);
+  cpu_n_escrever(&nes.cpu, nes.cpu.x);
+  cpu_z_escrever(&nes.cpu, nes.cpu.x);
 }
 
 //! Carrega um valor da memoria no acumulador
-static void instrucao_ldy(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_ldy(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->y = ler_memoria(nes, endereco);
+  nes.cpu.y = ler_memoria(nes, endereco);
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->y);
-  cpu_z_escrever(nes->cpu, nes->cpu->y);
+  cpu_n_escrever(&nes.cpu, nes.cpu.y);
+  cpu_z_escrever(&nes.cpu, nes.cpu.y);
 }
 
 /*!
   Instrução shift para a direita.
   Utiliza a memoria ou o acumulador
  */
-static void instrucao_lsr(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_lsr(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao.modo == MODO_ENDER_ACM)
   {
     // checa se a posição 0 do byte é '1' ou '0'
-    nes->cpu->c = buscar_bit(nes->cpu->a, 0);
+    nes.cpu.c = buscar_bit(nes.cpu.a, 0);
 
-    nes->cpu->a >>= 1;
+    nes.cpu.a >>= 1;
 
     // atualizar flags
-    cpu_n_escrever(nes->cpu, nes->cpu->a);
-    cpu_z_escrever(nes->cpu, nes->cpu->a);
+    cpu_n_escrever(&nes.cpu, nes.cpu.a);
+    cpu_z_escrever(&nes.cpu, nes.cpu.a);
   }
   else
   {
     uint8_t valor = ler_memoria(nes, endereco);
 
     // checa se a posição 0 do byte é '1' ou '0'
-    nes->cpu->c = buscar_bit(valor, 0);
+    nes.cpu.c = buscar_bit(valor, 0);
 
     valor >>= 1;
 
     escrever_memoria(nes, endereco, valor);
 
     // atualizar flags
-    cpu_n_escrever(nes->cpu, valor);
-    cpu_z_escrever(nes->cpu, valor);
+    cpu_n_escrever(&nes.cpu, valor);
+    cpu_z_escrever(&nes.cpu, valor);
   }
 }
 
 //! Não fazer nada
-static void instrucao_nop(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_nop(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
 }
 
 //! Operanção OR entre um valor na memoria e o acumulador
-static void instrucao_ora(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_ora(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  nes->cpu->a = nes->cpu->a | valor;
+  nes.cpu.a = nes.cpu.a | valor;
 
   //atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 //! Empurra o valor do acumulador na stack
-static void instrucao_pha(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_pha(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  stack_empurrar(nes, nes->cpu->a);
+  stack_empurrar(nes, nes.cpu.a);
 }
 
 //! Empurra o valor do estado do processador na stack
-static void instrucao_php(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_php(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  const uint8_t estado = cpu_estado_ler(nes->cpu);
+  const uint8_t estado = cpu_estado_ler(nes.cpu);
   stack_empurrar(nes, estado);
 }
 
 //! Puxa um valor da stack e salva esse valor no acumulador
-static void instrucao_pla(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_pla(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->a = stack_puxar(nes);
+  nes.cpu.a = stack_puxar(nes);
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 //! Puxa um valor da stack e salva esse valor no estado do processador
-static void instrucao_plp(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_plp(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   const uint8_t estado = stack_puxar(nes);
-  cpu_estado_escrever(nes->cpu, estado);
+  cpu_estado_escrever(nes.cpu, estado);
 }
 
 //! Gira um valor pra a esquerda
-static void instrucao_rol(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_rol(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao.modo == MODO_ENDER_ACM)
   {
-    bool carregar = nes->cpu->c;
-    nes->cpu->c = buscar_bit(nes->cpu->a, 7);
-    nes->cpu->a <<= 1;
-    nes->cpu->a = nes->cpu->a | ((carregar) ? 1 : 0);
+    bool carregar = nes.cpu.c;
+    nes.cpu.c = buscar_bit(nes.cpu.a, 7);
+    nes.cpu.a <<= 1;
+    nes.cpu.a = nes.cpu.a | ((carregar) ? 1 : 0);
 
     // atualizar flags
-    cpu_n_escrever(nes->cpu, nes->cpu->a);
-    cpu_z_escrever(nes->cpu, nes->cpu->a);
+    cpu_n_escrever(&nes.cpu, nes.cpu.a);
+    cpu_z_escrever(&nes.cpu, nes.cpu.a);
   }
   else
   {
     uint8_t valor = ler_memoria(nes, endereco);
 
-    bool carregar = nes->cpu->c;
-    nes->cpu->c = buscar_bit(valor, 7);
+    bool carregar = nes.cpu.c;
+    nes.cpu.c = buscar_bit(valor, 7);
     valor <<= 1;
     valor = valor | ((carregar) ? 1 : 0);
 
@@ -620,24 +620,24 @@ static void instrucao_rol(Instrucao *instrucao, Nes *nes, uint16_t endereco)
     escrever_memoria(nes, endereco, valor);
 
     // atualizar flags
-    cpu_n_escrever(nes->cpu, nes->cpu->a);
-    cpu_z_escrever(nes->cpu, nes->cpu->a);
+    cpu_n_escrever(&nes.cpu, nes.cpu.a);
+    cpu_z_escrever(&nes.cpu, nes.cpu.a);
   }
 }
 
 //! Gira um valor pra a direita
-static void instrucao_ror(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_ror(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao.modo == MODO_ENDER_ACM)
   {
-    bool carregar = nes->cpu->c;
-    nes->cpu->c = buscar_bit(nes->cpu->a, 0);
-    nes->cpu->a >>= 1;
-    nes->cpu->a = nes->cpu->a | ((carregar) ? 0b10000000 : 0);
+    bool carregar = nes.cpu.c;
+    nes.cpu.c = buscar_bit(nes.cpu.a, 0);
+    nes.cpu.a >>= 1;
+    nes.cpu.a = nes.cpu.a | ((carregar) ? 0b10000000 : 0);
 
     // atualizar flags
-    cpu_n_escrever(nes->cpu, nes->cpu->a);
-    cpu_z_escrever(nes->cpu, nes->cpu->a);
+    cpu_n_escrever(&nes.cpu, nes.cpu.a);
+    cpu_z_escrever(&nes.cpu, nes.cpu.a);
   }
   else
   {
@@ -658,143 +658,143 @@ static void instrucao_ror(Instrucao *instrucao, Nes *nes, uint16_t endereco)
 }
 
 //! Retorna de uma interupção
-static void instrucao_rti(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_rti(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   const uint8_t estado = stack_puxar(nes);
-  cpu_estado_escrever(nes->cpu, estado);
+  cpu_estado_escrever(nes.cpu, estado);
 
-  nes->cpu->pc = stack_puxar_16_bits(nes);
+  nes.cpu.pc = stack_puxar_16_bits(nes);
 }
 
 //! Retorna de uma função/sub-rotina
-static void instrucao_rts(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_rts(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->pc = stack_puxar_16_bits(nes) + 1;
+  nes.cpu.pc = stack_puxar_16_bits(nes) + 1;
 }
 
 //! Subtrai um valor da memoria usando o acumulador
-static void instrucao_sbc(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_sbc(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
   uint8_t valor = ler_memoria(nes, endereco);
 
-  const uint8_t a = nes->cpu->a;
-  const uint8_t c = (nes->cpu->c) ? 1 : 0;
+  const uint8_t a = nes.cpu.a;
+  const uint8_t c = (nes.cpu.c) ? 1 : 0;
 
-  nes->cpu->a = a - valor - 1 - c;
+  nes.cpu.a = a - valor - 1 - c;
 
   // atualiza a flag c
   int32_t subtracao_total = (int32_t)a - (int32_t)valor - 1 - (int32_t)c;
   if (subtracao_total >= 0)
-    nes->cpu->c = 1;
+    nes.cpu.c = 1;
   else
-    nes->cpu->c = 0;
+    nes.cpu.c = 0;
 
   // checa se houve um overflow/transbordamento e atualiza a flag v
   // solução baseada em: https://stackoverflow.com/a/16861251
   if ((~(a ^ (valor*-1 - 1))) & (a ^ c) & 0x80)
-    nes->cpu->v = 1;
+    nes.cpu.v = 1;
   else
-    nes->cpu->v = 0;
+    nes.cpu.v = 0;
 
   // atualiza as flags z e n
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 //! Ativa a flag 'c'
-static void instrucao_sec(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_sec(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->c = true;
+  nes.cpu.c = true;
 }
 
 //! Ativa a flag 'd'
-static void instrucao_sed(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_sed(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->d = true;
+  nes.cpu.d = true;
 }
 
 //! Ativa a flag 'i'
-static void instrucao_sei(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_sei(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->i = true;
+  nes.cpu.i = true;
 }
 
 //! Guarda o valor do acumulador na memoria
-static void instrucao_sta(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_sta(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  escrever_memoria(nes, endereco, nes->cpu->a);
+  escrever_memoria(nes, enderecones.cpu.a);
 }
 
 //! Guarda o valor do registrador 'x' na memoria
-static void instrucao_stx(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_stx(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  escrever_memoria(nes, endereco, nes->cpu->x);
+  escrever_memoria(nes, endereco, nes.cpu.x);
 }
 
 //! Guarda o valor do registrador 'y' na memoria
-static void instrucao_sty(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_sty(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  escrever_memoria(nes, endereco, nes->cpu->y);
+  escrever_memoria(nes, endereco, nes.cpu.y);
 }
 
 //! Atribui o valor do acumulador ao registrador 'x'
-static void instrucao_tax(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_tax(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->x = nes->cpu->a;
+  nes.cpu.x = nes.cpu.a;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->x);
-  cpu_z_escrever(nes->cpu, nes->cpu->x);
+  cpu_n_escrever(&nes.cpu, nes.cpu.x);
+  cpu_z_escrever(&nes.cpu, nes.cpu.x);
 }
 
 //! Atribui o valor do acumulador ao registrador 'y'
-static void instrucao_tay(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_tay(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->y = nes->cpu->a;
+  nes.cpu.y = nes.cpu.a;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->y);
-  cpu_z_escrever(nes->cpu, nes->cpu->y);
+  cpu_n_escrever(&nes.cpu, nes.cpu.y);
+  cpu_z_escrever(&nes.cpu, nes.cpu.y);
 }
 
 //! Atribui o valor do ponteiro da stack ao registrador 'x'
-static void instrucao_tsx(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_tsx(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->x = nes->cpu->sp;
+  nes.cpu.x = nes.cpu.sp;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->x);
-  cpu_z_escrever(nes->cpu, nes->cpu->x);
+  cpu_n_escrever(&nes.cpu, nes.cpu.x);
+  cpu_z_escrever(&nes.cpu, nes.cpu.x);
 }
 
 //! Atribui o valor do registrador 'x' ao acumulador
-static void instrucao_txa(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_txa(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->a = nes->cpu->x;
+  nes.cpu.a = nes.cpu.x;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 //! Atribui o valor do registrador 'x' ao ponteiro da stack
-static void instrucao_txs(Instrucao *instrucao, Nes *nes, uint16_t endereco)
+static void instrucao_txs(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->sp = nes->cpu->x;
+  nes.cpu.sp = nes.cpu.x;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->sp);
-  cpu_z_escrever(nes->cpu, nes->cpu->sp);
+  cpu_n_escrever(&nes.cpu, nes.cpu.sp);
+  cpu_z_escrever(&nes.cpu, nes.cpu.sp);
 }
 
 //! Atribui o valor do registrador 'y' ao acumulador
-static void instrucao_tya(Instrucao *isntrucao, Nes *nes, uint16_t endereco)
+static void instrucao_tya(Instrucao& instrucao, Nes& nes, uint16_t endereco)
 {
-  nes->cpu->a = nes->cpu->y;
+  nes.cpu.a = nes.cpu.y;
 
   // atualizar flags
-  cpu_n_escrever(nes->cpu, nes->cpu->a);
-  cpu_z_escrever(nes->cpu, nes->cpu->a);
+  cpu_n_escrever(&nes.cpu, nes.cpu.a);
+  cpu_z_escrever(&nes.cpu, nes.cpu.a);
 }
 
 Instrucao** carregar_instrucoes(void)

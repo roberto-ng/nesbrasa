@@ -19,17 +19,17 @@
 #include "nesbrasa.hpp"
 #include "memoria.hpp"
 
-uint8_t ler_memoria(Nes *nes, uint16_t  endereco)
+uint8_t ler_memoria(Nes& nes, uint16_t  endereco)
 {
   if (endereco <= 0x07FF)
   {
-    return nes->ram[endereco];
+    return nes.ram[endereco];
   }
   else if (endereco >= 0x0800 && endereco <=0x1FFF)
   {
     // endereços nesta area são espelhos dos endereços
     // localizados entre 0x0000 e 0x07FF
-    return nes->ram[endereco % 0x0800];
+    return nes.ram[endereco % 0x0800];
   }
   else if (endereco >= 0x2000 && endereco <= 0x2007)
   {
@@ -52,13 +52,13 @@ uint8_t ler_memoria(Nes *nes, uint16_t  endereco)
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    return cartucho_mapeador_ler(nes->cartucho, endereco);
+    return cartucho_mapeador_ler(nes.cartucho, endereco);
   }
 
   return 0;
 }
 
-uint16_t ler_memoria_16_bits(Nes *nes, uint16_t endereco)
+uint16_t ler_memoria_16_bits(Nes& nes, uint16_t endereco)
 {
   uint16_t menor = ler_memoria(nes, endereco);
   uint16_t maior = ler_memoria(nes, endereco + 1);
@@ -66,7 +66,7 @@ uint16_t ler_memoria_16_bits(Nes *nes, uint16_t endereco)
   return (maior << 8) | menor;
 }
 
-uint16_t ler_memoria_16_bits_bug(Nes *nes, uint16_t endereco)
+uint16_t ler_memoria_16_bits_bug(Nes& nes, uint16_t endereco)
 {
   uint16_t menor = ler_memoria(nes, endereco);
   uint16_t maior = 0;
@@ -83,17 +83,17 @@ uint16_t ler_memoria_16_bits_bug(Nes *nes, uint16_t endereco)
   return (maior << 8) | menor;
 }
 
-void escrever_memoria(Nes *nes, uint16_t endereco, uint8_t valor)
+void escrever_memoria(Nes& nes, uint16_t endereco, uint8_t valor)
 {
   if (endereco <= 0x07FF)
   {
-    nes->ram[endereco] = valor;
+    nes.ram[endereco] = valor;
   }
   else if (endereco >= 0x0800 && endereco <=0x1FFF)
   {
     // endereços nesta area são espelhos dos endereços
     // localizados entre 0x0000 e 0x07FF
-    nes->ram[endereco % 0x0800] = valor;
+    nes.ram[endereco % 0x0800] = valor;
   }
   else if (endereco >= 0x2000 && endereco <= 0x2007)
   {
@@ -116,6 +116,6 @@ void escrever_memoria(Nes *nes, uint16_t endereco, uint8_t valor)
   }
   else if (endereco >= 0x4020 && endereco <= 0xFFFF)
   {
-    cartucho_mapeador_escrever(nes->cartucho, endereco, valor);
+    cartucho_mapeador_escrever(nes.cartucho, endereco, valor);
   }
 }

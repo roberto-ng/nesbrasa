@@ -64,7 +64,7 @@ public:
 
 	/*! Uma fução de alto nivel que sera usada para reimplementar
             uma instrução da arquitetura 6502 */
-        function<void(Instrucao*, Nes*, uint16_t)> funcao;
+        function<void(Instrucao&, Nes&, uint16_t)> funcao;
 
         Instrucao(
           char *nome,
@@ -72,16 +72,14 @@ public:
           int32_t ciclos,
           int32_t ciclos_pag_alterada,
           InstrucaoModo  modo,
-          function<void(Instrucao*, Nes*, uint16_t)> funcao
+          function<void(Instrucao&, Nes&, uint16_t)> funcao
 	);
 
-
+        /*!
+          Busca o endereço que vai ser usado por uma instrução de
+          acordo com o modo de endereçamento da CPU
+        */
+	buscar_endereco(Nes &nes);
 };
-
-/*!
-  Busca o endereço que vai ser usado por uma instrução de
-  acordo com o modo de endereçamento da CPU
- */
-uint16_t buscar_endereco(Instrucao *instrucao, Nes *nes);
 
 Instrucao** carregar_instrucoes(void);
