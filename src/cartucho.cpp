@@ -19,13 +19,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cartucho.h"
-#include "mapeadores/nrom.h"
-#include "util.h"
+#include "cartucho.hpp"
+#include "mapeadores/nrom.hpp"
+#include "util.hpp"
 
 Cartucho* cartucho_new(void)
 {
-  Cartucho *cartucho = malloc(sizeof(Cartucho));
+  Cartucho *cartucho = new Cartucho;
   cartucho->espelhamento = ESPELHAMENTO_VERTICAL;
   cartucho->mapeador_tipo = MAPEADOR_DESCONHECIDO;
   cartucho->prg = NULL;
@@ -46,12 +46,12 @@ Cartucho* cartucho_new(void)
 void cartucho_free(Cartucho *cartucho)
 {
   if (cartucho->prg != NULL)
-    free(cartucho->prg);
+    delete cartucho->prg;
 
   if (cartucho->chr != NULL)
-    free(cartucho->chr);
+    delete cartucho->chr;
 
-  free(cartucho);
+  delete cartucho;
 }
 
 int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
@@ -91,8 +91,8 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
   const uint32_t prg_tamanho = cartucho->prg_quantidade * 0x4000;
   const uint32_t chr_tamanho = cartucho->chr_quantidade * 0x2000;
 
-  cartucho->prg = malloc(prg_tamanho);
-  cartucho->chr = malloc(chr_tamanho);
+  cartucho->prg = (uint8_t *)malloc(prg_tamanho);
+  cartucho->chr = (uint8_t *)malloc(chr_tamanho);
 
   for (int i = 0; i < prg_tamanho; i++) {
     cartucho->prg[i] = 0;

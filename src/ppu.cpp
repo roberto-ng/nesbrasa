@@ -16,67 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
-#include "ppu.h"
-#include "cartucho.h"
-#include "memoria.h"
-#include "util.h"
+#include "ppu.hpp"
+#include "cartucho.hpp"
+#include "memoria.hpp"
+#include "util.hpp"
 
-Ppu* ppu_new(void)
+Ppu::Ppu()
 {
-  Ppu *ppu = malloc(sizeof(Ppu));
+  buffer_dados = 0;
+  ultimo_valor = 0;
+  vram_incrementar = 0;
+  oam_endereco = 0;
+  nametable_endereco = 0;
+  padrao_fundo_endereco = 0;
+  padrao_sprite_endereco = 0;
 
-  ppu->buffer_dados = 0;
-  ppu->ultimo_valor = 0;
-  ppu->vram_incrementar = 0;
-  ppu->oam_endereco = 0;
-  ppu->nametable_endereco = 0;
-  ppu->padrao_fundo_endereco = 0;
-  ppu->padrao_sprite_endereco = 0;
+  flag_nmi = false;
+  flag_mestre_escravo = false;
+  flag_sprite_altura = false;
+  flag_padrao_fundo = false;
+  flag_padrao_sprite = false;
+  flag_incrementar = false;
+  flag_nametable_base = 0;
 
-  ppu->flag_nmi = false;
-  ppu->flag_mestre_escravo = false;
-  ppu->flag_sprite_altura = false;
-  ppu->flag_padrao_fundo = false;
-  ppu->flag_padrao_sprite = false;
-  ppu->flag_incrementar = false;
-  ppu->flag_nametable_base = 0;
+  flag_enfase_b = false;
+  flag_enfase_g = false;
+  flag_enfase_r = false;
+  flag_sprite_habilitar = false;
+  flag_fundo_habilitar = false;
+  flag_sprite_habilitar_col_esquerda = false;
+  flag_fundo_habilitar_col_esquerda = false;
+  flag_escala_cinza = false;
 
-  ppu->flag_enfase_b = false;
-  ppu->flag_enfase_g = false;
-  ppu->flag_enfase_r = false;
-  ppu->flag_sprite_habilitar = false;
-  ppu->flag_fundo_habilitar = false;
-  ppu->flag_sprite_habilitar_col_esquerda = false;
-  ppu->flag_fundo_habilitar_col_esquerda = false;
-  ppu->flag_escala_cinza = false;
+  flag_vblank = false;
+  flag_sprite_zero = false;
+  flag_sprite_transbordamento = false;
 
-  ppu->flag_vblank = false;
-  ppu->flag_sprite_zero = false;
-  ppu->flag_sprite_transbordamento = false;
+  v = 0;
+  t = 0;
+  x = 0;
+  w = false;
 
-  ppu->v = 0;
-  ppu->t = 0;
-  ppu->x = 0;
-  ppu->w = false;
-
-  for (int i = 0; i < TAMANHO(ppu->oam); i++)
+  for (int i = 0; i < TAMANHO(oam); i++)
   {
-    ppu->oam[i] = 0;
+    oam[i] = 0;
   }
 
-  for (int i = 0; i < TAMANHO(ppu->vram); i++)
+  for (int i = 0; i < TAMANHO(vram); i++)
   {
-    ppu->vram[i] = 0;
+    vram[i] = 0;
   }
-
-  return ppu;
-}
-
-void ppu_free(Ppu *ppu)
-{
-  free(ppu);
 }
 
 uint8_t ppu_registrador_ler(Nes *nes, uint16_t endereco)

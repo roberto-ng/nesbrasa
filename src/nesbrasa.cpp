@@ -1,4 +1,4 @@
-/* memoria.h
+/* nesbrasa.c
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *
@@ -16,26 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <stdlib.h>
 
-#include "nesbrasa.h"
+#include "nesbrasa.hpp"
+#include "cartucho.hpp"
+#include "util.hpp"
 
-typedef struct _Nes Nes;
+Nes::Nes()
+{
+  cpu = cpu_new();
+  ppu = ppu_new();
+  cartucho = cartucho_new();
 
-//! Lê um valor de 8 bits na memoria
-uint8_t ler_memoria(Nes *nes, uint16_t endereco);
-
-//! Lê um valor de 16 bits na memoria
-/*!
- \return O valor 16 bits do enrereço lido no formato little-endian
- */
-uint16_t ler_memoria_16_bits(Nes *nes, uint16_t endereco);
-
-//! Lê um valor de 16 bits na memoria com o bug do no modo indireto da cpu
-/*!
- \return O valor 16 bits do enrereço lido no formato little-endian
- */
-uint16_t ler_memoria_16_bits_bug(Nes *nes, uint16_t endereco);
-
-//! Escreve um valor na memoria
-void escrever_memoria(Nes *nes, uint16_t endereco, uint8_t valor);
+  for (int i = 0; i < TAMANHO(nes->ram); i++)
+  {
+    ram[i] = 0;
+  }
+}

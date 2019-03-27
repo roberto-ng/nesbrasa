@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstdbool>
 
 typedef enum
 {
@@ -37,10 +37,9 @@ typedef enum
   MAPEADOR_DESCONHECIDO,
 } MapeadorTipo;
 
-typedef struct _Cartucho Cartucho;
-
-struct _Cartucho
+class Cartucho
 {
+public:
         uint8_t *prg;
         uint8_t *chr;
         uint8_t  sram[0x2000];

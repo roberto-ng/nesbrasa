@@ -18,12 +18,12 @@
 
 #include <stdlib.h>
 
-#include "cpu.h"
-#include "util.h"
+#include "cpu.hpp"
+#include "util.hpp"
 
 Cpu* cpu_new(void)
 {
-  Cpu *cpu = malloc(sizeof(Cpu));
+  Cpu *cpu = new Cpu;
   cpu->pc = 0;
   cpu->sp = 0;
   cpu->a = 0;

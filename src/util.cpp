@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#include "util.h"
+#include "util.hpp"
 
 inline bool buscar_bit(uint8_t byte, uint8_t pos)
 {
@@ -52,7 +52,7 @@ char* formatar_str(char *fmt, ...)
   va_end(args_copia);
 
   // aloca o buffer de acordo com o tamanho calculado
-  char *str = malloc(tam);
+  char *str = (char*)malloc(tam);
   // copia a lista de argumentos novamente
   va_copy(args_copia, args);
   // formata a string

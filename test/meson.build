@@ -1,4 +1,4 @@
-teste_jmp_bug = executable('jmp_bug', 'jmp_bug.c',
+teste_jmp_bug = executable('jmp_bug', 'jmp_bug.cpp',
                      include_directories : inc,
                      link_with : nesbrasa_lib)
 

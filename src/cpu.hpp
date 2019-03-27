@@ -18,22 +18,19 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <cstdint>
+#include <cstdbool>
 
-#include "nesbrasa.h"
-#include "instrucao.h"
-#include "memoria.h"
+#include "nesbrasa.hpp"
+#include "instrucao.hpp"
+#include "memoria.hpp"
 
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
 
-typedef struct _Nes Nes;
-typedef struct _Cpu Cpu;
-typedef struct _Instrucao Instrucao;
-
-struct _Cpu
+class Cpu
 {
+public:
         uint16_t pc; // contador de programa
         uint8_t  sp; // ponteiro da stack
 

@@ -16,10 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "memoria.h"
-#include "nesbrasa.h"
-
-typedef struct _Nes Nes;
+#include "nesbrasa.hpp"
+#include "memoria.hpp"
 
 uint8_t ler_memoria(Nes *nes, uint16_t  endereco)
 {

@@ -18,20 +18,18 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
+#include <cstdbool>
+#include <cstdint>
 
-#include "nesbrasa.h"
+#include "nesbrasa.hpp"
 
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 // http://nemulator.com/files/nes_emu.txt
 
-typedef struct _Nes Nes;
-typedef struct _Ppu Ppu;
-
-struct _Ppu
+class Ppu
 {
+public:
         uint8_t oam[0x100];
         uint8_t vram[0x4000];
 
@@ -72,6 +70,8 @@ struct _Ppu
         uint16_t t;
         uint8_t  x;
         bool     w;
+
+        Ppu();
 };
 
 Ppu* ppu_new(void);

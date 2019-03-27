@@ -1,4 +1,4 @@
-/* nesbrasa.c
+/* nesbrasa.hpp
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *
@@ -15,32 +15,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#include <stdlib.h>
 
-#include "nesbrasa.h"
-#include "cartucho.h"
-#include "util.h"
+#pragma once
 
-Nes* nes_new(void)
+#include <cstdint>
+
+#include "cpu.hpp"
+#include "ppu.hpp"
+#include "cartucho.hpp"
+
+class Nes
 {
-  Nes *nes = malloc(sizeof (Nes));
-  nes->cpu = cpu_new();
-  nes->ppu = ppu_new();
-  nes->cartucho = cartucho_new();
+public:
+        uint8_t ram[0x800];
 
-  for (int i = 0; i < TAMANHO(nes->ram); i++)
-  {
-    nes->ram[i] = 0;
-  }
+        Cpu      cpu;
+        Ppu      ppu;
+        Cartucho cartucho;
 
-  return nes;
-}
-
-void nes_free(Nes *nes)
-{
-  cpu_free(nes->cpu);
-  ppu_free(nes->ppu);
-  cartucho_free(nes->cartucho);
-  free(nes);
-}
+        Nes();
+};

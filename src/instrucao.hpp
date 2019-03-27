@@ -18,10 +18,13 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+#include <functional>
 
-#include "cpu.h"
-#include "nesbrasa.h"
+#include "nesbrasa.hpp"
+#include "cpu.hpp"
+
+using std::function;
 
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
@@ -44,17 +47,11 @@ typedef enum
   MODO_ENDER_P_ZERO_Y,  // página 0, indexado pelo registrador y
 } InstrucaoModo;
 
-typedef struct _Nes Nes;
-typedef struct _Instrucao Instrucao;
-
-/*! Ponteiro para uma fução de alto nivel que
-   sera usada para reimplementar uma instrução
-   da arquitetura 6502 */
-typedef void (*InstrucaoFunc)(Instrucao *instrucao, Nes *nes, uint16_t endereco);
 
 //! Uma instrução da arquitetura 6502
-struct _Instrucao
+class Instrucao
 {
+public:
         char    *nome;
         uint8_t  bytes;
         int32_t  ciclos;
@@ -63,19 +60,23 @@ struct _Instrucao
         // página da memoria for alterada durante a leitura do endereço
         int32_t ciclos_pag_alterada;
 
-        // ponteiros para funções
         InstrucaoModo modo;
-        InstrucaoFunc funcao;
+
+	/*! Uma fução de alto nivel que sera usada para reimplementar
+            uma instrução da arquitetura 6502 */
+        function<void(Instrucao*, Nes*, uint16_t)> funcao;
+
+        Instrucao(
+          char *nome,
+          uint8_t bytes,
+          int32_t ciclos,
+          int32_t ciclos_pag_alterada,
+          InstrucaoModo  modo,
+          function<void(Instrucao*, Nes*, uint16_t)> funcao
+	);
+
+
 };
-
-Instrucao* instrucao_new(char          *nome,
-                         uint8_t        bytes,
-                         int32_t        ciclos,
-                         int32_t        ciclos_pag_alterada,
-                         InstrucaoModo  modo,
-                         InstrucaoFunc  funcao);
-
-void instrucao_free(Instrucao *instrucao);
 
 /*!
   Busca o endereço que vai ser usado por uma instrução de
