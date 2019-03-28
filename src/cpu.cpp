@@ -24,29 +24,34 @@
 
 Cpu::Cpu()
 {
-    pc = 0;
-    sp = 0;
-    a = 0;
-    x = 0;
-    y = 0;
-    c = false;
-    z = false;
-    i = false;
-    d = false;
-    b = false;
-    v = false;
-    n = false;
-    esperar = 0;
-    pag_alterada = false;
-    instrucoes = carregar_instrucoes();
+  this->pc = 0;
+  this->sp = 0;
+  this->a = 0;
+  this->x = 0;
+  this->y = 0;
+  this->c = false;
+  this->z = false;
+  this->i = false;
+  this->d = false;
+  this->b = false;
+  this->v = false;
+  this->n = false;
+  this->esperar = 0;
+  this->pag_alterada = false;
+  this->instrucoes = carregar_instrucoes();
 }
 
 Cpu::~Cpu()
 {
-    free(instrucoes);
+  for (int i = 0; i < 256; i++)
+  {
+    free(instrucoes[i]);
+  } 
+
+  free(instrucoes);
 }
 
-void Cpu::ciclo(Nes& nes)
+void Cpu::ciclo(Nes* nes)
 {
   if (this->esperar > 0)
   {
@@ -71,90 +76,90 @@ void Cpu::ciclo(Nes& nes)
   instrucao->funcao(instrucao, nes, endereco);
 }
 
-void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t endereco)
+void Cpu::branch_somar_ciclos(uint16_t endereco)
 {
   // somar 1 se os 2 endereços forem da mesma pagina,
   // somar 2 se forem de paginas diferentes
-  if (comparar_paginas(cpu->pc, endereco))
-    cpu->ciclos += 1;
+  if (comparar_paginas(this->pc, endereco))
+    this->ciclos += 1;
   else
-    cpu->ciclos += 2;
+    this->ciclos += 2;
 }
 
-uint8_t cpu_estado_ler(Cpu *cpu)
+uint8_t Cpu::get_estado()
 {
   uint8_t flags = 0;
 
-  const uint8_t c = cpu->c;
-  const uint8_t z = cpu->z << 1;
-  const uint8_t i = cpu->i << 2;
-  const uint8_t d = cpu->d << 3;
-  const uint8_t b = cpu->b << 4;
-  const uint8_t v = cpu->v << 6;
-  const uint8_t n = cpu->n << 7;
+  const uint8_t c = this->c;
+  const uint8_t z = this->z << 1;
+  const uint8_t i = this->i << 2;
+  const uint8_t d = this->d << 3;
+  const uint8_t b = this->b << 4;
+  const uint8_t v = this->v << 6;
+  const uint8_t n = this->n << 7;
   // o bit na posiçao 5 sempre está ativo
   const uint8_t bit_5 = 1 << 5;
 
   return flags | c | z | i | d | b | bit_5 | v | n;
 }
 
-void cpu_estado_escrever(Cpu *cpu, uint8_t valor)
+void Cpu::set_estado(uint8_t valor)
 {
-  cpu->c = buscar_bit(valor, 0);
-  cpu->z = buscar_bit(valor, 1);
-  cpu->i = buscar_bit(valor, 2);
-  cpu->d = buscar_bit(valor, 3);
-  cpu->b = buscar_bit(valor, 4);
-  cpu->v = buscar_bit(valor, 6);
-  cpu->n = buscar_bit(valor, 7);
+  this->c = buscar_bit(valor, 0);
+  this->z = buscar_bit(valor, 1);
+  this->i = buscar_bit(valor, 2);
+  this->d = buscar_bit(valor, 3);
+  this->b = buscar_bit(valor, 4);
+  this->v = buscar_bit(valor, 6);
+  this->n = buscar_bit(valor, 7);
 }
 
-void cpu_z_escrever(Cpu *cpu, uint8_t valor)
+void Cpu::set_z(uint8_t valor)
 {
   // checa se um valor é '0'
   if (valor == 0)
-    cpu->z = false;
+    this->z = false;
   else
-    cpu->z = true;
+    this->z = true;
 }
 
-void cpu_n_escrever(Cpu *cpu, uint8_t valor)
+void Cpu::set_n(uint8_t valor)
 {
   // o valor é negativo se o bit mais significativo não for '0'
   if ((valor & 0b10000000) != 0)
-    cpu->n = true;
+    this->n = true;
   else
-    cpu->n = false;
+    this->n = false;
 }
 
-void stack_empurrar(Nes *nes, uint8_t valor)
+void Cpu::stack_empurrar(Nes *nes, uint8_t valor)
 {
-  uint16_t endereco = 0x0100 | nes->cpu->sp;
+  uint16_t endereco = 0x0100 | nes->cpu.sp;
   escrever_memoria(nes, endereco, valor);
 
-  nes->cpu->sp -= 1;
+  nes->cpu.sp -= 1;
 }
 
-void stack_empurrar_16_bits(Nes *nes, uint16_t valor)
+void Cpu::stack_empurrar_16_bits(Nes *nes, uint16_t valor)
 {
   uint8_t menor = ler_memoria(nes, valor & 0x00FF);
   uint8_t maior = ler_memoria(nes, (valor & 0xFF00) >> 8);
 
-  stack_empurrar(nes, maior);
-  stack_empurrar(nes, menor);
+  this->stack_empurrar(nes, maior);
+  this->stack_empurrar(nes, menor);
 }
 
-uint8_t stack_puxar(Nes *nes)
+uint8_t Cpu::stack_puxar(Nes *nes)
 {
-  nes->cpu->sp += 1;
-  uint16_t endereco = 0x0100 | nes->cpu->sp;
+  nes->cpu.sp += 1;
+  uint16_t endereco = 0x0100 | nes->cpu.sp;
   return ler_memoria(nes, endereco);
 }
 
-uint16_t stack_puxar_16_bits(Nes *nes)
+uint16_t Cpu::stack_puxar_16_bits(Nes *nes)
 {
-  uint8_t menor = stack_puxar(nes);
-  uint8_t maior = stack_puxar(nes);
+  uint8_t menor = this->stack_puxar(nes);
+  uint8_t maior = this->stack_puxar(nes);
 
   return (maior << 8) | menor;
 }

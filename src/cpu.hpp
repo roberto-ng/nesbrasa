@@ -53,38 +53,33 @@ public:
 
         Cpu();
         ~Cpu();
-        void ciclo(Nes& nes);
+
+        void ciclo(Nes* nes);
+
+        /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
+        \param endereco O endereço em que o branch sera realizado
+        */
+        void branch_somar_ciclos(uint16_t endereco);
+
+        uint8_t get_estado();
+
+        void set_estado(uint8_t valor);
+
+        //! Ativa a flag de zero caso seja necessario
+        void set_z(uint8_t valor);
+
+        //! Ativa a flag de valor negativo caso seja necessario
+        void set_n(uint8_t valor);
+
+        //! Empurra um valor na stack
+        void stack_empurrar(Nes *nes, uint8_t valor);
+
+        //! Empurra um valor na stack
+        void stack_empurrar_16_bits(Nes *nes, uint16_t valor);
+
+        //! Puxa um valor da stack
+        uint8_t stack_puxar(Nes *nes);
+
+        //! Puxa um valor da stack
+        uint16_t stack_puxar_16_bits(Nes *nes);
 };
-
-Cpu* cpu_new(void);
-
-void cpu_free(Cpu *cpu);
-
-void cpu_ciclo(Cpu* cpu, Nes *nes);
-
-/*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
- \param endereco O endereço em que o branch sera realizado
- */
-void cpu_branch_somar_ciclos(Cpu *cpu, uint16_t endereco);
-
-uint8_t cpu_estado_ler(Cpu *cpu);
-
-void cpu_estado_escrever(Cpu *cpu, uint8_t valor);
-
-//! Ativa a flag de zero caso seja necessario
-void cpu_z_escrever(Cpu *cpu, uint8_t valor);
-
-//! Ativa a flag de valor negativo caso seja necessario
-void cpu_n_escrever(Cpu *cpu, uint8_t valor);
-
-//! Empurra um valor na stack
-void stack_empurrar(Nes *nes, uint8_t valor);
-
-//! Empurra um valor na stack
-void stack_empurrar_16_bits(Nes *nes, uint16_t valor);
-
-//! Puxa um valor da stack
-uint8_t stack_puxar(Nes *nes);
-
-//! Puxa um valor da stack
-uint16_t stack_puxar_16_bits(Nes *nes);
