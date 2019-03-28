@@ -19,6 +19,7 @@
 #include <cstdlib>
 
 #include "ppu.hpp"
+#include "nesbrasa.hpp"
 #include "cartucho.hpp"
 #include "memoria.hpp"
 #include "util.hpp"

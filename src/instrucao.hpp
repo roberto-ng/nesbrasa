@@ -21,7 +21,6 @@
 #include <cstdint>
 #include <functional>
 
-#include "nesbrasa.hpp"
 #include "cpu.hpp"
 
 using std::function;
@@ -47,6 +46,7 @@ typedef enum
   MODO_ENDER_P_ZERO_Y,  // página 0, indexado pelo registrador y
 } InstrucaoModo;
 
+class Nes;
 
 //! Uma instrução da arquitetura 6502
 class Instrucao

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "cpu.hpp"
+#include "nesbrasa.hpp"
 #include "util.hpp"
 #include "memoria.hpp"
 

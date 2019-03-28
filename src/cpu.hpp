@@ -21,11 +21,12 @@
 #include <cstdint>
 #include <cstdbool>
 
-#include "nesbrasa.hpp"
 #include "instrucao.hpp"
 
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
+
+class Nes;
 
 class Cpu
 {

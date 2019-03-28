@@ -1,4 +1,4 @@
-#include "nrom.h"
+#include "nrom.hpp"
 
 uint8_t nrom_ler(Cartucho *cartucho, uint16_t endereco)
 {

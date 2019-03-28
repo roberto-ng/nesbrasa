@@ -18,7 +18,9 @@
 
 #pragma once
 
-#include "nesbrasa.hpp"
+#include <cstdint>
+
+class Nes;
 
 //! Lê um valor de 8 bits na memoria
 uint8_t ler_memoria(Nes* nes, uint16_t endereco);

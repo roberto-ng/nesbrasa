@@ -21,11 +21,11 @@
 #include <cstdbool>
 #include <cstdint>
 
-#include "nesbrasa.hpp"
-
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 // http://nemulator.com/files/nes_emu.txt
+
+class Nes;
 
 class Ppu
 {
