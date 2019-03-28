@@ -60,12 +60,12 @@ Ppu::Ppu()
   x = 0;
   w = false;
 
-  for (int i = 0; i < this->oam.size(); i++)
+  for (uint32_t i = 0; i < this->oam.size(); i++)
   {
     oam[i] = 0;
   }
 
-  for (int i = 0; i < this->vram.size(); i++)
+  for (uint32_t i = 0; i < this->vram.size(); i++)
   {
     vram[i] = 0;
   }
@@ -355,7 +355,7 @@ void Ppu::set_omd_dma(Nes *nes, uint8_t valor)
 {
   uint16_t ponteiro = valor << 8;
 
-  for (int i = 0; i < TAMANHO(this->oam); i++)
+  for (uint32_t i = 0; i < this->oam.size(); i++)
   {
     this->oam[this->oam_endereco] = ler_memoria(nes, ponteiro);
     this->oam_endereco += 1;

@@ -33,7 +33,7 @@ Cartucho::Cartucho()
   this->possui_sram = false;
   
   this->sram.reserve(0x2000);
-  for (int i = 0; i < this->sram.capacity(); i++)
+  for (uint32_t i = 0; i < this->sram.capacity(); i++)
   {
     this->sram[i] = 0;
   }
@@ -51,7 +51,7 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
   this->resetar_arrays();
   
   this->sram.reserve(0x2000);
-  for (int i = 0; i < this->sram.capacity(); i++)
+  for (uint32_t i = 0; i < this->sram.capacity(); i++)
   {
     this->sram[i] = 0;
   }
@@ -105,13 +105,13 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
   }
 
   // Copia os dados referentes à ROM PRG do arquivo para o array
-  for (int i = 0; i < this->prg.capacity(); i++)
+  for (uint32_t i = 0; i < this->prg.capacity(); i++)
   {
     this->prg[i] = rom[offset+i];
   }
 
   // Copia os dados referentes à ROM CHR do arquivo para o array
-  for (int i = 0; i < this->chr.capacity(); i++) {
+  for (uint32_t i = 0; i < this->chr.capacity(); i++) {
     this->chr[i] = rom[offset+prg_tamanho+i];
   }
 
