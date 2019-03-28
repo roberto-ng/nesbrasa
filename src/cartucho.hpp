@@ -42,6 +42,9 @@ using std::vector;
 
 class Cartucho
 {
+private:
+        void resetar_arrays();
+
 public:
         vector<uint8_t> prg;
         vector<uint8_t> chr;

@@ -20,17 +20,19 @@
 
 #include <cstdint>
 #include <memory>
+#include <array>
 
 #include "cpu.hpp"
 #include "ppu.hpp"
 #include "cartucho.hpp"
 
 using std::unique_ptr;
+using std::array;
 
 class Nes
 {
 public:
-        uint8_t ram[0x800];
+        std::array<uint8_t, 0x800> ram;
 
         unique_ptr<Cpu>      cpu;
         unique_ptr<Ppu>      ppu;

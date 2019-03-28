@@ -60,12 +60,12 @@ Ppu::Ppu()
   x = 0;
   w = false;
 
-  for (int i = 0; i < TAMANHO(oam); i++)
+  for (int i = 0; i < this->oam.size(); i++)
   {
     oam[i] = 0;
   }
 
-  for (int i = 0; i < TAMANHO(vram); i++)
+  for (int i = 0; i < this->vram.size(); i++)
   {
     vram[i] = 0;
   }

@@ -39,19 +39,22 @@ Cartucho::Cartucho()
   }
 }
 
-int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
+void Cartucho::resetar_arrays()
 {
-  // reseta os arrays
   vector<uint8_t>().swap(this->prg);
   vector<uint8_t>().swap(this->chr);
   vector<uint8_t>().swap(this->sram);
+}
+
+int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
+{
+  this->resetar_arrays();
   
   this->sram.reserve(0x2000);
   for (int i = 0; i < this->sram.capacity(); i++)
   {
     this->sram[i] = 0;
   }
-
 
   if (rom_tam < 16)
     return -1;

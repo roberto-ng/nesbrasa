@@ -59,7 +59,7 @@ void Cpu::ciclo(Nes* nes)
 
   Instrucao& instrucao = this->instrucoes[opcode].value();
   uint16_t endereco = instrucao.buscar_endereco(nes);
-  
+
   this->pc += instrucao.bytes;
   instrucao.executar(nes, endereco);
   
@@ -70,10 +70,11 @@ void Cpu::ciclo(Nes* nes)
   }
   else
   {
-    this->ciclo += instrucao.ciclos;
+    this->ciclos += instrucao.ciclos;
   }
 
-  // soma a diferença da quantidade atual de ciclos com a anterior
+  // calcula a diferença da quantidade atual de ciclos com a 
+  // quantidade anterior e a adiciona ao tempo de espera
   this->esperar += this->ciclos - ciclos_qtd_anterior;
 }
 

@@ -20,6 +20,9 @@
 
 #include <cstdbool>
 #include <cstdint>
+#include <array>
+
+using std::array;
 
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
@@ -30,8 +33,8 @@ class Nes;
 class Ppu
 {
 public:
-        uint8_t oam[0x100];
-        uint8_t vram[0x4000];
+        array<uint8_t, 0x100>  oam;
+        array<uint8_t, 0x4000> vram;
 
         uint8_t  buffer_dados;
         uint8_t  ultimo_valor; // último valor escrito na ppu
