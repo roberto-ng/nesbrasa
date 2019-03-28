@@ -58,7 +58,7 @@ class Nes;
 class Instrucao
 {
 private:
-	      /*! Uma fução de alto nivel que sera usada para reimplementar
+        /*! Uma fução de alto nivel que sera usada para reimplementar
             uma instrução da arquitetura 6502 */
         function<void(Instrucao*, Nes*, uint16_t)> funcao;
 
@@ -80,13 +80,13 @@ public:
           int32_t ciclos_pag_alterada,
           InstrucaoModo  modo,
           function<void(Instrucao*, Nes*, uint16_t)> funcao
-	      );
+        );
 
         /*!
           Busca o endereço que vai ser usado por uma instrução de
           acordo com o modo de endereçamento da CPU
         */
-	      uint16_t buscar_endereco(Nes* nes);
+        uint16_t buscar_endereco(Nes* nes);
 
         void executar(Nes* nes);
 };
