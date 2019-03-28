@@ -26,7 +26,7 @@
 #include "util.hpp"
 
 Instrucao::Instrucao(
-  char *nome,
+  string nome,
   uint8_t bytes,
   int32_t ciclos,
   int32_t ciclos_pag_alterada,
@@ -34,7 +34,7 @@ Instrucao::Instrucao(
   function<void(Instrucao*, Nes*, uint16_t)> funcao
 )
 {
-  this->nome = strdup(nome);
+  this->nome = nome;
   this->bytes = bytes;
   this->ciclos = ciclos;
   this->modo = modo;

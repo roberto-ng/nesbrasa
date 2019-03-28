@@ -20,10 +20,12 @@
 
 #include <cstdint>
 #include <functional>
+#include <string>
 
 #include "cpu.hpp"
 
 using std::function;
+using std::string;
 
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
@@ -52,9 +54,9 @@ class Nes;
 class Instrucao
 {
 public:
-        char    *nome;
-        uint8_t  bytes;
-        int32_t  ciclos;
+        string  nome;
+        uint8_t bytes;
+        int32_t ciclos;
 
         // quantidade de ciclos adicionais que devem ocorrer quando a
         // página da memoria for alterada durante a leitura do endereço
@@ -67,7 +69,7 @@ public:
         function<void(Instrucao*, Nes*, uint16_t)> funcao;
 
         Instrucao(
-          char *nome,
+          string  nome,
           uint8_t bytes,
           int32_t ciclos,
           int32_t ciclos_pag_alterada,
