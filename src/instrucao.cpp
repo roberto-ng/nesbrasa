@@ -48,28 +48,28 @@ uint16_t Instrucao::buscar_endereco(Nes* nes)
 
   switch (this->modo)
   {
-    case MODO_ENDER_ACM:
+    case InstrucaoModo::ACM:
       return 0;
 
-    case MODO_ENDER_IMPL:
+    case InstrucaoModo::IMPL:
       return 0;
 
-    case MODO_ENDER_IMED:
+    case InstrucaoModo::IMED:
       return nes->cpu->pc + 1;
 
-    case MODO_ENDER_P_ZERO:
+    case InstrucaoModo::P_ZERO:
       return ler_memoria(nes, (nes->cpu->pc + 1)%0xFF);
 
-    case MODO_ENDER_P_ZERO_X:
+    case InstrucaoModo::P_ZERO_X:
       return ler_memoria(nes, (nes->cpu->pc + 1 + nes->cpu->x)%0xFF);
 
-    case MODO_ENDER_P_ZERO_Y:
+    case InstrucaoModo::P_ZERO_Y:
       return ler_memoria(nes, (nes->cpu->pc + 1 + nes->cpu->y)%0xFF);
 
-    case MODO_ENDER_ABS:
+    case InstrucaoModo::ABS:
       return ler_memoria_16_bits(nes, nes->cpu->pc + 1);
 
-    case MODO_ENDER_ABS_X:
+    case InstrucaoModo::ABS_X:
     {
       uint16_t endereco = ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->x);
       nes->cpu->pag_alterada = !comparar_paginas(endereco - nes->cpu->x, endereco);
@@ -77,7 +77,7 @@ uint16_t Instrucao::buscar_endereco(Nes* nes)
       return endereco;
     }
 
-    case MODO_ENDER_ABS_Y:
+    case InstrucaoModo::ABS_Y:
     {
       uint16_t endereco =  ler_memoria_16_bits(nes, nes->cpu->pc + 1 + nes->cpu->y);
       nes->cpu->pag_alterada = !comparar_paginas(endereco - nes->cpu->y, endereco);
@@ -85,19 +85,19 @@ uint16_t Instrucao::buscar_endereco(Nes* nes)
       return endereco;
     }
 
-    case MODO_ENDER_IND:
+    case InstrucaoModo::IND:
     {
       const uint16_t valor = ler_memoria_16_bits(nes, nes->cpu->pc+1);
       return ler_memoria_16_bits_bug(nes, valor);
     }
 
-    case MODO_ENDER_IND_X:
+    case InstrucaoModo::IND_X:
     {
       const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
       return ler_memoria_16_bits_bug(nes, valor + nes->cpu->x);
     }
 
-    case MODO_ENDER_IND_Y:
+    case InstrucaoModo::IND_Y:
     {
       const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
       uint16_t endereco = ler_memoria_16_bits_bug(nes, valor) + nes->cpu->y;
@@ -106,7 +106,7 @@ uint16_t Instrucao::buscar_endereco(Nes* nes)
       return endereco;
     }
 
-    case MODO_ENDER_REL:
+    case InstrucaoModo::REL:
     {
       const uint16_t valor = ler_memoria(nes, nes->cpu->pc + 1);
 
@@ -181,7 +181,7 @@ static void instrucao_and(Instrucao* instrucao, Nes* nes, uint16_t endereco)
  */
 static void instrucao_asl(Instrucao* instrucao, Nes* nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao->modo == InstrucaoModo::ACM)
   {
     // checa se a posição 7 do byte é '1' ou '0'
     nes->cpu->c = buscar_bit(nes->cpu->a, 7);
@@ -524,7 +524,7 @@ static void instrucao_ldy(Instrucao* instrucao, Nes* nes, uint16_t endereco)
  */
 static void instrucao_lsr(Instrucao* instrucao, Nes* nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao->modo == InstrucaoModo::ACM)
   {
     // checa se a posição 0 do byte é '1' ou '0'
     nes->cpu->c = buscar_bit(nes->cpu->a, 0);
@@ -602,7 +602,7 @@ static void instrucao_plp(Instrucao* instrucao, Nes* nes, uint16_t endereco)
 //! Gira um valor pra a esquerda
 static void instrucao_rol(Instrucao* instrucao, Nes* nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao->modo == InstrucaoModo::ACM)
   {
     bool carregar = nes->cpu->c;
     nes->cpu->c = buscar_bit(nes->cpu->a, 7);
@@ -634,7 +634,7 @@ static void instrucao_rol(Instrucao* instrucao, Nes* nes, uint16_t endereco)
 //! Gira um valor pra a direita
 static void instrucao_ror(Instrucao* instrucao, Nes* nes, uint16_t endereco)
 {
-  if (instrucao->modo == MODO_ENDER_ACM)
+  if (instrucao->modo == InstrucaoModo::ACM)
   {
     bool carregar = nes->cpu->c;
     nes->cpu->c = buscar_bit(nes->cpu->a, 0);
@@ -813,267 +813,267 @@ array<optional<Instrucao>, 256> carregar_instrucoes()
   }
 
   // modos da instrução ADC
-  instrucoes[0x69] = Instrucao("ADC", 2, 2, 0, MODO_ENDER_IMED, instrucao_adc);
-  instrucoes[0x65] = Instrucao("ADC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_adc);
-  instrucoes[0x75] = Instrucao("ADC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_adc);
-  instrucoes[0x6D] = Instrucao("ADC", 3, 4, 0, MODO_ENDER_ABS, instrucao_adc);
-  instrucoes[0x7D] = Instrucao("ADC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_adc);
-  instrucoes[0x79] = Instrucao("ADC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_adc);
-  instrucoes[0x61] = Instrucao("ADC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_adc);
-  instrucoes[0x71] = Instrucao("ADC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_adc);
+  instrucoes[0x69] = Instrucao("ADC", 2, 2, 0, InstrucaoModo::IMED, instrucao_adc);
+  instrucoes[0x65] = Instrucao("ADC", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_adc);
+  instrucoes[0x75] = Instrucao("ADC", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_adc);
+  instrucoes[0x6D] = Instrucao("ADC", 3, 4, 0, InstrucaoModo::ABS, instrucao_adc);
+  instrucoes[0x7D] = Instrucao("ADC", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_adc);
+  instrucoes[0x79] = Instrucao("ADC", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_adc);
+  instrucoes[0x61] = Instrucao("ADC", 2, 6, 0, InstrucaoModo::IND_X, instrucao_adc);
+  instrucoes[0x71] = Instrucao("ADC", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_adc);
 
   // modos da instrução AND
-  instrucoes[0x29] = Instrucao("AND", 2, 2, 0, MODO_ENDER_IMED, instrucao_and);
-  instrucoes[0x25] = Instrucao("AND", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_and);
-  instrucoes[0x35] = Instrucao("AND", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_and);
-  instrucoes[0x2D] = Instrucao("AND", 3, 4, 0, MODO_ENDER_ABS, instrucao_and);
-  instrucoes[0x3D] = Instrucao("AND", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_and);
-  instrucoes[0x39] = Instrucao("AND", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_and);
-  instrucoes[0x21] = Instrucao("AND", 2, 6, 0, MODO_ENDER_IND_X, instrucao_and);
-  instrucoes[0x21] = Instrucao("AND", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_and);
+  instrucoes[0x29] = Instrucao("AND", 2, 2, 0, InstrucaoModo::IMED, instrucao_and);
+  instrucoes[0x25] = Instrucao("AND", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_and);
+  instrucoes[0x35] = Instrucao("AND", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_and);
+  instrucoes[0x2D] = Instrucao("AND", 3, 4, 0, InstrucaoModo::ABS, instrucao_and);
+  instrucoes[0x3D] = Instrucao("AND", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_and);
+  instrucoes[0x39] = Instrucao("AND", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_and);
+  instrucoes[0x21] = Instrucao("AND", 2, 6, 0, InstrucaoModo::IND_X, instrucao_and);
+  instrucoes[0x21] = Instrucao("AND", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_and);
 
   // modos da instrução ASL
-  instrucoes[0x0A] = Instrucao("ASL", 1, 2, 0, MODO_ENDER_ACM, instrucao_asl);
-  instrucoes[0x06] = Instrucao("ASL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_asl);
-  instrucoes[0x16] = Instrucao("ASL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_asl);
-  instrucoes[0x0E] = Instrucao("ASL", 3, 6, 0, MODO_ENDER_ABS, instrucao_asl);
-  instrucoes[0x1E] = Instrucao("ASL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_asl);
+  instrucoes[0x0A] = Instrucao("ASL", 1, 2, 0, InstrucaoModo::ACM, instrucao_asl);
+  instrucoes[0x06] = Instrucao("ASL", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_asl);
+  instrucoes[0x16] = Instrucao("ASL", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_asl);
+  instrucoes[0x0E] = Instrucao("ASL", 3, 6, 0, InstrucaoModo::ABS, instrucao_asl);
+  instrucoes[0x1E] = Instrucao("ASL", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_asl);
 
   // modos da instrução BCC
-  instrucoes[0x90] = Instrucao("BCC", 2, 2, 0, MODO_ENDER_REL, instrucao_bcc);
+  instrucoes[0x90] = Instrucao("BCC", 2, 2, 0, InstrucaoModo::REL, instrucao_bcc);
 
   // modos da instrução BCS
-  instrucoes[0xB0] = Instrucao("BCS", 2, 2, 0, MODO_ENDER_REL, instrucao_bcs);
+  instrucoes[0xB0] = Instrucao("BCS", 2, 2, 0, InstrucaoModo::REL, instrucao_bcs);
 
   // modos da instrução BEQ
-  instrucoes[0xF0] = Instrucao("BEQ", 2, 2, 0, MODO_ENDER_REL, instrucao_beq);
+  instrucoes[0xF0] = Instrucao("BEQ", 2, 2, 0, InstrucaoModo::REL, instrucao_beq);
 
   // modos da instrução BIT
-  instrucoes[0x24] = Instrucao("BIT", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_bit);
-  instrucoes[0x2C] = Instrucao("BIT", 3, 4, 0, MODO_ENDER_ABS, instrucao_bit);
+  instrucoes[0x24] = Instrucao("BIT", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_bit);
+  instrucoes[0x2C] = Instrucao("BIT", 3, 4, 0, InstrucaoModo::ABS, instrucao_bit);
 
   // modos da instrução BMI
-  instrucoes[0x30] = Instrucao("BIM", 2, 2, 0, MODO_ENDER_REL, instrucao_bmi);
+  instrucoes[0x30] = Instrucao("BIM", 2, 2, 0, InstrucaoModo::REL, instrucao_bmi);
 
   // modos da instrução BNE
-  instrucoes[0xD0] = Instrucao("BNE", 2, 2, 0, MODO_ENDER_REL, instrucao_bne);
+  instrucoes[0xD0] = Instrucao("BNE", 2, 2, 0, InstrucaoModo::REL, instrucao_bne);
 
   // modos da instrução BPL
-  instrucoes[0x10] = Instrucao("BPL", 2, 2, 0, MODO_ENDER_REL, instrucao_bpl);
+  instrucoes[0x10] = Instrucao("BPL", 2, 2, 0, InstrucaoModo::REL, instrucao_bpl);
 
   // modos da instrução BRK
-  instrucoes[0x00] = Instrucao("BRK", 1, 7, 0, MODO_ENDER_IMPL, instrucao_brk);
+  instrucoes[0x00] = Instrucao("BRK", 1, 7, 0, InstrucaoModo::IMPL, instrucao_brk);
 
   // modos da instrução BVC
-  instrucoes[0x50] = Instrucao("BVC", 2, 2, 0, MODO_ENDER_REL, instrucao_bvc);
+  instrucoes[0x50] = Instrucao("BVC", 2, 2, 0, InstrucaoModo::REL, instrucao_bvc);
 
   // modos da instrução BVS
-  instrucoes[0x70] = Instrucao("BVS", 2, 2, 0, MODO_ENDER_REL, instrucao_bvs);
+  instrucoes[0x70] = Instrucao("BVS", 2, 2, 0, InstrucaoModo::REL, instrucao_bvs);
 
   // modos da instrução CLC
-  instrucoes[0x18] = Instrucao("CLC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clc);
+  instrucoes[0x18] = Instrucao("CLC", 1, 2, 0, InstrucaoModo::IMPL, instrucao_clc);
 
   // modos da instrução CLD
-  instrucoes[0xD8] = Instrucao("CLD", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cld);
+  instrucoes[0xD8] = Instrucao("CLD", 1, 2, 0, InstrucaoModo::IMPL, instrucao_cld);
 
   // modos da instrução CLI
-  instrucoes[0x58] = Instrucao("CLI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cli);
+  instrucoes[0x58] = Instrucao("CLI", 1, 2, 0, InstrucaoModo::IMPL, instrucao_cli);
 
   // modos da instrução CLV
-  instrucoes[0xB8] = Instrucao("CLV", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clv);
+  instrucoes[0xB8] = Instrucao("CLV", 1, 2, 0, InstrucaoModo::IMPL, instrucao_clv);
 
   // modos da instrução CMP
-  instrucoes[0xC9] = Instrucao("CMP", 2, 2, 0, MODO_ENDER_IMED, instrucao_cmp);
-  instrucoes[0xC5] = Instrucao("CMP", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cmp);
-  instrucoes[0xD5] = Instrucao("CMP", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_cmp);
-  instrucoes[0xCD] = Instrucao("CMP", 3, 4, 0, MODO_ENDER_ABS, instrucao_cmp);
-  instrucoes[0xDD] = Instrucao("CMP", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_cmp);
-  instrucoes[0xD9] = Instrucao("CMP", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_cmp);
-  instrucoes[0xC1] = Instrucao("CMP", 2, 6, 0, MODO_ENDER_IND_X, instrucao_cmp);
-  instrucoes[0xD1] = Instrucao("CMP", 3, 5, 1, MODO_ENDER_IND_Y, instrucao_cmp);
+  instrucoes[0xC9] = Instrucao("CMP", 2, 2, 0, InstrucaoModo::IMED, instrucao_cmp);
+  instrucoes[0xC5] = Instrucao("CMP", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_cmp);
+  instrucoes[0xD5] = Instrucao("CMP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_cmp);
+  instrucoes[0xCD] = Instrucao("CMP", 3, 4, 0, InstrucaoModo::ABS, instrucao_cmp);
+  instrucoes[0xDD] = Instrucao("CMP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_cmp);
+  instrucoes[0xD9] = Instrucao("CMP", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_cmp);
+  instrucoes[0xC1] = Instrucao("CMP", 2, 6, 0, InstrucaoModo::IND_X, instrucao_cmp);
+  instrucoes[0xD1] = Instrucao("CMP", 3, 5, 1, InstrucaoModo::IND_Y, instrucao_cmp);
 
   // modos da instrução CPX
-  instrucoes[0xE0] = Instrucao("CPX", 2, 2, 0, MODO_ENDER_IMED, instrucao_cpx);
-  instrucoes[0xE4] = Instrucao("CPX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cpx);
-  instrucoes[0xEC] = Instrucao("CPX", 3, 4, 0, MODO_ENDER_ABS, instrucao_cpx);
+  instrucoes[0xE0] = Instrucao("CPX", 2, 2, 0, InstrucaoModo::IMED, instrucao_cpx);
+  instrucoes[0xE4] = Instrucao("CPX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_cpx);
+  instrucoes[0xEC] = Instrucao("CPX", 3, 4, 0, InstrucaoModo::ABS, instrucao_cpx);
 
    // modos da instrução CPY
-  instrucoes[0xC0] = Instrucao("CPY", 2, 2, 0, MODO_ENDER_IMED, instrucao_cpy);
-  instrucoes[0xC4] = Instrucao("CPY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cpy);
-  instrucoes[0xCC] = Instrucao("CPY", 3, 4, 0, MODO_ENDER_ABS, instrucao_cpy);
+  instrucoes[0xC0] = Instrucao("CPY", 2, 2, 0, InstrucaoModo::IMED, instrucao_cpy);
+  instrucoes[0xC4] = Instrucao("CPY", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_cpy);
+  instrucoes[0xCC] = Instrucao("CPY", 3, 4, 0, InstrucaoModo::ABS, instrucao_cpy);
 
   // modos da instrução DEC
-  instrucoes[0xC6] = Instrucao("DEC", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_dec);
-  instrucoes[0xD6] = Instrucao("DEC", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_dec);
-  instrucoes[0xCE] = Instrucao("DEC", 3, 3, 0, MODO_ENDER_ABS, instrucao_dec);
-  instrucoes[0xDE] = Instrucao("DEC", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_dec);
+  instrucoes[0xC6] = Instrucao("DEC", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_dec);
+  instrucoes[0xD6] = Instrucao("DEC", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_dec);
+  instrucoes[0xCE] = Instrucao("DEC", 3, 3, 0, InstrucaoModo::ABS, instrucao_dec);
+  instrucoes[0xDE] = Instrucao("DEC", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_dec);
 
   // modos da instrução DEX
-  instrucoes[0xCA] = Instrucao("DEX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_dex);
+  instrucoes[0xCA] = Instrucao("DEX", 1, 2, 0, InstrucaoModo::IMPL, instrucao_dex);
 
   // modos da instrução DEY
-  instrucoes[0x88] = Instrucao("DEX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_dey);
+  instrucoes[0x88] = Instrucao("DEX", 1, 2, 0, InstrucaoModo::IMPL, instrucao_dey);
 
   // modos da instrução EOR
-  instrucoes[0x49] = Instrucao("EOR", 2, 2, 0, MODO_ENDER_IMED, instrucao_eor);
-  instrucoes[0x45] = Instrucao("EOR", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_eor);
-  instrucoes[0x55] = Instrucao("EOR", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_eor);
-  instrucoes[0x4D] = Instrucao("EOR", 3, 4, 0, MODO_ENDER_ABS, instrucao_eor);
-  instrucoes[0x5D] = Instrucao("EOR", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_eor);
-  instrucoes[0x59] = Instrucao("EOR", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_eor);
-  instrucoes[0x41] = Instrucao("EOR", 2, 6, 0, MODO_ENDER_IND_X, instrucao_eor);
-  instrucoes[0x51] = Instrucao("EOR", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_eor);
+  instrucoes[0x49] = Instrucao("EOR", 2, 2, 0, InstrucaoModo::IMED, instrucao_eor);
+  instrucoes[0x45] = Instrucao("EOR", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_eor);
+  instrucoes[0x55] = Instrucao("EOR", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_eor);
+  instrucoes[0x4D] = Instrucao("EOR", 3, 4, 0, InstrucaoModo::ABS, instrucao_eor);
+  instrucoes[0x5D] = Instrucao("EOR", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_eor);
+  instrucoes[0x59] = Instrucao("EOR", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_eor);
+  instrucoes[0x41] = Instrucao("EOR", 2, 6, 0, InstrucaoModo::IND_X, instrucao_eor);
+  instrucoes[0x51] = Instrucao("EOR", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_eor);
 
   // modos da instrução INC
-  instrucoes[0xE6] = Instrucao("INC", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_inc);
-  instrucoes[0xF6] = Instrucao("INC", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_inc);
-  instrucoes[0xEE] = Instrucao("INC", 3, 6, 0, MODO_ENDER_ABS, instrucao_inc);
-  instrucoes[0xFE] = Instrucao("INC", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_inc);
+  instrucoes[0xE6] = Instrucao("INC", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_inc);
+  instrucoes[0xF6] = Instrucao("INC", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_inc);
+  instrucoes[0xEE] = Instrucao("INC", 3, 6, 0, InstrucaoModo::ABS, instrucao_inc);
+  instrucoes[0xFE] = Instrucao("INC", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_inc);
 
   // modos da instrução INX
-  instrucoes[0xE8] = Instrucao("INX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_inx);
+  instrucoes[0xE8] = Instrucao("INX", 1, 2, 0, InstrucaoModo::IMPL, instrucao_inx);
 
   // modos da instrução INY
-  instrucoes[0xC8] = Instrucao("INY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_iny);
+  instrucoes[0xC8] = Instrucao("INY", 1, 2, 0, InstrucaoModo::IMPL, instrucao_iny);
 
   // modos da instrução JMP
-  instrucoes[0x4C] = Instrucao("JMP", 3, 3, 0, MODO_ENDER_ABS, instrucao_jmp);
-  instrucoes[0x6C] = Instrucao("JMP", 3, 5, 0, MODO_ENDER_IND, instrucao_jmp);
+  instrucoes[0x4C] = Instrucao("JMP", 3, 3, 0, InstrucaoModo::ABS, instrucao_jmp);
+  instrucoes[0x6C] = Instrucao("JMP", 3, 5, 0, InstrucaoModo::IND, instrucao_jmp);
 
   // modos da instrução JSR
-  instrucoes[0x20] = Instrucao("JSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_jsr);
+  instrucoes[0x20] = Instrucao("JSR", 3, 6, 0, InstrucaoModo::ABS, instrucao_jsr);
 
   // modos da instrução LDA
-  instrucoes[0xA9] = Instrucao("LDA", 2, 2, 0, MODO_ENDER_IMED, instrucao_lda);
-  instrucoes[0xA5] = Instrucao("LDA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_lda);
-  instrucoes[0xB5] = Instrucao("LDA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_lda);
-  instrucoes[0xAD] = Instrucao("LDA", 3, 4, 0, MODO_ENDER_ABS, instrucao_lda);
-  instrucoes[0xBD] = Instrucao("LDA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_lda);
-  instrucoes[0xB9] = Instrucao("LDA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_lda);
-  instrucoes[0xA1] = Instrucao("LDA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_lda);
-  instrucoes[0xB1] = Instrucao("LDA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_lda);
+  instrucoes[0xA9] = Instrucao("LDA", 2, 2, 0, InstrucaoModo::IMED, instrucao_lda);
+  instrucoes[0xA5] = Instrucao("LDA", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_lda);
+  instrucoes[0xB5] = Instrucao("LDA", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_lda);
+  instrucoes[0xAD] = Instrucao("LDA", 3, 4, 0, InstrucaoModo::ABS, instrucao_lda);
+  instrucoes[0xBD] = Instrucao("LDA", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_lda);
+  instrucoes[0xB9] = Instrucao("LDA", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_lda);
+  instrucoes[0xA1] = Instrucao("LDA", 2, 6, 0, InstrucaoModo::IND_X, instrucao_lda);
+  instrucoes[0xB1] = Instrucao("LDA", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_lda);
 
   // modos da instrução LDX
-  instrucoes[0xA2] = Instrucao("LDX", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldx);
-  instrucoes[0xA6] = Instrucao("LDX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldx);
-  instrucoes[0xB6] = Instrucao("LDX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_ldx);
-  instrucoes[0xAE] = Instrucao("LDX", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldx);
-  instrucoes[0xBE] = Instrucao("LDX", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ldx);
+  instrucoes[0xA2] = Instrucao("LDX", 2, 2, 0, InstrucaoModo::IMED, instrucao_ldx);
+  instrucoes[0xA6] = Instrucao("LDX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_ldx);
+  instrucoes[0xB6] = Instrucao("LDX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_ldx);
+  instrucoes[0xAE] = Instrucao("LDX", 3, 4, 0, InstrucaoModo::ABS, instrucao_ldx);
+  instrucoes[0xBE] = Instrucao("LDX", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_ldx);
 
   // modos da instrução LDY
-  instrucoes[0xA0] = Instrucao("LDY", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldy);
-  instrucoes[0xA4] = Instrucao("LDY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldy);
-  instrucoes[0xB4] = Instrucao("LDY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ldy);
-  instrucoes[0xAC] = Instrucao("LDY", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldy);
-  instrucoes[0xBC] = Instrucao("LDY", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ldy);
+  instrucoes[0xA0] = Instrucao("LDY", 2, 2, 0, InstrucaoModo::IMED, instrucao_ldy);
+  instrucoes[0xA4] = Instrucao("LDY", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_ldy);
+  instrucoes[0xB4] = Instrucao("LDY", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_ldy);
+  instrucoes[0xAC] = Instrucao("LDY", 3, 4, 0, InstrucaoModo::ABS, instrucao_ldy);
+  instrucoes[0xBC] = Instrucao("LDY", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_ldy);
 
   // modos da instrução LSR
-  instrucoes[0x4A] = Instrucao("LSR", 1, 2, 0, MODO_ENDER_ACM, instrucao_lsr);
-  instrucoes[0x46] = Instrucao("LSR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_lsr);
-  instrucoes[0x56] = Instrucao("LSR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_lsr);
-  instrucoes[0x4E] = Instrucao("LSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_lsr);
-  instrucoes[0x5E] = Instrucao("LSR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_lsr);
+  instrucoes[0x4A] = Instrucao("LSR", 1, 2, 0, InstrucaoModo::ACM, instrucao_lsr);
+  instrucoes[0x46] = Instrucao("LSR", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_lsr);
+  instrucoes[0x56] = Instrucao("LSR", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_lsr);
+  instrucoes[0x4E] = Instrucao("LSR", 3, 6, 0, InstrucaoModo::ABS, instrucao_lsr);
+  instrucoes[0x5E] = Instrucao("LSR", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_lsr);
 
   // modos da instrução NOP
-  instrucoes[0xEA] = Instrucao("NOP", 1, 2, 0, MODO_ENDER_IMPL, instrucao_nop);
+  instrucoes[0xEA] = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
 
   // modos da instrução ORA
-  instrucoes[0x09] = Instrucao("ORA", 2, 2, 0, MODO_ENDER_IMED, instrucao_ora);
-  instrucoes[0x05] = Instrucao("ORA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ora);
-  instrucoes[0x15] = Instrucao("ORA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ora);
-  instrucoes[0x0D] = Instrucao("ORA", 3, 4, 0, MODO_ENDER_ABS, instrucao_ora);
-  instrucoes[0x1D] = Instrucao("ORA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ora);
-  instrucoes[0x19] = Instrucao("ORA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ora);
-  instrucoes[0x01] = Instrucao("ORA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_ora);
-  instrucoes[0x11] = Instrucao("ORA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_ora);
+  instrucoes[0x09] = Instrucao("ORA", 2, 2, 0, InstrucaoModo::IMED, instrucao_ora);
+  instrucoes[0x05] = Instrucao("ORA", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_ora);
+  instrucoes[0x15] = Instrucao("ORA", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_ora);
+  instrucoes[0x0D] = Instrucao("ORA", 3, 4, 0, InstrucaoModo::ABS, instrucao_ora);
+  instrucoes[0x1D] = Instrucao("ORA", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_ora);
+  instrucoes[0x19] = Instrucao("ORA", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_ora);
+  instrucoes[0x01] = Instrucao("ORA", 2, 6, 0, InstrucaoModo::IND_X, instrucao_ora);
+  instrucoes[0x11] = Instrucao("ORA", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_ora);
 
   // modos da instrução PHA
-  instrucoes[0x48] = Instrucao("PHA", 1, 3, 0, MODO_ENDER_IMPL, instrucao_pha);
+  instrucoes[0x48] = Instrucao("PHA", 1, 3, 0, InstrucaoModo::IMPL, instrucao_pha);
 
   // modos da instrução PHP
-  instrucoes[0x08] = Instrucao("PHP", 1, 3, 0, MODO_ENDER_IMPL, instrucao_php);
+  instrucoes[0x08] = Instrucao("PHP", 1, 3, 0, InstrucaoModo::IMPL, instrucao_php);
 
   // modos da instrução PLA
-  instrucoes[0x68] = Instrucao("PLA", 1, 4, 0, MODO_ENDER_IMPL, instrucao_pla);
+  instrucoes[0x68] = Instrucao("PLA", 1, 4, 0, InstrucaoModo::IMPL, instrucao_pla);
 
   // modos da instrução PLP
-  instrucoes[0x28] = Instrucao("PLP", 1, 4, 0, MODO_ENDER_IMPL, instrucao_plp);
+  instrucoes[0x28] = Instrucao("PLP", 1, 4, 0, InstrucaoModo::IMPL, instrucao_plp);
 
   // modos da instrução ROL
-  instrucoes[0x2A] = Instrucao("ROL", 1, 2, 0, MODO_ENDER_ACM, instrucao_rol);
-  instrucoes[0x26] = Instrucao("ROL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_rol);
-  instrucoes[0x36] = Instrucao("ROL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_rol);
-  instrucoes[0x2E] = Instrucao("ROL", 3, 6, 0, MODO_ENDER_ABS, instrucao_rol);
-  instrucoes[0x3E] = Instrucao("ROL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_rol);
+  instrucoes[0x2A] = Instrucao("ROL", 1, 2, 0, InstrucaoModo::ACM, instrucao_rol);
+  instrucoes[0x26] = Instrucao("ROL", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_rol);
+  instrucoes[0x36] = Instrucao("ROL", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_rol);
+  instrucoes[0x2E] = Instrucao("ROL", 3, 6, 0, InstrucaoModo::ABS, instrucao_rol);
+  instrucoes[0x3E] = Instrucao("ROL", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_rol);
 
   // modos da instrução ROR
-  instrucoes[0x6A] = Instrucao("ROR", 1, 2, 0, MODO_ENDER_ACM, instrucao_ror);
-  instrucoes[0x66] = Instrucao("ROR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_ror);
-  instrucoes[0x76] = Instrucao("ROR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_ror);
-  instrucoes[0x6E] = Instrucao("ROR", 3, 6, 0, MODO_ENDER_ABS, instrucao_ror);
-  instrucoes[0x7E] = Instrucao("ROR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_ror);
+  instrucoes[0x6A] = Instrucao("ROR", 1, 2, 0, InstrucaoModo::ACM, instrucao_ror);
+  instrucoes[0x66] = Instrucao("ROR", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_ror);
+  instrucoes[0x76] = Instrucao("ROR", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_ror);
+  instrucoes[0x6E] = Instrucao("ROR", 3, 6, 0, InstrucaoModo::ABS, instrucao_ror);
+  instrucoes[0x7E] = Instrucao("ROR", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_ror);
 
   // modos da instrução RTI
-  instrucoes[0x40] = Instrucao("RTI", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rti);
+  instrucoes[0x40] = Instrucao("RTI", 1, 6, 0, InstrucaoModo::IMPL, instrucao_rti);
 
   // modos da instrução RTS
-  instrucoes[0x60] = Instrucao("RTS", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rts);
+  instrucoes[0x60] = Instrucao("RTS", 1, 6, 0, InstrucaoModo::IMPL, instrucao_rts);
 
   // modos da instrução SBC
-  instrucoes[0xE9] = Instrucao("SBC", 2, 2, 0, MODO_ENDER_IMED, instrucao_sbc);
-  instrucoes[0xE5] = Instrucao("SBC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sbc);
-  instrucoes[0xF5] = Instrucao("SBC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sbc);
-  instrucoes[0xED] = Instrucao("SBC", 3, 4, 0, MODO_ENDER_ABS, instrucao_sbc);
-  instrucoes[0xFD] = Instrucao("SBC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_sbc);
-  instrucoes[0xF9] = Instrucao("SBC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_sbc);
-  instrucoes[0xE1] = Instrucao("SBC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sbc);
-  instrucoes[0xF1] = Instrucao("SBC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_sbc);
+  instrucoes[0xE9] = Instrucao("SBC", 2, 2, 0, InstrucaoModo::IMED, instrucao_sbc);
+  instrucoes[0xE5] = Instrucao("SBC", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_sbc);
+  instrucoes[0xF5] = Instrucao("SBC", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_sbc);
+  instrucoes[0xED] = Instrucao("SBC", 3, 4, 0, InstrucaoModo::ABS, instrucao_sbc);
+  instrucoes[0xFD] = Instrucao("SBC", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_sbc);
+  instrucoes[0xF9] = Instrucao("SBC", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_sbc);
+  instrucoes[0xE1] = Instrucao("SBC", 2, 6, 0, InstrucaoModo::IND_X, instrucao_sbc);
+  instrucoes[0xF1] = Instrucao("SBC", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_sbc);
 
   // modos da instrução SEC
-  instrucoes[0x38] = Instrucao("SEC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sec);
+  instrucoes[0x38] = Instrucao("SEC", 1, 2, 0, InstrucaoModo::IMPL, instrucao_sec);
 
   // modos da instrução SED
-  instrucoes[0xF8] = Instrucao("SED", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sed);
+  instrucoes[0xF8] = Instrucao("SED", 1, 2, 0, InstrucaoModo::IMPL, instrucao_sed);
 
   // modos da instrução SEI
-  instrucoes[0x78] = Instrucao("SEI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sei);
+  instrucoes[0x78] = Instrucao("SEI", 1, 2, 0, InstrucaoModo::IMPL, instrucao_sei);
 
   // modos da instrução STA
-  instrucoes[0x85] = Instrucao("STA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sta);
-  instrucoes[0x95] = Instrucao("STA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sta);
-  instrucoes[0x8D] = Instrucao("STA", 3, 4, 0, MODO_ENDER_ABS, instrucao_sta);
-  instrucoes[0x9D] = Instrucao("STA", 3, 5, 0, MODO_ENDER_ABS_X, instrucao_sta);
-  instrucoes[0x99] = Instrucao("STA", 3, 5, 0, MODO_ENDER_ABS_Y, instrucao_sta);
-  instrucoes[0x81] = Instrucao("STA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sta);
-  instrucoes[0x91] = Instrucao("STA", 2, 6, 0, MODO_ENDER_IND_Y, instrucao_sta);
+  instrucoes[0x85] = Instrucao("STA", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_sta);
+  instrucoes[0x95] = Instrucao("STA", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_sta);
+  instrucoes[0x8D] = Instrucao("STA", 3, 4, 0, InstrucaoModo::ABS, instrucao_sta);
+  instrucoes[0x9D] = Instrucao("STA", 3, 5, 0, InstrucaoModo::ABS_X, instrucao_sta);
+  instrucoes[0x99] = Instrucao("STA", 3, 5, 0, InstrucaoModo::ABS_Y, instrucao_sta);
+  instrucoes[0x81] = Instrucao("STA", 2, 6, 0, InstrucaoModo::IND_X, instrucao_sta);
+  instrucoes[0x91] = Instrucao("STA", 2, 6, 0, InstrucaoModo::IND_Y, instrucao_sta);
 
   // modos da instrução STX
-  instrucoes[0x86] = Instrucao("STX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_stx);
-  instrucoes[0x96] = Instrucao("STX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_stx);
-  instrucoes[0x8E] = Instrucao("STX", 3, 4, 0, MODO_ENDER_ABS, instrucao_stx);
+  instrucoes[0x86] = Instrucao("STX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_stx);
+  instrucoes[0x96] = Instrucao("STX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_stx);
+  instrucoes[0x8E] = Instrucao("STX", 3, 4, 0, InstrucaoModo::ABS, instrucao_stx);
 
   // modos da instrução STY
-  instrucoes[0x84] = Instrucao("STY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sty);
-  instrucoes[0x94] = Instrucao("STY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sty);
-  instrucoes[0x8C] = Instrucao("STY", 3, 4, 0, MODO_ENDER_ABS, instrucao_sty);
+  instrucoes[0x84] = Instrucao("STY", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_sty);
+  instrucoes[0x94] = Instrucao("STY", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_sty);
+  instrucoes[0x8C] = Instrucao("STY", 3, 4, 0, InstrucaoModo::ABS, instrucao_sty);
 
   // modos da instrução TAX
-  instrucoes[0xAA] = Instrucao("TAX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tax);
+  instrucoes[0xAA] = Instrucao("TAX", 1, 2, 0, InstrucaoModo::IMPL, instrucao_tax);
 
   // modos da instrução TAY
-  instrucoes[0xA8] = Instrucao("TAY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tay);
+  instrucoes[0xA8] = Instrucao("TAY", 1, 2, 0, InstrucaoModo::IMPL, instrucao_tay);
 
   // modos da instrução TSX
-  instrucoes[0xBA] = Instrucao("TSX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tsx);
+  instrucoes[0xBA] = Instrucao("TSX", 1, 2, 0, InstrucaoModo::IMPL, instrucao_tsx);
 
   // modos da instrução TXA
-  instrucoes[0x8A] = Instrucao("TXA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txa);
+  instrucoes[0x8A] = Instrucao("TXA", 1, 2, 0, InstrucaoModo::IMPL, instrucao_txa);
 
   // modos da instrução TXS
-  instrucoes[0x9A] = Instrucao("TXS", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txs);
+  instrucoes[0x9A] = Instrucao("TXS", 1, 2, 0, InstrucaoModo::IMPL, instrucao_txs);
 
   // modos da instrução TYA
-  instrucoes[0x98] = Instrucao("TYA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tya);
+  instrucoes[0x98] = Instrucao("TYA", 1, 2, 0, InstrucaoModo::IMPL, instrucao_tya);
 
   return instrucoes;
 }

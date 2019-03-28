@@ -35,22 +35,22 @@ using std::array;
 // https://www.masswerk.at/6502/6502_instruction_set.html
 
 //! Modos de endereçamento das instruções
-typedef enum
+enum class InstrucaoModo
 {
-  MODO_ENDER_ACM,       // acumulador
-  MODO_ENDER_ABS,       // absoluto
-  MODO_ENDER_ABS_X,     // absoluto, indexado pelo registrador x
-  MODO_ENDER_ABS_Y,     // absoluto, indexado pelo registrador y
-  MODO_ENDER_IMED,      // imediato
-  MODO_ENDER_IMPL,      // implicado
-  MODO_ENDER_IND,       // indireto
-  MODO_ENDER_IND_X,     // indireto indexado por x
-  MODO_ENDER_IND_Y,     // indireto indexado por y
-  MODO_ENDER_REL,       // relativo
-  MODO_ENDER_P_ZERO,    // página 0
-  MODO_ENDER_P_ZERO_X,  // página 0, indexado pelo registrador x
-  MODO_ENDER_P_ZERO_Y,  // página 0, indexado pelo registrador y
-} InstrucaoModo;
+  ACM,       // acumulador
+  ABS,       // absoluto
+  ABS_X,     // absoluto, indexado pelo registrador x
+  ABS_Y,     // absoluto, indexado pelo registrador y
+  IMED,      // imediato
+  IMPL,      // implicado
+  IND,       // indireto
+  IND_X,     // indireto indexado por x
+  IND_Y,     // indireto indexado por y
+  REL,       // relativo
+  P_ZERO,    // página 0
+  P_ZERO_X,  // página 0, indexado pelo registrador x
+  P_ZERO_Y,  // página 0, indexado pelo registrador y
+};
 
 class Nes;
 

@@ -23,20 +23,20 @@
 #include <cstdbool>
 #include <vector>
 
-typedef enum
+enum class Espelhamento
 {
-  ESPELHAMENTO_HORIZONTAL,
-  ESPELHAMENTO_VERTICAL,
-  ESPELHAMENTO_TELA_UNICA,
-  ESPELHAMENTO_4_TELAS,
-} Espelhamento;
+  HORIZONTAL,
+  VERTICAL,
+  TELA_UNICA,
+  QUATRO_TELAS,
+};
 
-typedef enum
+enum class MapeadorTipo
 {
-  MAPEADOR_NROM = 0,
-  MAPEADOR_MMC1 = 1,
-  MAPEADOR_DESCONHECIDO,
-} MapeadorTipo;
+  NROM,
+  MMC1,
+  DESCONHECIDO,
+};
 
 using std::vector;
 

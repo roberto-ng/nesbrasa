@@ -399,7 +399,7 @@ uint16_t Ppu::endereco_espelhado(Nes *nes, uint16_t endereco)
   uint16_t base = 0;
   switch (nes->cartucho->espelhamento)
   {
-    case ESPELHAMENTO_HORIZONTAL:
+    case Espelhamento::HORIZONTAL:
       if (endereco >= 0x2000 && endereco < 0x2400)
       {
         base = 0x2000;
@@ -418,7 +418,7 @@ uint16_t Ppu::endereco_espelhado(Nes *nes, uint16_t endereco)
       }
       break;
 
-    case ESPELHAMENTO_VERTICAL:
+    case Espelhamento::VERTICAL:
       if (endereco >= 0x2000 && endereco < 0x2400)
       {
         base = 0x2000;
@@ -437,11 +437,11 @@ uint16_t Ppu::endereco_espelhado(Nes *nes, uint16_t endereco)
       }
       break;
 
-    case ESPELHAMENTO_TELA_UNICA:
+    case Espelhamento::TELA_UNICA:
       base = 0x2000;
       break;
 
-    case ESPELHAMENTO_4_TELAS:
+    case Espelhamento::QUATRO_TELAS:
       if (endereco >= 0x2000 && endereco < 0x2400)
       {
         base = 0x2000;

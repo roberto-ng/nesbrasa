@@ -25,8 +25,8 @@
 
 Cartucho::Cartucho()
 {
-  this->espelhamento = ESPELHAMENTO_VERTICAL;
-  this->mapeador_tipo = MAPEADOR_DESCONHECIDO;
+  this->espelhamento = Espelhamento::VERTICAL;
+  this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
   this->prg_quantidade = 0;
   this->chr_quantidade = 0;
   this->rom_carregada = false;
@@ -119,34 +119,34 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
   uint8_t mapeador_byte_maior = (rom[7] & 0xFF00) >> 8;
   uint8_t mapeador_codigo = (mapeador_byte_maior << 8) | mapeador_byte_menor;
 
-  switch ((MapeadorTipo)mapeador_codigo)
+  switch (mapeador_codigo)
   {
-    case MAPEADOR_NROM:
-      this->mapeador_tipo = MAPEADOR_NROM;
+    case 0:
+      this->mapeador_tipo = MapeadorTipo::NROM;
       break;
 
-    case MAPEADOR_MMC1:
-      this->mapeador_tipo = MAPEADOR_MMC1;
+    case 1:
+      this->mapeador_tipo = MapeadorTipo::MMC1;
       break;
 
     default:
-      this->mapeador_tipo = MAPEADOR_DESCONHECIDO;
+      this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
       break;
   }
 
   if (buscar_bit(rom[6], 3) == true)
   {
-    this->espelhamento = ESPELHAMENTO_4_TELAS;
+    this->espelhamento = Espelhamento::QUATRO_TELAS;
   }
   else
   {
     if (buscar_bit(rom[6], 0) == false)
     {
-      this->espelhamento = ESPELHAMENTO_VERTICAL;
+      this->espelhamento = Espelhamento::VERTICAL;
     }
     else
     {
-      this->espelhamento = ESPELHAMENTO_HORIZONTAL;
+      this->espelhamento = Espelhamento::HORIZONTAL;
     }
   }
 
@@ -158,7 +158,7 @@ uint8_t Cartucho::mapeador_ler(uint16_t endereco)
 {
   switch (this->mapeador_tipo)
   {
-    case MAPEADOR_NROM:
+    case MapeadorTipo::NROM:
       return nrom_ler(this, endereco);
 
     default:
@@ -170,7 +170,7 @@ void Cartucho::mapeador_escrever(uint16_t endereco, uint8_t valor)
 {
   switch (this->mapeador_tipo)
   {
-    case MAPEADOR_NROM:
+    case MapeadorTipo::NROM:
       nrom_escrever(this, endereco, valor);
       break;
 
