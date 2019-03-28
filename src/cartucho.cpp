@@ -23,38 +23,33 @@
 #include "mapeadores/nrom.hpp"
 #include "util.hpp"
 
-Cartucho* cartucho_new(void)
+Cartucho::Cartucho()
 {
-  Cartucho *cartucho = new Cartucho;
-  cartucho->espelhamento = ESPELHAMENTO_VERTICAL;
-  cartucho->mapeador_tipo = MAPEADOR_DESCONHECIDO;
-  cartucho->prg = NULL;
-  cartucho->chr = NULL;
-  cartucho->prg_quantidade = 0;
-  cartucho->chr_quantidade = 0;
-  cartucho->rom_carregada = false;
-  cartucho->possui_sram = false;
+  this->espelhamento = ESPELHAMENTO_VERTICAL;
+  this->mapeador_tipo = MAPEADOR_DESCONHECIDO;
+  this->prg = NULL;
+  this->chr = NULL;
+  this->prg_quantidade = 0;
+  this->chr_quantidade = 0;
+  this->rom_carregada = false;
+  this->possui_sram = false;
 
-  for (int i = 0; i < TAMANHO(cartucho->sram); i++)
+  for (int i = 0; i < TAMANHO(this->sram); i++)
   {
-    cartucho->sram[i] = 0;
+    this->sram[i] = 0;
   }
-
-  return cartucho;
 }
 
-void cartucho_free(Cartucho *cartucho)
+Cartucho::~Cartucho()
 {
-  if (cartucho->prg != NULL)
-    delete cartucho->prg;
+  if (this->prg != NULL)
+    free(this->prg);
 
-  if (cartucho->chr != NULL)
-    delete cartucho->chr;
-
-  delete cartucho;
+  if (this->chr != NULL)
+    free(this->chr);
 }
 
-int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
+int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
 {
   if (rom_tam < 16)
     return -1;
@@ -83,23 +78,23 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
     return -1;
   }
 
-  cartucho->possui_sram = buscar_bit(rom[6], 1);
+  this->possui_sram = buscar_bit(rom[6], 1);
 
-  cartucho->prg_quantidade = rom[4];
-  cartucho->chr_quantidade = rom[5];
+  this->prg_quantidade = rom[4];
+  this->chr_quantidade = rom[5];
 
-  const uint32_t prg_tamanho = cartucho->prg_quantidade * 0x4000;
-  const uint32_t chr_tamanho = cartucho->chr_quantidade * 0x2000;
+  const uint32_t prg_tamanho = this->prg_quantidade * 0x4000;
+  const uint32_t chr_tamanho = this->chr_quantidade * 0x2000;
 
-  cartucho->prg = (uint8_t *)malloc(prg_tamanho);
-  cartucho->chr = (uint8_t *)malloc(chr_tamanho);
+  this->prg = (uint8_t *)malloc(prg_tamanho);
+  this->chr = (uint8_t *)malloc(chr_tamanho);
 
   for (int i = 0; i < prg_tamanho; i++) {
-    cartucho->prg[i] = 0;
+    this->prg[i] = 0;
   }
 
   for (int i = 0; i < chr_tamanho; i++) {
-    cartucho->chr[i] = 0;
+    this->chr[i] = 0;
   }
 
   bool contem_trainer = buscar_bit(rom[6], 2);
@@ -113,10 +108,10 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
   }
 
   // Copia os dados referentes à ROM PRG do arquivo para o array
-  memcpy(cartucho->prg, &rom[offset], prg_tamanho);
+  memcpy(this->prg, &rom[offset], prg_tamanho);
 
   // Copia os dados referentes à ROM CHR do arquivo para o array
-  memcpy(cartucho->chr, &rom[offset+prg_tamanho], chr_tamanho);
+  memcpy(this->chr, &rom[offset+prg_tamanho], chr_tamanho);
 
   uint8_t mapeador_byte_menor = (rom[6] & 0xFF00) >> 8;
   uint8_t mapeador_byte_maior = (rom[7] & 0xFF00) >> 8;
@@ -125,31 +120,31 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
   switch ((MapeadorTipo)mapeador_codigo)
   {
     case MAPEADOR_NROM:
-      cartucho->mapeador_tipo = MAPEADOR_NROM;
+      this->mapeador_tipo = MAPEADOR_NROM;
       break;
 
     case MAPEADOR_MMC1:
-      cartucho->mapeador_tipo = MAPEADOR_MMC1;
+      this->mapeador_tipo = MAPEADOR_MMC1;
       break;
 
     default:
-      cartucho->mapeador_tipo = MAPEADOR_DESCONHECIDO;
+      this->mapeador_tipo = MAPEADOR_DESCONHECIDO;
       break;
   }
 
   if (buscar_bit(rom[6], 3) == true)
   {
-    cartucho->espelhamento = ESPELHAMENTO_4_TELAS;
+    this->espelhamento = ESPELHAMENTO_4_TELAS;
   }
   else
   {
     if (buscar_bit(rom[6], 0) == false)
     {
-      cartucho->espelhamento = ESPELHAMENTO_VERTICAL;
+      this->espelhamento = ESPELHAMENTO_VERTICAL;
     }
     else
     {
-      cartucho->espelhamento = ESPELHAMENTO_HORIZONTAL;
+      this->espelhamento = ESPELHAMENTO_HORIZONTAL;
     }
   }
 
@@ -157,24 +152,24 @@ int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam)
   return 0;
 }
 
-uint8_t cartucho_mapeador_ler(Cartucho *cartucho, uint16_t endereco)
+uint8_t Cartucho::mapeador_ler(uint16_t endereco)
 {
-  switch (cartucho->mapeador_tipo)
+  switch (this->mapeador_tipo)
   {
     case MAPEADOR_NROM:
-      return nrom_ler(cartucho, endereco);
+      return nrom_ler(this, endereco);
 
     default:
       return 0;
   }
 }
 
-void cartucho_mapeador_escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor)
+void Cartucho::mapeador_escrever(uint16_t endereco, uint8_t valor)
 {
-  switch (cartucho->mapeador_tipo)
+  switch (this->mapeador_tipo)
   {
     case MAPEADOR_NROM:
-      nrom_escrever(cartucho, endereco, valor);
+      nrom_escrever(this, endereco, valor);
       break;
 
     default:

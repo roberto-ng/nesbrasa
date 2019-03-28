@@ -24,11 +24,11 @@
 
 Nes::Nes()
 {
-  cpu = cpu_new();
-  ppu = ppu_new();
-  cartucho = cartucho_new();
+  this->cpu = Cpu();
+  this->ppu = Ppu();
+  this->cartucho = Cartucho();
 
-  for (int i = 0; i < TAMANHO(nes->ram); i++)
+  for (int i = 0; i < TAMANHO(this->ram); i++)
   {
     ram[i] = 0;
   }

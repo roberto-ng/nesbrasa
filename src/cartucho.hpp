@@ -52,14 +52,13 @@ public:
 
         bool rom_carregada;
         bool possui_sram;
+
+        Cartucho();
+        ~Cartucho();
+        
+        int carregar_rom(uint8_t *rom, size_t rom_tam);
+
+        uint8_t mapeador_ler(uint16_t endereco);
+
+        void mapeador_escrever(uint16_t endereco, uint8_t valor);
 };
-
-Cartucho* cartucho_new(void);
-
-void cartucho_free(Cartucho *cartucho);
-
-int cartucho_carregar_rom(Cartucho *cartucho, uint8_t *rom, size_t rom_tam);
-
-uint8_t cartucho_mapeador_ler(Cartucho *cartucho, uint16_t endereco);
-
-void cartucho_mapeador_escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
