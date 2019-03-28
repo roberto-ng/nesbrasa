@@ -32,7 +32,7 @@ using std::array;
 class Nes
 {
 public:
-        std::array<uint8_t, 0x800> ram;
+        array<uint8_t, 0x800> ram;
 
         unique_ptr<Cpu>      cpu;
         unique_ptr<Ppu>      ppu;
