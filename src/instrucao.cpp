@@ -808,9 +808,9 @@ array<optional<Instrucao>, 256> carregar_instrucoes()
 {
   // cria um array com 0x100 (256 em decimal) ponteiros para instruções
   array<optional<Instrucao>, 256> instrucoes;
-  for (int i = 0; i < 0x100; i++)
+  for (auto& instrucao : instrucoes)
   {
-    instrucoes[i] = std::nullopt;
+    instrucao = std::nullopt;
   }
 
   // modos da instrução ADC

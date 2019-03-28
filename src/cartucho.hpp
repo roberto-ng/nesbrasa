@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstdbool>
+#include <vector>
 
 typedef enum
 {
@@ -37,12 +38,14 @@ typedef enum
   MAPEADOR_DESCONHECIDO,
 } MapeadorTipo;
 
+using std::vector;
+
 class Cartucho
 {
 public:
-        uint8_t *prg;
-        uint8_t *chr;
-        uint8_t  sram[0x2000];
+        vector<uint8_t> prg;
+        vector<uint8_t> chr;
+        vector<uint8_t> sram;
 
         uint8_t prg_quantidade;
         uint8_t chr_quantidade;
@@ -54,7 +57,6 @@ public:
         bool possui_sram;
 
         Cartucho();
-        ~Cartucho();
         
         int carregar_rom(uint8_t *rom, size_t rom_tam);
 

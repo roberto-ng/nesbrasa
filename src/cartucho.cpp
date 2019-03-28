@@ -27,30 +27,32 @@ Cartucho::Cartucho()
 {
   this->espelhamento = ESPELHAMENTO_VERTICAL;
   this->mapeador_tipo = MAPEADOR_DESCONHECIDO;
-  this->prg = nullptr;
-  this->chr = nullptr;
   this->prg_quantidade = 0;
   this->chr_quantidade = 0;
   this->rom_carregada = false;
   this->possui_sram = false;
-
-  for (int i = 0; i < TAMANHO(this->sram); i++)
+  
+  this->sram.reserve(0x2000);
+  for (int i = 0; i < this->sram.capacity(); i++)
   {
     this->sram[i] = 0;
   }
 }
 
-Cartucho::~Cartucho()
-{
-  if (this->prg != nullptr)
-    free(this->prg);
-
-  if (this->chr != nullptr)
-    free(this->chr);
-}
-
 int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
 {
+  // reseta os arrays
+  vector<uint8_t>().swap(this->prg);
+  vector<uint8_t>().swap(this->chr);
+  vector<uint8_t>().swap(this->sram);
+  
+  this->sram.reserve(0x2000);
+  for (int i = 0; i < this->sram.capacity(); i++)
+  {
+    this->sram[i] = 0;
+  }
+
+
   if (rom_tam < 16)
     return -1;
 
@@ -80,25 +82,17 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
 
   this->possui_sram = buscar_bit(rom[6], 1);
 
+  bool contem_trainer = buscar_bit(rom[6], 2);
+  int offset = 16 + ((contem_trainer) ? 512 : 0);
+
   this->prg_quantidade = rom[4];
   this->chr_quantidade = rom[5];
 
   const uint32_t prg_tamanho = this->prg_quantidade * 0x4000;
   const uint32_t chr_tamanho = this->chr_quantidade * 0x2000;
 
-  this->prg = (uint8_t *)malloc(prg_tamanho);
-  this->chr = (uint8_t *)malloc(chr_tamanho);
-
-  for (int i = 0; i < prg_tamanho; i++) {
-    this->prg[i] = 0;
-  }
-
-  for (int i = 0; i < chr_tamanho; i++) {
-    this->chr[i] = 0;
-  }
-
-  bool contem_trainer = buscar_bit(rom[6], 2);
-  int offset = 16 + ((contem_trainer) ? 512 : 0);
+  this->prg.reserve(prg_tamanho);
+  this->chr.reserve(chr_tamanho);
 
   // checa o tamanho do arquivo
   if (rom_tam < (offset + prg_tamanho + chr_tamanho))
@@ -108,10 +102,15 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
   }
 
   // Copia os dados referentes à ROM PRG do arquivo para o array
-  memcpy(this->prg, &rom[offset], prg_tamanho);
+  for (int i = 0; i < this->prg.capacity(); i++)
+  {
+    this->prg[i] = rom[offset+i];
+  }
 
   // Copia os dados referentes à ROM CHR do arquivo para o array
-  memcpy(this->chr, &rom[offset+prg_tamanho], chr_tamanho);
+  for (int i = 0; i < this->chr.capacity(); i++) {
+    this->chr[i] = rom[offset+prg_tamanho+i];
+  }
 
   uint8_t mapeador_byte_menor = (rom[6] & 0xFF00) >> 8;
   uint8_t mapeador_byte_maior = (rom[7] & 0xFF00) >> 8;
