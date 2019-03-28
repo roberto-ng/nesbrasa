@@ -58,8 +58,10 @@ void Cpu::ciclo(Nes* nes)
     return;
 
   Instrucao& instrucao = this->instrucoes[opcode].value();
+  uint16_t endereco = instrucao.buscar_endereco(nes);
+  
   this->pc += instrucao.bytes;
-  instrucao.executar(nes);
+  instrucao.executar(nes, endereco);
   
   if (this->pag_alterada) 
   {

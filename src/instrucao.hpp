@@ -88,7 +88,7 @@ public:
         */
         uint16_t buscar_endereco(Nes* nes);
 
-        void executar(Nes* nes);
+        void executar(Nes* nes, uint16_t endereco);
 };
 
 array<optional<Instrucao>, 256> carregar_instrucoes();

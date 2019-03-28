@@ -120,9 +120,8 @@ uint16_t Instrucao::buscar_endereco(Nes* nes)
   return 0;
 }
 
-void Instrucao::executar(Nes* nes)
+void Instrucao::executar(Nes* nes, uint16_t endereco)
 {
-  uint16_t endereco = this->buscar_endereco(nes);
   this->funcao(this, nes, endereco);
 }
 
