@@ -20,8 +20,13 @@
 
 #include <cstdint>
 #include <cstdbool>
+#include <optional>
+#include <array>
 
 #include "instrucao.hpp"
+
+using std::optional;
+using std::array;
 
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
@@ -50,11 +55,10 @@ public:
         uint32_t ciclos;
         bool     pag_alterada;
 
-        Instrucao** instrucoes;
+        array<optional<Instrucao>, 256> instrucoes;
 
         Cpu();
-        ~Cpu();
-
+        
         void ciclo(Nes* nes);
 
         /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.

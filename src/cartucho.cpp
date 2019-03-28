@@ -27,8 +27,8 @@ Cartucho::Cartucho()
 {
   this->espelhamento = ESPELHAMENTO_VERTICAL;
   this->mapeador_tipo = MAPEADOR_DESCONHECIDO;
-  this->prg = NULL;
-  this->chr = NULL;
+  this->prg = nullptr;
+  this->chr = nullptr;
   this->prg_quantidade = 0;
   this->chr_quantidade = 0;
   this->rom_carregada = false;
@@ -42,10 +42,10 @@ Cartucho::Cartucho()
 
 Cartucho::~Cartucho()
 {
-  if (this->prg != NULL)
+  if (this->prg != nullptr)
     free(this->prg);
 
-  if (this->chr != NULL)
+  if (this->chr != nullptr)
     free(this->chr);
 }
 

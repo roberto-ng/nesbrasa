@@ -22,6 +22,7 @@
 #include "nesbrasa.hpp"
 #include "util.hpp"
 #include "memoria.hpp"
+#include "instrucao.hpp"
 
 Cpu::Cpu()
 {
@@ -42,16 +43,6 @@ Cpu::Cpu()
   this->instrucoes = carregar_instrucoes();
 }
 
-Cpu::~Cpu()
-{
-  for (int i = 0; i < 256; i++)
-  {
-    free(instrucoes[i]);
-  } 
-
-  free(instrucoes);
-}
-
 void Cpu::ciclo(Nes* nes)
 {
   if (this->esperar > 0)
@@ -61,20 +52,19 @@ void Cpu::ciclo(Nes* nes)
   }
 
   uint8_t opcode = ler_memoria(nes, this->pc);
-  Instrucao *instrucao = this->instrucoes[opcode];
 
-  if (instrucao == NULL)
+  if (!this->instrucoes[opcode].has_value())
     return;
 
-  uint16_t endereco = instrucao->buscar_endereco(nes);
+  Instrucao& instrucao = this->instrucoes[opcode].value();
 
-  this->pc += instrucao->bytes;
-  this->ciclos += instrucao->ciclos;
+  this->pc += instrucao.bytes;
+  this->ciclos += instrucao.ciclos;
 
   if (this->pag_alterada)
-    this->ciclos += instrucao->ciclos_pag_alterada;
+    this->ciclos += instrucao.ciclos_pag_alterada;
 
-  instrucao->funcao(instrucao, nes, endereco);
+  instrucao.executar(nes);
 }
 
 void Cpu::branch_somar_ciclos(uint16_t endereco)

@@ -21,11 +21,15 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <array>
+#include <optional>
 
 #include "cpu.hpp"
 
 using std::function;
 using std::string;
+using std::optional;
+using std::array;
 
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
@@ -53,6 +57,11 @@ class Nes;
 //! Uma instrução da arquitetura 6502
 class Instrucao
 {
+private:
+	      /*! Uma fução de alto nivel que sera usada para reimplementar
+            uma instrução da arquitetura 6502 */
+        function<void(Instrucao*, Nes*, uint16_t)> funcao;
+
 public:
         string  nome;
         uint8_t bytes;
@@ -63,10 +72,6 @@ public:
         int32_t ciclos_pag_alterada;
 
         InstrucaoModo modo;
-
-	      /*! Uma fução de alto nivel que sera usada para reimplementar
-            uma instrução da arquitetura 6502 */
-        function<void(Instrucao*, Nes*, uint16_t)> funcao;
 
         Instrucao(
           string  nome,
@@ -82,6 +87,8 @@ public:
           acordo com o modo de endereçamento da CPU
         */
 	      uint16_t buscar_endereco(Nes* nes);
+
+        void executar(Nes* nes);
 };
 
-Instrucao** carregar_instrucoes(void);
+array<optional<Instrucao>, 256> carregar_instrucoes();

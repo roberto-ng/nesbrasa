@@ -18,6 +18,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 
 #include "nesbrasa.hpp"
 #include "cpu.hpp"
@@ -117,6 +118,12 @@ uint16_t Instrucao::buscar_endereco(Nes* nes)
   }
 
   return 0;
+}
+
+void Instrucao::executar(Nes* nes)
+{
+  uint16_t endereco = this->buscar_endereco(nes);
+  this->funcao(this, nes, endereco);
 }
 
 /*!
@@ -797,277 +804,277 @@ static void instrucao_tya(Instrucao* instrucao, Nes* nes, uint16_t endereco)
   nes->cpu->set_z(nes->cpu->a);
 }
 
-Instrucao** carregar_instrucoes(void)
+array<optional<Instrucao>, 256> carregar_instrucoes()
 {
   // cria um array com 0x100 (256 em decimal) ponteiros para instruções
-  Instrucao **instrucoes = (Instrucao**)malloc(sizeof(Instrucao*) * 0x100);
+  array<optional<Instrucao>, 256> instrucoes;
   for (int i = 0; i < 0x100; i++)
   {
-    instrucoes[i] = NULL;
+    instrucoes[i] = std::nullopt;
   }
 
   // modos da instrução ADC
-  instrucoes[0x69] = new Instrucao("ADC", 2, 2, 0, MODO_ENDER_IMED, instrucao_adc);
-  instrucoes[0x65] = new Instrucao("ADC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_adc);
-  instrucoes[0x75] = new Instrucao("ADC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_adc);
-  instrucoes[0x6D] = new Instrucao("ADC", 3, 4, 0, MODO_ENDER_ABS, instrucao_adc);
-  instrucoes[0x7D] = new Instrucao("ADC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_adc);
-  instrucoes[0x79] = new Instrucao("ADC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_adc);
-  instrucoes[0x61] = new Instrucao("ADC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_adc);
-  instrucoes[0x71] = new Instrucao("ADC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_adc);
+  instrucoes[0x69] = Instrucao("ADC", 2, 2, 0, MODO_ENDER_IMED, instrucao_adc);
+  instrucoes[0x65] = Instrucao("ADC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_adc);
+  instrucoes[0x75] = Instrucao("ADC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_adc);
+  instrucoes[0x6D] = Instrucao("ADC", 3, 4, 0, MODO_ENDER_ABS, instrucao_adc);
+  instrucoes[0x7D] = Instrucao("ADC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_adc);
+  instrucoes[0x79] = Instrucao("ADC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_adc);
+  instrucoes[0x61] = Instrucao("ADC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_adc);
+  instrucoes[0x71] = Instrucao("ADC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_adc);
 
   // modos da instrução AND
-  instrucoes[0x29] = new Instrucao("AND", 2, 2, 0, MODO_ENDER_IMED, instrucao_and);
-  instrucoes[0x25] = new Instrucao("AND", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_and);
-  instrucoes[0x35] = new Instrucao("AND", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_and);
-  instrucoes[0x2D] = new Instrucao("AND", 3, 4, 0, MODO_ENDER_ABS, instrucao_and);
-  instrucoes[0x3D] = new Instrucao("AND", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_and);
-  instrucoes[0x39] = new Instrucao("AND", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_and);
-  instrucoes[0x21] = new Instrucao("AND", 2, 6, 0, MODO_ENDER_IND_X, instrucao_and);
-  instrucoes[0x21] = new Instrucao("AND", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_and);
+  instrucoes[0x29] = Instrucao("AND", 2, 2, 0, MODO_ENDER_IMED, instrucao_and);
+  instrucoes[0x25] = Instrucao("AND", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_and);
+  instrucoes[0x35] = Instrucao("AND", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_and);
+  instrucoes[0x2D] = Instrucao("AND", 3, 4, 0, MODO_ENDER_ABS, instrucao_and);
+  instrucoes[0x3D] = Instrucao("AND", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_and);
+  instrucoes[0x39] = Instrucao("AND", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_and);
+  instrucoes[0x21] = Instrucao("AND", 2, 6, 0, MODO_ENDER_IND_X, instrucao_and);
+  instrucoes[0x21] = Instrucao("AND", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_and);
 
   // modos da instrução ASL
-  instrucoes[0x0A] = new Instrucao("ASL", 1, 2, 0, MODO_ENDER_ACM, instrucao_asl);
-  instrucoes[0x06] = new Instrucao("ASL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_asl);
-  instrucoes[0x16] = new Instrucao("ASL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_asl);
-  instrucoes[0x0E] = new Instrucao("ASL", 3, 6, 0, MODO_ENDER_ABS, instrucao_asl);
-  instrucoes[0x1E] = new Instrucao("ASL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_asl);
+  instrucoes[0x0A] = Instrucao("ASL", 1, 2, 0, MODO_ENDER_ACM, instrucao_asl);
+  instrucoes[0x06] = Instrucao("ASL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_asl);
+  instrucoes[0x16] = Instrucao("ASL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_asl);
+  instrucoes[0x0E] = Instrucao("ASL", 3, 6, 0, MODO_ENDER_ABS, instrucao_asl);
+  instrucoes[0x1E] = Instrucao("ASL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_asl);
 
   // modos da instrução BCC
-  instrucoes[0x90] = new Instrucao("BCC", 2, 2, 0, MODO_ENDER_REL, instrucao_bcc);
+  instrucoes[0x90] = Instrucao("BCC", 2, 2, 0, MODO_ENDER_REL, instrucao_bcc);
 
   // modos da instrução BCS
-  instrucoes[0xB0] = new Instrucao("BCS", 2, 2, 0, MODO_ENDER_REL, instrucao_bcs);
+  instrucoes[0xB0] = Instrucao("BCS", 2, 2, 0, MODO_ENDER_REL, instrucao_bcs);
 
   // modos da instrução BEQ
-  instrucoes[0xF0] = new Instrucao("BEQ", 2, 2, 0, MODO_ENDER_REL, instrucao_beq);
+  instrucoes[0xF0] = Instrucao("BEQ", 2, 2, 0, MODO_ENDER_REL, instrucao_beq);
 
   // modos da instrução BIT
-  instrucoes[0x24] = new Instrucao("BIT", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_bit);
-  instrucoes[0x2C] = new Instrucao("BIT", 3, 4, 0, MODO_ENDER_ABS, instrucao_bit);
+  instrucoes[0x24] = Instrucao("BIT", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_bit);
+  instrucoes[0x2C] = Instrucao("BIT", 3, 4, 0, MODO_ENDER_ABS, instrucao_bit);
 
   // modos da instrução BMI
-  instrucoes[0x30] = new Instrucao("BIM", 2, 2, 0, MODO_ENDER_REL, instrucao_bmi);
+  instrucoes[0x30] = Instrucao("BIM", 2, 2, 0, MODO_ENDER_REL, instrucao_bmi);
 
   // modos da instrução BNE
-  instrucoes[0xD0] = new Instrucao("BNE", 2, 2, 0, MODO_ENDER_REL, instrucao_bne);
+  instrucoes[0xD0] = Instrucao("BNE", 2, 2, 0, MODO_ENDER_REL, instrucao_bne);
 
   // modos da instrução BPL
-  instrucoes[0x10] = new Instrucao("BPL", 2, 2, 0, MODO_ENDER_REL, instrucao_bpl);
+  instrucoes[0x10] = Instrucao("BPL", 2, 2, 0, MODO_ENDER_REL, instrucao_bpl);
 
   // modos da instrução BRK
-  instrucoes[0x00] = new Instrucao("BRK", 1, 7, 0, MODO_ENDER_IMPL, instrucao_brk);
+  instrucoes[0x00] = Instrucao("BRK", 1, 7, 0, MODO_ENDER_IMPL, instrucao_brk);
 
   // modos da instrução BVC
-  instrucoes[0x50] = new Instrucao("BVC", 2, 2, 0, MODO_ENDER_REL, instrucao_bvc);
+  instrucoes[0x50] = Instrucao("BVC", 2, 2, 0, MODO_ENDER_REL, instrucao_bvc);
 
   // modos da instrução BVS
-  instrucoes[0x70] = new Instrucao("BVS", 2, 2, 0, MODO_ENDER_REL, instrucao_bvs);
+  instrucoes[0x70] = Instrucao("BVS", 2, 2, 0, MODO_ENDER_REL, instrucao_bvs);
 
   // modos da instrução CLC
-  instrucoes[0x18] = new Instrucao("CLC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clc);
+  instrucoes[0x18] = Instrucao("CLC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clc);
 
   // modos da instrução CLD
-  instrucoes[0xD8] = new Instrucao("CLD", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cld);
+  instrucoes[0xD8] = Instrucao("CLD", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cld);
 
   // modos da instrução CLI
-  instrucoes[0x58] = new Instrucao("CLI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cli);
+  instrucoes[0x58] = Instrucao("CLI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_cli);
 
   // modos da instrução CLV
-  instrucoes[0xB8] = new Instrucao("CLV", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clv);
+  instrucoes[0xB8] = Instrucao("CLV", 1, 2, 0, MODO_ENDER_IMPL, instrucao_clv);
 
   // modos da instrução CMP
-  instrucoes[0xC9] = new Instrucao("CMP", 2, 2, 0, MODO_ENDER_IMED, instrucao_cmp);
-  instrucoes[0xC5] = new Instrucao("CMP", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cmp);
-  instrucoes[0xD5] = new Instrucao("CMP", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_cmp);
-  instrucoes[0xCD] = new Instrucao("CMP", 3, 4, 0, MODO_ENDER_ABS, instrucao_cmp);
-  instrucoes[0xDD] = new Instrucao("CMP", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_cmp);
-  instrucoes[0xD9] = new Instrucao("CMP", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_cmp);
-  instrucoes[0xC1] = new Instrucao("CMP", 2, 6, 0, MODO_ENDER_IND_X, instrucao_cmp);
-  instrucoes[0xD1] = new Instrucao("CMP", 3, 5, 1, MODO_ENDER_IND_Y, instrucao_cmp);
+  instrucoes[0xC9] = Instrucao("CMP", 2, 2, 0, MODO_ENDER_IMED, instrucao_cmp);
+  instrucoes[0xC5] = Instrucao("CMP", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cmp);
+  instrucoes[0xD5] = Instrucao("CMP", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_cmp);
+  instrucoes[0xCD] = Instrucao("CMP", 3, 4, 0, MODO_ENDER_ABS, instrucao_cmp);
+  instrucoes[0xDD] = Instrucao("CMP", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_cmp);
+  instrucoes[0xD9] = Instrucao("CMP", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_cmp);
+  instrucoes[0xC1] = Instrucao("CMP", 2, 6, 0, MODO_ENDER_IND_X, instrucao_cmp);
+  instrucoes[0xD1] = Instrucao("CMP", 3, 5, 1, MODO_ENDER_IND_Y, instrucao_cmp);
 
   // modos da instrução CPX
-  instrucoes[0xE0] = new Instrucao("CPX", 2, 2, 0, MODO_ENDER_IMED, instrucao_cpx);
-  instrucoes[0xE4] = new Instrucao("CPX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cpx);
-  instrucoes[0xEC] = new Instrucao("CPX", 3, 4, 0, MODO_ENDER_ABS, instrucao_cpx);
+  instrucoes[0xE0] = Instrucao("CPX", 2, 2, 0, MODO_ENDER_IMED, instrucao_cpx);
+  instrucoes[0xE4] = Instrucao("CPX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cpx);
+  instrucoes[0xEC] = Instrucao("CPX", 3, 4, 0, MODO_ENDER_ABS, instrucao_cpx);
 
    // modos da instrução CPY
-  instrucoes[0xC0] = new Instrucao("CPY", 2, 2, 0, MODO_ENDER_IMED, instrucao_cpy);
-  instrucoes[0xC4] = new Instrucao("CPY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cpy);
-  instrucoes[0xCC] = new Instrucao("CPY", 3, 4, 0, MODO_ENDER_ABS, instrucao_cpy);
+  instrucoes[0xC0] = Instrucao("CPY", 2, 2, 0, MODO_ENDER_IMED, instrucao_cpy);
+  instrucoes[0xC4] = Instrucao("CPY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_cpy);
+  instrucoes[0xCC] = Instrucao("CPY", 3, 4, 0, MODO_ENDER_ABS, instrucao_cpy);
 
   // modos da instrução DEC
-  instrucoes[0xC6] = new Instrucao("DEC", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_dec);
-  instrucoes[0xD6] = new Instrucao("DEC", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_dec);
-  instrucoes[0xCE] = new Instrucao("DEC", 3, 3, 0, MODO_ENDER_ABS, instrucao_dec);
-  instrucoes[0xDE] = new Instrucao("DEC", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_dec);
+  instrucoes[0xC6] = Instrucao("DEC", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_dec);
+  instrucoes[0xD6] = Instrucao("DEC", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_dec);
+  instrucoes[0xCE] = Instrucao("DEC", 3, 3, 0, MODO_ENDER_ABS, instrucao_dec);
+  instrucoes[0xDE] = Instrucao("DEC", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_dec);
 
   // modos da instrução DEX
-  instrucoes[0xCA] = new Instrucao("DEX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_dex);
+  instrucoes[0xCA] = Instrucao("DEX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_dex);
 
   // modos da instrução DEY
-  instrucoes[0x88] = new Instrucao("DEX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_dey);
+  instrucoes[0x88] = Instrucao("DEX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_dey);
 
   // modos da instrução EOR
-  instrucoes[0x49] = new Instrucao("EOR", 2, 2, 0, MODO_ENDER_IMED, instrucao_eor);
-  instrucoes[0x45] = new Instrucao("EOR", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_eor);
-  instrucoes[0x55] = new Instrucao("EOR", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_eor);
-  instrucoes[0x4D] = new Instrucao("EOR", 3, 4, 0, MODO_ENDER_ABS, instrucao_eor);
-  instrucoes[0x5D] = new Instrucao("EOR", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_eor);
-  instrucoes[0x59] = new Instrucao("EOR", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_eor);
-  instrucoes[0x41] = new Instrucao("EOR", 2, 6, 0, MODO_ENDER_IND_X, instrucao_eor);
-  instrucoes[0x51] = new Instrucao("EOR", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_eor);
+  instrucoes[0x49] = Instrucao("EOR", 2, 2, 0, MODO_ENDER_IMED, instrucao_eor);
+  instrucoes[0x45] = Instrucao("EOR", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_eor);
+  instrucoes[0x55] = Instrucao("EOR", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_eor);
+  instrucoes[0x4D] = Instrucao("EOR", 3, 4, 0, MODO_ENDER_ABS, instrucao_eor);
+  instrucoes[0x5D] = Instrucao("EOR", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_eor);
+  instrucoes[0x59] = Instrucao("EOR", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_eor);
+  instrucoes[0x41] = Instrucao("EOR", 2, 6, 0, MODO_ENDER_IND_X, instrucao_eor);
+  instrucoes[0x51] = Instrucao("EOR", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_eor);
 
   // modos da instrução INC
-  instrucoes[0xE6] = new Instrucao("INC", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_inc);
-  instrucoes[0xF6] = new Instrucao("INC", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_inc);
-  instrucoes[0xEE] = new Instrucao("INC", 3, 6, 0, MODO_ENDER_ABS, instrucao_inc);
-  instrucoes[0xFE] = new Instrucao("INC", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_inc);
+  instrucoes[0xE6] = Instrucao("INC", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_inc);
+  instrucoes[0xF6] = Instrucao("INC", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_inc);
+  instrucoes[0xEE] = Instrucao("INC", 3, 6, 0, MODO_ENDER_ABS, instrucao_inc);
+  instrucoes[0xFE] = Instrucao("INC", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_inc);
 
   // modos da instrução INX
-  instrucoes[0xE8] = new Instrucao("INX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_inx);
+  instrucoes[0xE8] = Instrucao("INX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_inx);
 
   // modos da instrução INY
-  instrucoes[0xC8] = new Instrucao("INY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_iny);
+  instrucoes[0xC8] = Instrucao("INY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_iny);
 
   // modos da instrução JMP
-  instrucoes[0x4C] = new Instrucao("JMP", 3, 3, 0, MODO_ENDER_ABS, instrucao_jmp);
-  instrucoes[0x6C] = new Instrucao("JMP", 3, 5, 0, MODO_ENDER_IND, instrucao_jmp);
+  instrucoes[0x4C] = Instrucao("JMP", 3, 3, 0, MODO_ENDER_ABS, instrucao_jmp);
+  instrucoes[0x6C] = Instrucao("JMP", 3, 5, 0, MODO_ENDER_IND, instrucao_jmp);
 
   // modos da instrução JSR
-  instrucoes[0x20] = new Instrucao("JSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_jsr);
+  instrucoes[0x20] = Instrucao("JSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_jsr);
 
   // modos da instrução LDA
-  instrucoes[0xA9] = new Instrucao("LDA", 2, 2, 0, MODO_ENDER_IMED, instrucao_lda);
-  instrucoes[0xA5] = new Instrucao("LDA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_lda);
-  instrucoes[0xB5] = new Instrucao("LDA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_lda);
-  instrucoes[0xAD] = new Instrucao("LDA", 3, 4, 0, MODO_ENDER_ABS, instrucao_lda);
-  instrucoes[0xBD] = new Instrucao("LDA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_lda);
-  instrucoes[0xB9] = new Instrucao("LDA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_lda);
-  instrucoes[0xA1] = new Instrucao("LDA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_lda);
-  instrucoes[0xB1] = new Instrucao("LDA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_lda);
+  instrucoes[0xA9] = Instrucao("LDA", 2, 2, 0, MODO_ENDER_IMED, instrucao_lda);
+  instrucoes[0xA5] = Instrucao("LDA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_lda);
+  instrucoes[0xB5] = Instrucao("LDA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_lda);
+  instrucoes[0xAD] = Instrucao("LDA", 3, 4, 0, MODO_ENDER_ABS, instrucao_lda);
+  instrucoes[0xBD] = Instrucao("LDA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_lda);
+  instrucoes[0xB9] = Instrucao("LDA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_lda);
+  instrucoes[0xA1] = Instrucao("LDA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_lda);
+  instrucoes[0xB1] = Instrucao("LDA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_lda);
 
   // modos da instrução LDX
-  instrucoes[0xA2] = new Instrucao("LDX", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldx);
-  instrucoes[0xA6] = new Instrucao("LDX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldx);
-  instrucoes[0xB6] = new Instrucao("LDX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_ldx);
-  instrucoes[0xAE] = new Instrucao("LDX", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldx);
-  instrucoes[0xBE] = new Instrucao("LDX", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ldx);
+  instrucoes[0xA2] = Instrucao("LDX", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldx);
+  instrucoes[0xA6] = Instrucao("LDX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldx);
+  instrucoes[0xB6] = Instrucao("LDX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_ldx);
+  instrucoes[0xAE] = Instrucao("LDX", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldx);
+  instrucoes[0xBE] = Instrucao("LDX", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ldx);
 
   // modos da instrução LDY
-  instrucoes[0xA0] = new Instrucao("LDY", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldy);
-  instrucoes[0xA4] = new Instrucao("LDY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldy);
-  instrucoes[0xB4] = new Instrucao("LDY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ldy);
-  instrucoes[0xAC] = new Instrucao("LDY", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldy);
-  instrucoes[0xBC] = new Instrucao("LDY", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ldy);
+  instrucoes[0xA0] = Instrucao("LDY", 2, 2, 0, MODO_ENDER_IMED, instrucao_ldy);
+  instrucoes[0xA4] = Instrucao("LDY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ldy);
+  instrucoes[0xB4] = Instrucao("LDY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ldy);
+  instrucoes[0xAC] = Instrucao("LDY", 3, 4, 0, MODO_ENDER_ABS, instrucao_ldy);
+  instrucoes[0xBC] = Instrucao("LDY", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ldy);
 
   // modos da instrução LSR
-  instrucoes[0x4A] = new Instrucao("LSR", 1, 2, 0, MODO_ENDER_ACM, instrucao_lsr);
-  instrucoes[0x46] = new Instrucao("LSR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_lsr);
-  instrucoes[0x56] = new Instrucao("LSR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_lsr);
-  instrucoes[0x4E] = new Instrucao("LSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_lsr);
-  instrucoes[0x5E] = new Instrucao("LSR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_lsr);
+  instrucoes[0x4A] = Instrucao("LSR", 1, 2, 0, MODO_ENDER_ACM, instrucao_lsr);
+  instrucoes[0x46] = Instrucao("LSR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_lsr);
+  instrucoes[0x56] = Instrucao("LSR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_lsr);
+  instrucoes[0x4E] = Instrucao("LSR", 3, 6, 0, MODO_ENDER_ABS, instrucao_lsr);
+  instrucoes[0x5E] = Instrucao("LSR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_lsr);
 
   // modos da instrução NOP
-  instrucoes[0xEA] = new Instrucao("NOP", 1, 2, 0, MODO_ENDER_IMPL, instrucao_nop);
+  instrucoes[0xEA] = Instrucao("NOP", 1, 2, 0, MODO_ENDER_IMPL, instrucao_nop);
 
   // modos da instrução ORA
-  instrucoes[0x09] = new Instrucao("ORA", 2, 2, 0, MODO_ENDER_IMED, instrucao_ora);
-  instrucoes[0x05] = new Instrucao("ORA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ora);
-  instrucoes[0x15] = new Instrucao("ORA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ora);
-  instrucoes[0x0D] = new Instrucao("ORA", 3, 4, 0, MODO_ENDER_ABS, instrucao_ora);
-  instrucoes[0x1D] = new Instrucao("ORA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ora);
-  instrucoes[0x19] = new Instrucao("ORA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ora);
-  instrucoes[0x01] = new Instrucao("ORA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_ora);
-  instrucoes[0x11] = new Instrucao("ORA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_ora);
+  instrucoes[0x09] = Instrucao("ORA", 2, 2, 0, MODO_ENDER_IMED, instrucao_ora);
+  instrucoes[0x05] = Instrucao("ORA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_ora);
+  instrucoes[0x15] = Instrucao("ORA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_ora);
+  instrucoes[0x0D] = Instrucao("ORA", 3, 4, 0, MODO_ENDER_ABS, instrucao_ora);
+  instrucoes[0x1D] = Instrucao("ORA", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_ora);
+  instrucoes[0x19] = Instrucao("ORA", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_ora);
+  instrucoes[0x01] = Instrucao("ORA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_ora);
+  instrucoes[0x11] = Instrucao("ORA", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_ora);
 
   // modos da instrução PHA
-  instrucoes[0x48] = new Instrucao("PHA", 1, 3, 0, MODO_ENDER_IMPL, instrucao_pha);
+  instrucoes[0x48] = Instrucao("PHA", 1, 3, 0, MODO_ENDER_IMPL, instrucao_pha);
 
   // modos da instrução PHP
-  instrucoes[0x08] = new Instrucao("PHP", 1, 3, 0, MODO_ENDER_IMPL, instrucao_php);
+  instrucoes[0x08] = Instrucao("PHP", 1, 3, 0, MODO_ENDER_IMPL, instrucao_php);
 
   // modos da instrução PLA
-  instrucoes[0x68] = new Instrucao("PLA", 1, 4, 0, MODO_ENDER_IMPL, instrucao_pla);
+  instrucoes[0x68] = Instrucao("PLA", 1, 4, 0, MODO_ENDER_IMPL, instrucao_pla);
 
   // modos da instrução PLP
-  instrucoes[0x28] = new Instrucao("PLP", 1, 4, 0, MODO_ENDER_IMPL, instrucao_plp);
+  instrucoes[0x28] = Instrucao("PLP", 1, 4, 0, MODO_ENDER_IMPL, instrucao_plp);
 
   // modos da instrução ROL
-  instrucoes[0x2A] = new Instrucao("ROL", 1, 2, 0, MODO_ENDER_ACM, instrucao_rol);
-  instrucoes[0x26] = new Instrucao("ROL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_rol);
-  instrucoes[0x36] = new Instrucao("ROL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_rol);
-  instrucoes[0x2E] = new Instrucao("ROL", 3, 6, 0, MODO_ENDER_ABS, instrucao_rol);
-  instrucoes[0x3E] = new Instrucao("ROL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_rol);
+  instrucoes[0x2A] = Instrucao("ROL", 1, 2, 0, MODO_ENDER_ACM, instrucao_rol);
+  instrucoes[0x26] = Instrucao("ROL", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_rol);
+  instrucoes[0x36] = Instrucao("ROL", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_rol);
+  instrucoes[0x2E] = Instrucao("ROL", 3, 6, 0, MODO_ENDER_ABS, instrucao_rol);
+  instrucoes[0x3E] = Instrucao("ROL", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_rol);
 
   // modos da instrução ROR
-  instrucoes[0x6A] = new Instrucao("ROR", 1, 2, 0, MODO_ENDER_ACM, instrucao_ror);
-  instrucoes[0x66] = new Instrucao("ROR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_ror);
-  instrucoes[0x76] = new Instrucao("ROR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_ror);
-  instrucoes[0x6E] = new Instrucao("ROR", 3, 6, 0, MODO_ENDER_ABS, instrucao_ror);
-  instrucoes[0x7E] = new Instrucao("ROR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_ror);
+  instrucoes[0x6A] = Instrucao("ROR", 1, 2, 0, MODO_ENDER_ACM, instrucao_ror);
+  instrucoes[0x66] = Instrucao("ROR", 2, 5, 0, MODO_ENDER_P_ZERO, instrucao_ror);
+  instrucoes[0x76] = Instrucao("ROR", 2, 6, 0, MODO_ENDER_P_ZERO_X, instrucao_ror);
+  instrucoes[0x6E] = Instrucao("ROR", 3, 6, 0, MODO_ENDER_ABS, instrucao_ror);
+  instrucoes[0x7E] = Instrucao("ROR", 3, 7, 0, MODO_ENDER_ABS_X, instrucao_ror);
 
   // modos da instrução RTI
-  instrucoes[0x40] = new Instrucao("RTI", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rti);
+  instrucoes[0x40] = Instrucao("RTI", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rti);
 
   // modos da instrução RTS
-  instrucoes[0x60] = new Instrucao("RTS", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rts);
+  instrucoes[0x60] = Instrucao("RTS", 1, 6, 0, MODO_ENDER_IMPL, instrucao_rts);
 
   // modos da instrução SBC
-  instrucoes[0xE9] = new Instrucao("SBC", 2, 2, 0, MODO_ENDER_IMED, instrucao_sbc);
-  instrucoes[0xE5] = new Instrucao("SBC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sbc);
-  instrucoes[0xF5] = new Instrucao("SBC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sbc);
-  instrucoes[0xED] = new Instrucao("SBC", 3, 4, 0, MODO_ENDER_ABS, instrucao_sbc);
-  instrucoes[0xFD] = new Instrucao("SBC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_sbc);
-  instrucoes[0xF9] = new Instrucao("SBC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_sbc);
-  instrucoes[0xE1] = new Instrucao("SBC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sbc);
-  instrucoes[0xF1] = new Instrucao("SBC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_sbc);
+  instrucoes[0xE9] = Instrucao("SBC", 2, 2, 0, MODO_ENDER_IMED, instrucao_sbc);
+  instrucoes[0xE5] = Instrucao("SBC", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sbc);
+  instrucoes[0xF5] = Instrucao("SBC", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sbc);
+  instrucoes[0xED] = Instrucao("SBC", 3, 4, 0, MODO_ENDER_ABS, instrucao_sbc);
+  instrucoes[0xFD] = Instrucao("SBC", 3, 4, 1, MODO_ENDER_ABS_X, instrucao_sbc);
+  instrucoes[0xF9] = Instrucao("SBC", 3, 4, 1, MODO_ENDER_ABS_Y, instrucao_sbc);
+  instrucoes[0xE1] = Instrucao("SBC", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sbc);
+  instrucoes[0xF1] = Instrucao("SBC", 2, 5, 1, MODO_ENDER_IND_Y, instrucao_sbc);
 
   // modos da instrução SEC
-  instrucoes[0x38] = new Instrucao("SEC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sec);
+  instrucoes[0x38] = Instrucao("SEC", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sec);
 
   // modos da instrução SED
-  instrucoes[0xF8] = new Instrucao("SED", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sed);
+  instrucoes[0xF8] = Instrucao("SED", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sed);
 
   // modos da instrução SEI
-  instrucoes[0x78] = new Instrucao("SEI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sei);
+  instrucoes[0x78] = Instrucao("SEI", 1, 2, 0, MODO_ENDER_IMPL, instrucao_sei);
 
   // modos da instrução STA
-  instrucoes[0x85] = new Instrucao("STA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sta);
-  instrucoes[0x95] = new Instrucao("STA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sta);
-  instrucoes[0x8D] = new Instrucao("STA", 3, 4, 0, MODO_ENDER_ABS, instrucao_sta);
-  instrucoes[0x9D] = new Instrucao("STA", 3, 5, 0, MODO_ENDER_ABS_X, instrucao_sta);
-  instrucoes[0x99] = new Instrucao("STA", 3, 5, 0, MODO_ENDER_ABS_Y, instrucao_sta);
-  instrucoes[0x81] = new Instrucao("STA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sta);
-  instrucoes[0x91] = new Instrucao("STA", 2, 6, 0, MODO_ENDER_IND_Y, instrucao_sta);
+  instrucoes[0x85] = Instrucao("STA", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sta);
+  instrucoes[0x95] = Instrucao("STA", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sta);
+  instrucoes[0x8D] = Instrucao("STA", 3, 4, 0, MODO_ENDER_ABS, instrucao_sta);
+  instrucoes[0x9D] = Instrucao("STA", 3, 5, 0, MODO_ENDER_ABS_X, instrucao_sta);
+  instrucoes[0x99] = Instrucao("STA", 3, 5, 0, MODO_ENDER_ABS_Y, instrucao_sta);
+  instrucoes[0x81] = Instrucao("STA", 2, 6, 0, MODO_ENDER_IND_X, instrucao_sta);
+  instrucoes[0x91] = Instrucao("STA", 2, 6, 0, MODO_ENDER_IND_Y, instrucao_sta);
 
   // modos da instrução STX
-  instrucoes[0x86] = new Instrucao("STX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_stx);
-  instrucoes[0x96] = new Instrucao("STX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_stx);
-  instrucoes[0x8E] = new Instrucao("STX", 3, 4, 0, MODO_ENDER_ABS, instrucao_stx);
+  instrucoes[0x86] = Instrucao("STX", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_stx);
+  instrucoes[0x96] = Instrucao("STX", 2, 4, 0, MODO_ENDER_P_ZERO_Y, instrucao_stx);
+  instrucoes[0x8E] = Instrucao("STX", 3, 4, 0, MODO_ENDER_ABS, instrucao_stx);
 
   // modos da instrução STY
-  instrucoes[0x84] = new Instrucao("STY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sty);
-  instrucoes[0x94] = new Instrucao("STY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sty);
-  instrucoes[0x8C] = new Instrucao("STY", 3, 4, 0, MODO_ENDER_ABS, instrucao_sty);
+  instrucoes[0x84] = Instrucao("STY", 2, 3, 0, MODO_ENDER_P_ZERO, instrucao_sty);
+  instrucoes[0x94] = Instrucao("STY", 2, 4, 0, MODO_ENDER_P_ZERO_X, instrucao_sty);
+  instrucoes[0x8C] = Instrucao("STY", 3, 4, 0, MODO_ENDER_ABS, instrucao_sty);
 
   // modos da instrução TAX
-  instrucoes[0xAA] = new Instrucao("TAX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tax);
+  instrucoes[0xAA] = Instrucao("TAX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tax);
 
   // modos da instrução TAY
-  instrucoes[0xA8] = new Instrucao("TAY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tay);
+  instrucoes[0xA8] = Instrucao("TAY", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tay);
 
   // modos da instrução TSX
-  instrucoes[0xBA] = new Instrucao("TSX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tsx);
+  instrucoes[0xBA] = Instrucao("TSX", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tsx);
 
   // modos da instrução TXA
-  instrucoes[0x8A] = new Instrucao("TXA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txa);
+  instrucoes[0x8A] = Instrucao("TXA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txa);
 
   // modos da instrução TXS
-  instrucoes[0x9A] = new Instrucao("TXS", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txs);
+  instrucoes[0x9A] = Instrucao("TXS", 1, 2, 0, MODO_ENDER_IMPL, instrucao_txs);
 
   // modos da instrução TYA
-  instrucoes[0x98] = new Instrucao("TYA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tya);
+  instrucoes[0x98] = Instrucao("TYA", 1, 2, 0, MODO_ENDER_IMPL, instrucao_tya);
 
   return instrucoes;
 }
