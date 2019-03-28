@@ -1,4 +1,4 @@
-/* memoria.c
+/* memoria.cpp
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *

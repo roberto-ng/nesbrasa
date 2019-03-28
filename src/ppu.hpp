@@ -1,4 +1,4 @@
-/* ppu.h
+/* ppu.hpp
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *

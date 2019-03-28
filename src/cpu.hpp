@@ -1,4 +1,4 @@
-/* cpu.h
+/* cpu.hpp
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *
