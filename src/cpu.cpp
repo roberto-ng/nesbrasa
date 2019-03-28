@@ -135,10 +135,10 @@ void Cpu::set_n(uint8_t valor)
 
 void Cpu::stack_empurrar(Nes *nes, uint8_t valor)
 {
-  uint16_t endereco = 0x0100 | nes->cpu.sp;
+  uint16_t endereco = 0x0100 | this->sp;
   escrever_memoria(nes, endereco, valor);
 
-  nes->cpu.sp -= 1;
+  this->sp -= 1;
 }
 
 void Cpu::stack_empurrar_16_bits(Nes *nes, uint16_t valor)
@@ -152,8 +152,8 @@ void Cpu::stack_empurrar_16_bits(Nes *nes, uint16_t valor)
 
 uint8_t Cpu::stack_puxar(Nes *nes)
 {
-  nes->cpu.sp += 1;
-  uint16_t endereco = 0x0100 | nes->cpu.sp;
+  this->sp += 1;
+  uint16_t endereco = 0x0100 | this->sp;
   return ler_memoria(nes, endereco);
 }
 

@@ -24,9 +24,9 @@
 
 Nes::Nes()
 {
-  this->cpu = Cpu();
-  this->ppu = Ppu();
-  this->cartucho = Cartucho();
+  this->cpu = std::make_unique<Cpu>();
+  this->ppu = std::make_unique<Ppu>();
+  this->cartucho = std::make_unique<Cartucho>();
 
   for (int i = 0; i < TAMANHO(this->ram); i++)
   {

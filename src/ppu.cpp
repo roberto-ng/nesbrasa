@@ -126,7 +126,7 @@ uint8_t Ppu::ler(Nes *nes, uint16_t endereco)
 {
   if (endereco < 0x2000)
   {
-    return nes->cartucho.mapeador_ler(endereco);
+    return nes->cartucho->mapeador_ler(endereco);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
@@ -172,7 +172,7 @@ void Ppu::escrever(Nes *nes, uint16_t endereco, uint8_t valor)
 {
   if (endereco < 0x2000)
   {
-    nes->cartucho.mapeador_escrever(endereco, valor);
+    nes->cartucho->mapeador_escrever(endereco, valor);
   }
   else if (endereco >= 0x2000 && endereco < 0x3F00)
   {
@@ -363,10 +363,10 @@ void Ppu::set_omd_dma(Nes *nes, uint8_t valor)
   }
 
   // se o ciclo for impar
-  if ((nes->cpu.ciclos%2) != 0)
-    nes->cpu.esperar = 514;
+  if ((nes->cpu->ciclos%2) != 0)
+    nes->cpu->esperar = 514;
   else
-    nes->cpu.esperar = 513;
+    nes->cpu->esperar = 513;
 }
 
 uint8_t Ppu::get_dados(Nes *nes)
@@ -397,7 +397,7 @@ void Ppu::set_dados(Nes *nes, uint8_t valor)
 uint16_t Ppu::endereco_espelhado(Nes *nes, uint16_t endereco)
 {
   uint16_t base = 0;
-  switch (nes->cartucho.espelhamento)
+  switch (nes->cartucho->espelhamento)
   {
     case ESPELHAMENTO_HORIZONTAL:
       if (endereco >= 0x2000 && endereco < 0x2400)

@@ -19,19 +19,22 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 #include "cpu.hpp"
 #include "ppu.hpp"
 #include "cartucho.hpp"
+
+using std::unique_ptr;
 
 class Nes
 {
 public:
         uint8_t ram[0x800];
 
-        Cpu      cpu;
-        Ppu      ppu;
-        Cartucho cartucho;
+        unique_ptr<Cpu>      cpu;
+        unique_ptr<Ppu>      ppu;
+        unique_ptr<Cartucho> cartucho;
 
         Nes();
 };
