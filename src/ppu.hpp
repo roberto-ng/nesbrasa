@@ -72,41 +72,25 @@ public:
         bool     w;
 
         Ppu();
+
+        uint8_t ler(Nes *nes, uint16_t endereco);
+        void escrever(Nes *nes, uint16_t endereco, uint8_t valor);
+
+        uint8_t registrador_ler(Nes *nes, uint16_t endereco);
+        void registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor);
+
+private:
+        void set_controle(Nes *nes, uint8_t valor);
+        void set_mascara(Nes *nes, uint8_t  valor);
+        uint8_t get_estado(Nes *nes);
+        void set_oam_enderco(Nes *nes, uint8_t valor);
+        void set_oam_dados(Nes *nes, uint8_t valor);
+        uint8_t get_oam_dados(Nes *nes);
+        void set_scroll(Nes *nes, uint8_t valor);
+        void set_endereco(Nes *nes, uint8_t valor);
+        void set_omd_dma(Nes *nes, uint8_t valor);
+        uint8_t get_dados(Nes *nes);
+        void set_dados(Nes *nes, uint8_t valor);
+        
+        uint16_t endereco_espelhado(Nes *nes, uint16_t endereco);
 };
-
-Ppu* ppu_new(void);
-
-void ppu_free(Ppu *ppu);
-
-
-uint8_t ppu_ler(Nes *nes, uint16_t endereco);
-
-void ppu_escrever(Nes *nes, uint16_t endereco, uint8_t valor);
-
-uint8_t ppu_registrador_ler(Nes *nes, uint16_t endereco);
-
-void ppu_registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor);
-
-void ppu_controle_escrever(Nes *nes, uint8_t valor);
-
-void ppu_mascara_escrever(Nes *nes, uint8_t  valor);
-
-uint8_t ppu_estado_ler(Nes *nes);
-
-void oam_enderco_escrever(Nes *nes, uint8_t valor);
-
-void oam_dados_escrever(Nes *nes, uint8_t valor);
-
-uint8_t oam_dados_ler(Nes *nes);
-
-void ppu_scroll_escrever(Nes *nes, uint8_t valor);
-
-void ppu_endereco_escrever (Nes *nes, uint8_t valor);
-
-void omd_dma_escrever(Nes *nes, uint8_t valor);
-
-uint8_t ppu_dados_ler(Nes *nes);
-
-void ppu_dados_escrever(Nes *nes, uint8_t valor);
-
-uint16_t ppu_endereco_espelhado(Nes *nes, uint16_t endereco);

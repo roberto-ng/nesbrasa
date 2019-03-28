@@ -20,56 +20,53 @@
 
 #include "cpu.hpp"
 #include "util.hpp"
+#include "memoria.hpp"
 
-Cpu* cpu_new(void)
+Cpu::Cpu()
 {
-  Cpu *cpu = new Cpu;
-  cpu->pc = 0;
-  cpu->sp = 0;
-  cpu->a = 0;
-  cpu->x = 0;
-  cpu->y = 0;
-  cpu->c = false;
-  cpu->z = false;
-  cpu->i = false;
-  cpu->d = false;
-  cpu->b = false;
-  cpu->v = false;
-  cpu->n = false;
-  cpu->esperar = 0;
-  cpu->pag_alterada = false;
-  cpu->instrucoes = carregar_instrucoes();
-
-  return cpu;
+    pc = 0;
+    sp = 0;
+    a = 0;
+    x = 0;
+    y = 0;
+    c = false;
+    z = false;
+    i = false;
+    d = false;
+    b = false;
+    v = false;
+    n = false;
+    esperar = 0;
+    pag_alterada = false;
+    instrucoes = carregar_instrucoes();
 }
 
-void cpu_free(Cpu *cpu)
+Cpu::~Cpu()
 {
-  free(cpu->instrucoes);
-  free(cpu);
+    free(instrucoes);
 }
 
-void cpu_ciclo(Cpu* cpu, Nes *nes)
+void Cpu::ciclo(Nes& nes)
 {
-  if (cpu->esperar > 0)
+  if (this->esperar > 0)
   {
-    cpu->esperar -= 1;
+    this->esperar -= 1;
     return;
   }
 
-  uint8_t opcode = ler_memoria(nes, cpu->pc);
-  Instrucao *instrucao = cpu->instrucoes[opcode];
+  uint8_t opcode = ler_memoria(nes, this->pc);
+  Instrucao *instrucao = this->instrucoes[opcode];
 
   if (instrucao == NULL)
     return;
 
-  uint16_t endereco = buscar_endereco(instrucao, nes);
+  uint16_t endereco = instrucao->buscar_endereco(nes);
 
-  cpu->pc += instrucao->bytes;
-  cpu->ciclos += instrucao->ciclos;
+  this->pc += instrucao->bytes;
+  this->ciclos += instrucao->ciclos;
 
-  if (cpu->pag_alterada)
-    cpu->ciclos += instrucao->ciclos_pag_alterada;
+  if (this->pag_alterada)
+    this->ciclos += instrucao->ciclos_pag_alterada;
 
   instrucao->funcao(instrucao, nes, endereco);
 }

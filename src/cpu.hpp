@@ -23,7 +23,6 @@
 
 #include "nesbrasa.hpp"
 #include "instrucao.hpp"
-#include "memoria.hpp"
 
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
@@ -50,7 +49,11 @@ public:
         uint32_t ciclos;
         bool     pag_alterada;
 
-        Instrucao **instrucoes;
+        Instrucao** instrucoes;
+
+        Cpu();
+        ~Cpu();
+        void ciclo(Nes& nes);
 };
 
 Cpu* cpu_new(void);
