@@ -51,20 +51,28 @@ void Cpu::ciclo(Nes* nes)
     return;
   }
 
-  uint8_t opcode = ler_memoria(nes, this->pc);
+  uint32_t ciclos_qtd_anterior = this->ciclos;
 
+  uint8_t opcode = ler_memoria(nes, this->pc);
   if (!this->instrucoes[opcode].has_value())
     return;
 
   Instrucao& instrucao = this->instrucoes[opcode].value();
-
   this->pc += instrucao.bytes;
-  this->ciclos += instrucao.ciclos;
-
-  if (this->pag_alterada)
-    this->ciclos += instrucao.ciclos_pag_alterada;
-
   instrucao.executar(nes);
+  
+  if (this->pag_alterada) 
+  {
+    this->ciclos += instrucao.ciclos;
+    this->ciclos += instrucao.ciclos_pag_alterada;
+  }
+  else
+  {
+    this->ciclo += instrucao.ciclos;
+  }
+
+  // soma a diferença da quantidade atual de ciclos com a anterior
+  this->esperar += this->ciclos - ciclos_qtd_anterior;
 }
 
 void Cpu::branch_somar_ciclos(uint16_t endereco)
