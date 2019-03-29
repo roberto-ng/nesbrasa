@@ -61,7 +61,7 @@ public:
 
         Cartucho();
         
-        int carregar_rom(uint8_t *rom, size_t rom_tam);
+        int carregar_rom(vector<uint8_t> rom);
 
         uint8_t mapeador_ler(uint16_t endereco);
 

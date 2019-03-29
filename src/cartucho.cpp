@@ -46,7 +46,7 @@ void Cartucho::resetar_arrays()
   vector<uint8_t>().swap(this->sram);
 }
 
-int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
+int Cartucho::carregar_rom(vector<uint8_t> rom)
 {
   this->resetar_arrays();
   
@@ -56,7 +56,7 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
     this->sram[i] = 0;
   }
 
-  if (rom_tam < 16)
+  if (rom.size() < 16)
     return -1;
 
   bool formato_ines = false;
@@ -98,7 +98,7 @@ int Cartucho::carregar_rom(uint8_t *rom, size_t rom_tam)
   this->chr.reserve(chr_tamanho);
 
   // checa o tamanho do arquivo
-  if (rom_tam < (offset + prg_tamanho + chr_tamanho))
+  if ((offset + prg_tamanho + chr_tamanho) > rom.size())
   {
     // formato inválido
     return -1;
