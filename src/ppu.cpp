@@ -24,6 +24,9 @@
 #include "memoria.hpp"
 #include "util.hpp"
 
+namespace nesbrasa
+{
+
 Ppu::Ppu()
 {
   buffer_dados = 0;
@@ -462,4 +465,6 @@ uint16_t Ppu::endereco_espelhado(Nes *nes, uint16_t endereco)
   }
 
   return base | (endereco & 0b0000001111111111);
+}
+
 }

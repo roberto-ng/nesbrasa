@@ -16,10 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma once
+
 #include <stdint.h>
 
+#include "mapeador.hpp"
 #include "../cartucho.hpp"
 
-uint8_t nrom_ler(Cartucho *cartucho, uint16_t endereco);
+namespace nesbrasa
+{
 
-void nrom_escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
+class NRom : public IMapeador
+{
+public:
+    uint8_t ler(Cartucho *cartucho, uint16_t endereco);
+
+    void escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
+};
+
+}

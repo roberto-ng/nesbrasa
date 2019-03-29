@@ -3,6 +3,8 @@
 #include "nesbrasa.hpp"
 #include "memoria.hpp"
 
+using namespace nesbrasa;
+
 int main()
 {
   // testa a implementação de um bug

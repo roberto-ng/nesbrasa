@@ -31,6 +31,9 @@ using std::string;
 using std::optional;
 using std::array;
 
+namespace nesbrasa
+{
+
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
 
@@ -92,3 +95,5 @@ public:
 };
 
 array<optional<Instrucao>, 256> carregar_instrucoes();
+
+}

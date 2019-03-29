@@ -23,6 +23,9 @@
 #include "mapeadores/nrom.hpp"
 #include "util.hpp"
 
+namespace nesbrasa
+{
+
 Cartucho::Cartucho()
 {
   this->espelhamento = Espelhamento::VERTICAL;
@@ -31,6 +34,7 @@ Cartucho::Cartucho()
   this->chr_quantidade = 0;
   this->rom_carregada = false;
   this->possui_sram = false;
+  this->mapeador = nullptr;
   
   this->sram.reserve(0x2000);
   for (uint32_t i = 0; i < this->sram.capacity(); i++)
@@ -48,6 +52,8 @@ void Cartucho::resetar_arrays()
 
 int Cartucho::carregar_rom(vector<uint8_t> rom)
 {
+  // limpa os arrays e o mapeador
+  this->mapeador.reset();
   this->resetar_arrays();
   
   this->sram.reserve(0x2000);
@@ -123,15 +129,13 @@ int Cartucho::carregar_rom(vector<uint8_t> rom)
   {
     case 0:
       this->mapeador_tipo = MapeadorTipo::NROM;
-      break;
-
-    case 1:
-      this->mapeador_tipo = MapeadorTipo::MMC1;
+      this->mapeador = std::make_unique<NRom>();
       break;
 
     default:
       this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
-      break;
+      this->mapeador = nullptr;
+      return -1;
   }
 
   if (buscar_bit(rom[6], 3) == true)
@@ -156,25 +160,22 @@ int Cartucho::carregar_rom(vector<uint8_t> rom)
 
 uint8_t Cartucho::mapeador_ler(uint16_t endereco)
 {
-  switch (this->mapeador_tipo)
+  if (this->mapeador != nullptr)
   {
-    case MapeadorTipo::NROM:
-      return nrom_ler(this, endereco);
-
-    default:
-      return 0;
+    return this->mapeador->ler(this, endereco);
+  }
+  else
+  {
+    return 0;
   }
 }
 
 void Cartucho::mapeador_escrever(uint16_t endereco, uint8_t valor)
 {
-  switch (this->mapeador_tipo)
+  if (this->mapeador != nullptr)
   {
-    case MapeadorTipo::NROM:
-      nrom_escrever(this, endereco, valor);
-      break;
-
-    default:
-      break;
+    return this->mapeador->escrever(this, endereco, valor);
   }
+}
+
 }

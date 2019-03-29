@@ -22,6 +22,13 @@
 #include <cstdlib>
 #include <cstdbool>
 #include <vector>
+#include <memory>
+
+#include "mapeadores/mapeador.hpp"
+#include "mapeadores/nrom.hpp"
+
+namespace nesbrasa
+{
 
 enum class Espelhamento
 {
@@ -39,6 +46,7 @@ enum class MapeadorTipo
 };
 
 using std::vector;
+using std::unique_ptr;
 
 class Cartucho
 {
@@ -52,6 +60,8 @@ public:
 
         uint8_t prg_quantidade;
         uint8_t chr_quantidade;
+
+        unique_ptr<IMapeador> mapeador;
 
         MapeadorTipo mapeador_tipo;
         Espelhamento espelhamento;
@@ -67,3 +77,5 @@ public:
 
         void mapeador_escrever(uint16_t endereco, uint8_t valor);
 };
+
+}

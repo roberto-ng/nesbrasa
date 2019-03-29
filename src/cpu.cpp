@@ -24,6 +24,9 @@
 #include "memoria.hpp"
 #include "instrucao.hpp"
 
+namespace nesbrasa
+{
+
 Cpu::Cpu()
 {
   this->pc = 0;
@@ -164,4 +167,6 @@ uint16_t Cpu::stack_puxar_16_bits(Nes *nes)
   uint8_t maior = this->stack_puxar(nes);
 
   return (maior << 8) | menor;
+}
+
 }

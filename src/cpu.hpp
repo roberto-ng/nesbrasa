@@ -31,6 +31,9 @@ using std::array;
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
 
+namespace nesbrasa
+{
+
 class Nes;
 
 class Cpu
@@ -88,3 +91,5 @@ public:
         //! Puxa um valor da stack
         uint16_t stack_puxar_16_bits(Nes *nes);
 };
+
+}

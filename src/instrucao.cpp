@@ -26,6 +26,9 @@
 #include "memoria.hpp"
 #include "util.hpp"
 
+namespace nesbrasa
+{
+
 Instrucao::Instrucao(
   string nome,
   uint8_t bytes,
@@ -1076,4 +1079,6 @@ array<optional<Instrucao>, 256> carregar_instrucoes()
   instrucoes[0x98] = Instrucao("TYA", 1, 2, 0, InstrucaoModo::IMPL, instrucao_tya);
 
   return instrucoes;
+}
+
 }

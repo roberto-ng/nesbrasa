@@ -19,6 +19,9 @@
 #include "memoria.hpp"
 #include "nesbrasa.hpp"
 
+namespace nesbrasa
+{
+
 uint8_t ler_memoria(Nes* nes, uint16_t  endereco)
 {
   if (endereco <= 0x07FF)
@@ -118,4 +121,6 @@ void escrever_memoria(Nes* nes, uint16_t endereco, uint8_t valor)
   {
     nes->cartucho->mapeador_escrever(endereco, valor);
   }
+}
+
 }

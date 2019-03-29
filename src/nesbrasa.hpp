@@ -29,6 +29,9 @@
 using std::unique_ptr;
 using std::array;
 
+namespace nesbrasa
+{
+
 class Nes
 {
 public:
@@ -40,3 +43,5 @@ public:
 
         Nes();
 };
+
+}

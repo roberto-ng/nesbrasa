@@ -23,6 +23,9 @@
 
 #include "util.hpp"
 
+namespace nesbrasa
+{
+
 bool buscar_bit(uint8_t byte, uint8_t pos)
 {
   // dar a volta quando a posição do bit for maior que 7
@@ -32,7 +35,9 @@ bool buscar_bit(uint8_t byte, uint8_t pos)
   return (tmp >> pos) != 0;
 }
 
-bool comparar_paginas(uint16_t pagina_1, uint16_t pagina_2)
+bool comparar_paginas(uint16_t endereco_1, uint16_t endereco_2)
 {
-  return (pagina_1 & 0xFF00) == (pagina_2 & 0xFF00);
+  return (endereco_1 & 0xFF00) == (endereco_2 & 0xFF00);
+}
+
 }

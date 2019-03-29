@@ -20,6 +20,9 @@
 
 #include <cstdint>
 
+namespace nesbrasa
+{
+
 class Nes;
 
 //! Lê um valor de 8 bits na memoria
@@ -39,3 +42,5 @@ uint16_t ler_memoria_16_bits_bug(Nes* nes, uint16_t endereco);
 
 //! Escreve um valor na memoria
 void escrever_memoria(Nes* nes, uint16_t endereco, uint8_t valor);
+
+}

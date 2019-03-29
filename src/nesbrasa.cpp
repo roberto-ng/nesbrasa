@@ -22,6 +22,9 @@
 #include "cartucho.hpp"
 #include "util.hpp"
 
+namespace nesbrasa
+{
+
 Nes::Nes()
 {
   this->cpu = std::make_unique<Cpu>();
@@ -32,4 +35,6 @@ Nes::Nes()
   {
     ram[i] = 0;
   }
+}
+
 }

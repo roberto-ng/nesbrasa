@@ -18,7 +18,10 @@
 
 #include "nrom.hpp"
 
-uint8_t nrom_ler(Cartucho *cartucho, uint16_t endereco)
+namespace nesbrasa
+{
+
+uint8_t NRom::ler(Cartucho *cartucho, uint16_t endereco)
 {
   if (endereco < 0x2000)
   {
@@ -44,11 +47,13 @@ uint8_t nrom_ler(Cartucho *cartucho, uint16_t endereco)
   return 0;
 }
 
-void nrom_escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor)
+void NRom::escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor)
 {
   if (endereco < 0x2000)
   {
     // escrever na rom CHR
     cartucho->chr[endereco] = valor;
   }
+}
+
 }

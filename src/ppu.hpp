@@ -28,6 +28,9 @@ using std::array;
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 // http://nemulator.com/files/nes_emu.txt
 
+namespace nesbrasa
+{
+
 class Nes;
 
 class Ppu
@@ -97,3 +100,5 @@ private:
         
         uint16_t endereco_espelhado(Nes *nes, uint16_t endereco);
 };
+
+}
