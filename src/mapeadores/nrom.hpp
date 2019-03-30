@@ -23,15 +23,15 @@
 #include "mapeador.hpp"
 #include "../cartucho.hpp"
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-class NRom : public IMapeador
-{
-public:
-    uint8_t ler(Cartucho *cartucho, uint16_t endereco);
+	class NRom : public IMapeador
+	{
+	public:
+		uint8_t ler(Cartucho *cartucho, uint16_t endereco);
 
-    void escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
-};
+		void escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
+	};
 
 }

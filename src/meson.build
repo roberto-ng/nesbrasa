@@ -15,6 +15,7 @@ nesbrasa_headers = [
   'cartucho.hpp',
   'cpu.hpp',
   'instrucao.hpp',
+  'mapeadores/mapeador.hpp',
   'mapeadores/nrom.hpp',
   'memoria.hpp',
   'nesbrasa.hpp',

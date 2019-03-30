@@ -22,19 +22,16 @@
 #include "cartucho.hpp"
 #include "util.hpp"
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-Nes::Nes()
-{
-  this->cpu = std::make_unique<Cpu>();
-  this->ppu = std::make_unique<Ppu>();
-  this->cartucho = std::make_unique<Cartucho>();
+    Nes::Nes()
+    {
+        this->memoria = std::make_shared<Memoria>(this);
 
-  for (uint32_t i = 0; i < this->ram.size(); i++)
-  {
-    ram[i] = 0;
-  }
-}
+        this->cpu = std::make_unique<Cpu>(this->memoria);
+        this->ppu = std::make_unique<Ppu>(this->memoria);
+        this->cartucho = std::make_unique<Cartucho>();
+    }
 
 }

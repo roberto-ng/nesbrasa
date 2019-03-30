@@ -3,21 +3,26 @@
 #include "nesbrasa.hpp"
 #include "memoria.hpp"
 
-using namespace nesbrasa;
+using namespace nesbrasa::nucleo;
 
 int main()
 {
-  // testa a implementação de um bug
+    // testa a implementação de um bug
 
-  Nes nes;
-  escrever_memoria(&nes, 0x0FFF, 0x05);
-  escrever_memoria(&nes, 0x0F00, 0xF3);
+    Nes nes;
+    nes.memoria->escrever(0x0FFF, 0x05);
+    nes.memoria->escrever(0x0F00, 0xF3);
 
-  if (ler_memoria_16_bits_bug(&nes, 0x0FFF) != 0xF305)
-  {
-    // retornar erro
-    return EXIT_FAILURE;
-  }
+    uint16_t valor = nes.memoria->ler_16_bits_bug(0x0FFF);
 
-  return EXIT_SUCCESS;
+    if (valor == 0xF305)
+    {
+        // retornar erro
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        return EXIT_FAILURE;
+    }
+
 }

@@ -22,23 +22,30 @@
 #include <cstdbool>
 #include <optional>
 #include <array>
+#include <memory>
 
 #include "instrucao.hpp"
+#include "memoria.hpp"
 
 using std::optional;
 using std::array;
+using std::shared_ptr;
 
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-class Nes;
+    class Nes;
 
-class Cpu
-{
-public:
+    class Cpu
+    {
+    private:
+        void executar(Instrucao* instrucao, uint16_t endereco);
+    public:
+        shared_ptr<Memoria> memoria;
+    
         uint16_t pc; // contador de programa
         uint8_t  sp; // ponteiro da stack
 
@@ -60,12 +67,12 @@ public:
 
         array<optional<Instrucao>, 256> instrucoes;
 
-        Cpu();
-        
+        Cpu(shared_ptr<Memoria>& memoria);
+            
         void ciclo(Nes* nes);
 
         /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
-        \param endereco O endereço em que o branch sera realizado
+            \param endereco O endereço em que o branch sera realizado
         */
         void branch_somar_ciclos(uint16_t endereco);
 
@@ -80,16 +87,16 @@ public:
         void set_n(uint8_t valor);
 
         //! Empurra um valor na stack
-        void stack_empurrar(Nes *nes, uint8_t valor);
+        void stack_empurrar(uint8_t valor);
 
         //! Empurra um valor na stack
-        void stack_empurrar_16_bits(Nes *nes, uint16_t valor);
+        void stack_empurrar_16_bits(uint16_t valor);
 
         //! Puxa um valor da stack
-        uint8_t stack_puxar(Nes *nes);
+        uint8_t stack_puxar();
 
         //! Puxa um valor da stack
-        uint16_t stack_puxar_16_bits(Nes *nes);
-};
+        uint16_t stack_puxar_16_bits();
+    };
 
 }

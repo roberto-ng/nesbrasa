@@ -26,22 +26,23 @@
 #include "ppu.hpp"
 #include "cartucho.hpp"
 
+using std::shared_ptr;
 using std::unique_ptr;
 using std::array;
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-class Nes
-{
-public:
-        array<uint8_t, 0x800> ram;
+    class Nes
+    {
+    public:
+        shared_ptr<Memoria> memoria;
 
         unique_ptr<Cpu>      cpu;
         unique_ptr<Ppu>      ppu;
         unique_ptr<Cartucho> cartucho;
 
         Nes();
-};
+    };
 
 }

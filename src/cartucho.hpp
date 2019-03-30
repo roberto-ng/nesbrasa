@@ -27,33 +27,33 @@
 #include "mapeadores/mapeador.hpp"
 #include "mapeadores/nrom.hpp"
 
-namespace nesbrasa
-{
-
-enum class Espelhamento
-{
-  HORIZONTAL,
-  VERTICAL,
-  TELA_UNICA,
-  QUATRO_TELAS,
-};
-
-enum class MapeadorTipo
-{
-  NROM,
-  MMC1,
-  DESCONHECIDO,
-};
-
 using std::vector;
 using std::unique_ptr;
 
-class Cartucho
+namespace nesbrasa::nucleo
 {
-private:
+
+    enum class Espelhamento
+    {
+        HORIZONTAL,
+        VERTICAL,
+        TELA_UNICA,
+        QUATRO_TELAS,
+    };
+
+    enum class MapeadorTipo
+    {
+        NROM,
+        MMC1,
+        DESCONHECIDO,
+    };
+
+    class Cartucho
+    {
+    private:
         void resetar_arrays();
 
-public:
+    public:
         vector<uint8_t> prg;
         vector<uint8_t> chr;
         vector<uint8_t> sram;
@@ -70,12 +70,12 @@ public:
         bool possui_sram;
 
         Cartucho();
-        
+            
         int carregar_rom(vector<uint8_t> rom);
 
         uint8_t mapeador_ler(uint16_t endereco);
 
         void mapeador_escrever(uint16_t endereco, uint8_t valor);
-};
+    };
 
 }

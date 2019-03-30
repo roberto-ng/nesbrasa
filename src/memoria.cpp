@@ -19,108 +19,118 @@
 #include "memoria.hpp"
 #include "nesbrasa.hpp"
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-uint8_t ler_memoria(Nes* nes, uint16_t  endereco)
-{
-  if (endereco <= 0x07FF)
-  {
-    return nes->ram[endereco];
-  }
-  else if (endereco >= 0x0800 && endereco <=0x1FFF)
-  {
-    // endereços nesta area são espelhos dos endereços
-    // localizados entre 0x0000 e 0x07FF
-    return nes->ram[endereco % 0x0800];
-  }
-  else if (endereco >= 0x2000 && endereco <= 0x2007)
-  {
-    return nes->ppu->registrador_ler(nes, endereco);
-  }
-  else if (endereco >= 0x2008 && endereco <= 0x3FFF)
-  {
-    // endereço espelhado do registrador
-    uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
-    return nes->ppu->registrador_ler(nes, ender_espelhado);
-  }
-  else if (endereco >= 0x4000 && endereco <= 0x4017)
-  {
-    // TODO: registradores da APU e de input/output
-  }
-  else if (endereco >= 0x4018 && endereco <= 0x401F)
-  {
-    // originalmente usado apenas em modo de testes da CPU
-    return 0;
-  }
-  else if (endereco >= 0x4020 && endereco <= 0xFFFF)
-  {
-    return nes->cartucho->mapeador_ler(endereco);
-  }
+    Memoria::Memoria(Nes *nes)
+    {
+        this->nes = nes;
+    
+        for (auto& valor : this->ram)
+        {
+            valor = 0;
+        }
+    }
 
-  return 0;
-}
+    uint8_t Memoria::ler(uint16_t  endereco)
+    {
+        if (endereco <= 0x07FF)
+        {
+            return this->ram[endereco];
+        }
+        else if (endereco >= 0x0800 && endereco <=0x1FFF)
+        {
+            // endereços nesta area são espelhos dos endereços
+            // localizados entre 0x0000 e 0x07FF
+            return this->ram[endereco % 0x0800];
+        }
+        else if (endereco >= 0x2000 && endereco <= 0x2007)
+        {
+            return this->nes->ppu->registrador_ler(nes, endereco);
+        }
+        else if (endereco >= 0x2008 && endereco <= 0x3FFF)
+        {
+            // endereço espelhado do registrador
+            uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
+            return this->nes->ppu->registrador_ler(nes, ender_espelhado);
+        }
+        else if (endereco >= 0x4000 && endereco <= 0x4017)
+        {
+            // TODO: registradores da APU e de input/output
+        }
+        else if (endereco >= 0x4018 && endereco <= 0x401F)
+        {
+            // originalmente usado apenas em modo de testes da CPU
+            return 0;
+        }
+        else if (endereco >= 0x4020 && endereco <= 0xFFFF)
+        {
+            return this->nes->cartucho->mapeador_ler(endereco);
+        }
 
-uint16_t ler_memoria_16_bits(Nes* nes, uint16_t endereco)
-{
-  uint16_t menor = ler_memoria(nes, endereco);
-  uint16_t maior = ler_memoria(nes, endereco + 1);
+        return 0;
+    }
 
-  return (maior << 8) | menor;
-}
+    uint16_t Memoria::ler_16_bits(uint16_t endereco)
+    {
+        uint16_t menor = this->ler(endereco);
+        uint16_t maior = this->ler(endereco + 1);
 
-uint16_t ler_memoria_16_bits_bug(Nes* nes, uint16_t endereco)
-{
-  uint16_t menor = ler_memoria(nes, endereco);
-  uint16_t maior = 0;
+        return (maior << 8) | menor;
+    }
 
-  if ((endereco & 0x00FF) == 0x00FF)
-  {
-    maior = ler_memoria(nes, endereco & 0xFF00);
-  }
-  else
-  {
-    maior = ler_memoria(nes, endereco + 1);
-  }
+    uint16_t Memoria::ler_16_bits_bug(uint16_t endereco)
+    {
+        uint16_t menor = this->ler(endereco);
+        uint16_t maior = 0;
 
-  return (maior << 8) | menor;
-}
+        if ((endereco & 0x00FF) == 0x00FF)
+        {
+            maior = this->ler(endereco & 0xFF00);
+        }
+        else
+        {
+            maior = this->ler(endereco + 1);
+        }
 
-void escrever_memoria(Nes* nes, uint16_t endereco, uint8_t valor)
-{
-  if (endereco <= 0x07FF)
-  {
-    nes->ram[endereco] = valor;
-  }
-  else if (endereco >= 0x0800 && endereco <=0x1FFF)
-  {
-    // endereços nesta area são espelhos dos endereços
-    // localizados entre 0x0000 e 0x07FF
-    nes->ram[endereco % 0x0800] = valor;
-  }
-  else if (endereco >= 0x2000 && endereco <= 0x2007)
-  {
-    nes->ppu->registrador_escrever(nes, endereco, valor);
-  }
-  else if (endereco >= 0x2008 && endereco <= 0x3FFF)
-  {
-    // endereço espelhado do registrador
-    uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
-    nes->ppu->registrador_escrever(nes, ender_espelhado, valor);
-  }
-  else if (endereco >= 0x4000 && endereco <= 0x4017)
-  {
-    // TODO: registradores da APU e de input/output
-  }
-  else if (endereco >= 0x4018 && endereco <= 0x401F)
-  {
-    // originalmente usado apenas no modo de testes da CPU
-    return;
-  }
-  else if (endereco >= 0x4020 && endereco <= 0xFFFF)
-  {
-    nes->cartucho->mapeador_escrever(endereco, valor);
-  }
-}
+        return (maior << 8) | menor;
+    }
+
+    void Memoria::escrever(uint16_t endereco, uint8_t valor)
+    {
+        if (endereco <= 0x07FF)
+        {
+            this->ram[endereco] = valor;
+        }
+        else if (endereco >= 0x0800 && endereco <=0x1FFF)
+        {
+            // endereços nesta area são espelhos dos endereços
+            // localizados entre 0x0000 e 0x07FF
+            this->ram[endereco % 0x0800] = valor;
+        }
+        else if (endereco >= 0x2000 && endereco <= 0x2007)
+        {
+            this->nes->ppu->registrador_escrever(nes, endereco, valor);
+        }
+        else if (endereco >= 0x2008 && endereco <= 0x3FFF)
+        {
+            // endereço espelhado do registrador
+            uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
+            this->nes->ppu->registrador_escrever(nes, ender_espelhado, valor);
+        }
+        else if (endereco >= 0x4000 && endereco <= 0x4017)
+        {
+            // TODO: registradores da APU e de input/output
+        }
+        else if (endereco >= 0x4018 && endereco <= 0x401F)
+        {
+            // originalmente usado apenas no modo de testes da CPU
+            return;
+        }
+        else if (endereco >= 0x4020 && endereco <= 0xFFFF)
+        {
+            this->nes->cartucho->mapeador_escrever(endereco, valor);
+        }
+    }
 
 }

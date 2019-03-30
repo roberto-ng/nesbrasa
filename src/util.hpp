@@ -21,13 +21,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-//! Busca uma posição de 0 a 7 em um byte e returna o seu valor
-bool buscar_bit(uint8_t byte, uint8_t pos);
+    //! Busca uma posição de 0 a 7 em um byte e returna o seu valor
+    bool buscar_bit(uint8_t byte, uint8_t pos);
 
-//! Checa se dois endereços da memoria estão na mesma pagina
-bool comparar_paginas(uint16_t pagina_1, uint16_t pagina_2);
+    //! Checa se dois endereços da memoria estão na mesma pagina
+    bool comparar_paginas(uint16_t pagina_1, uint16_t pagina_2);
 
 }

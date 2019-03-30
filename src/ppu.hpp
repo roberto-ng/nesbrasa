@@ -21,21 +21,27 @@
 #include <cstdbool>
 #include <cstdint>
 #include <array>
+#include <memory>
+
+#include "memoria.hpp"
 
 using std::array;
+using std::shared_ptr;
 
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 // http://nemulator.com/files/nes_emu.txt
 
-namespace nesbrasa
+namespace nesbrasa::nucleo
 {
 
-class Nes;
+    class Nes;
 
-class Ppu
-{
-public:
+    class Ppu
+    {
+    public:
+        shared_ptr<Memoria> memoria;
+
         array<uint8_t, 0x100>  oam;
         array<uint8_t, 0x4000> vram;
 
@@ -77,7 +83,7 @@ public:
         uint8_t  x;
         bool     w;
 
-        Ppu();
+        Ppu(shared_ptr<Memoria>& memoria);
 
         uint8_t ler(Nes *nes, uint16_t endereco);
         void escrever(Nes *nes, uint16_t endereco, uint8_t valor);
@@ -85,7 +91,7 @@ public:
         uint8_t registrador_ler(Nes *nes, uint16_t endereco);
         void registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor);
 
-private:
+    private:
         void set_controle(Nes *nes, uint8_t valor);
         void set_mascara(Nes *nes, uint8_t  valor);
         uint8_t get_estado(Nes *nes);
@@ -97,8 +103,8 @@ private:
         void set_omd_dma(Nes *nes, uint8_t valor);
         uint8_t get_dados(Nes *nes);
         void set_dados(Nes *nes, uint8_t valor);
-        
+            
         uint16_t endereco_espelhado(Nes *nes, uint16_t endereco);
-};
+    };
 
 }
