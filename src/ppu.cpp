@@ -150,23 +150,23 @@ namespace nesbrasa::nucleo
 
             if (endereco == 0x3F10)
             {
-            return this->vram[0x3F00];
+                return this->vram[0x3F00];
             }
             else if (endereco == 0x3F14)
             {
-            return this->vram[0x3F04];
+                return this->vram[0x3F04];
             }
             else if (endereco == 0x3F18)
             {
-            return this->vram[0x3F08];
+                return this->vram[0x3F08];
             }
             else if (endereco == 0x3F1C)
             {
-            return this->vram[0x3F0C];
+                return this->vram[0x3F0C];
             }
             else
             {
-            return this->vram[endereco];
+                return this->vram[endereco];
             }
         }
 
@@ -404,65 +404,65 @@ namespace nesbrasa::nucleo
         switch (nes->cartucho->espelhamento)
         {
             case Espelhamento::HORIZONTAL:
-            if (endereco >= 0x2000 && endereco < 0x2400)
-            {
-                base = 0x2000;
-            }
-            else if (endereco >= 0x2400 && endereco < 0x2800)
-            {
-                base = 0x2000;
-            }
-            else if (endereco >= 0x2800 && endereco < 0x2C00)
-            {
-                base = 0x2400;
-            }
-            else
-            {
-                base = 0x2400;
-            }
-            break;
+                if (endereco >= 0x2000 && endereco < 0x2400)
+                {
+                    base = 0x2000;
+                }
+                else if (endereco >= 0x2400 && endereco < 0x2800)
+                {
+                    base = 0x2000;
+                }
+                else if (endereco >= 0x2800 && endereco < 0x2C00)
+                {
+                    base = 0x2400;
+                }
+                else
+                {
+                    base = 0x2400;
+                }
+                break;
 
             case Espelhamento::VERTICAL:
-            if (endereco >= 0x2000 && endereco < 0x2400)
-            {
-                base = 0x2000;
-            }
-            else if (endereco >= 0x2400 && endereco < 0x2800)
-            {
-                base = 0x2400;
-            }
-            else if (endereco >= 0x2800 && endereco < 0x2C00)
-            {
-                base = 0x2000;
-            }
-            else
-            {
-                base = 0x2400;
-            }
-            break;
+                if (endereco >= 0x2000 && endereco < 0x2400)
+                {
+                    base = 0x2000;
+                }
+                else if (endereco >= 0x2400 && endereco < 0x2800)
+                {
+                    base = 0x2400;
+                }
+                else if (endereco >= 0x2800 && endereco < 0x2C00)
+                {
+                    base = 0x2000;
+                }
+                else
+                {
+                    base = 0x2400;
+                }
+                break;
 
             case Espelhamento::TELA_UNICA:
-            base = 0x2000;
-            break;
+                base = 0x2000;
+                break;
 
             case Espelhamento::QUATRO_TELAS:
-            if (endereco >= 0x2000 && endereco < 0x2400)
-            {
-                base = 0x2000;
-            }
-            else if (endereco >= 0x2400 && endereco < 0x2800)
-            {
-                base = 0x2400;
-            }
-            else if (endereco >= 0x2800 && endereco < 0x2C00)
-            {
-                base = 0x2800;
-            }
-            else
-            {
-                base = 0x2C00;
-            }
-            break;
+                if (endereco >= 0x2000 && endereco < 0x2400)
+                {
+                    base = 0x2000;
+                }
+                else if (endereco >= 0x2400 && endereco < 0x2800)
+                {
+                    base = 0x2400;
+                }
+                else if (endereco >= 0x2800 && endereco < 0x2C00)
+                {
+                    base = 0x2800;
+                }
+                else
+                {
+                    base = 0x2C00;
+                }
+                break;
         }
 
         return base | (endereco & 0b0000001111111111);

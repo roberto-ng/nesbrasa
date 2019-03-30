@@ -249,11 +249,11 @@ namespace nesbrasa::nucleo
         cpu->n = buscar_bit(valor, 7);
         cpu->v = buscar_bit(valor, 6);
         cpu->z = valor & cpu->a;
-        }
+    }
 
-        //! Pula para o endereço indicado se a flag 'n' estiver ativa
-        static void instrucao_bmi(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
-        {
+    //! Pula para o endereço indicado se a flag 'n' estiver ativa
+    static void instrucao_bmi(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
+    {
         if (cpu->n == true)
         {
             cpu->branch_somar_ciclos(endereco);
@@ -269,10 +269,10 @@ namespace nesbrasa::nucleo
             cpu->branch_somar_ciclos(endereco);
             cpu->pc = endereco;
         }
-        }
+    }
 
-        //! Pula para o endereço indicado se a flag 'n' não estiver ativa
-        static void instrucao_bpl(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
+    //! Pula para o endereço indicado se a flag 'n' não estiver ativa
+    static void instrucao_bpl(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
         {
         if (cpu->n == false)
         {
