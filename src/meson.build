@@ -37,6 +37,8 @@ nesbrasa_lib = shared_library('nesbrasa' + api_version,
   install: true,
 )
 
+nesbrasa_dep = declare_dependency(include_directories : inc, link_with : nesbrasa_lib)
+
 pkg = import('pkgconfig')
 
 pkg.generate(
