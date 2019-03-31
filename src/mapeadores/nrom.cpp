@@ -36,7 +36,7 @@ namespace nesbrasa::nucleo
             // espelhar o endereço caso a rom PRG só possua 1 banco
             if (cartucho->prg_quantidade == 1)
             {
-                 endereco_mapeado % 0x4000;
+                return endereco_mapeado % 0x4000;
             }
             else
             {
