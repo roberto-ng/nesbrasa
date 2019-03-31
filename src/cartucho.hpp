@@ -24,8 +24,8 @@
 #include <vector>
 #include <memory>
 
-#include "mapeadores/mapeador.hpp"
-#include "mapeadores/nrom.hpp"
+#include "mapeador.hpp"
+#include "nrom.hpp"
 
 using std::vector;
 using std::unique_ptr;
@@ -70,7 +70,7 @@ namespace nesbrasa::nucleo
         bool possui_sram;
 
         Cartucho();
-            
+
         int carregar_rom(vector<uint8_t> rom);
 
         uint8_t mapeador_ler(uint16_t endereco);

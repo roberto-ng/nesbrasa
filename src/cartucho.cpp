@@ -20,7 +20,7 @@
 #include <string.h>
 
 #include "cartucho.hpp"
-#include "mapeadores/nrom.hpp"
+#include "nrom.hpp"
 #include "util.hpp"
 
 namespace nesbrasa::nucleo
@@ -35,7 +35,7 @@ namespace nesbrasa::nucleo
         this->rom_carregada = false;
         this->possui_sram = false;
         this->mapeador = nullptr;
-        
+
         this->sram.reserve(0x2000);
         for (uint32_t i = 0; i < this->sram.capacity(); i++)
         {
@@ -55,7 +55,7 @@ namespace nesbrasa::nucleo
         // limpa os arrays e o mapeador
         this->mapeador.reset();
         this->resetar_arrays();
-        
+
         this->sram.reserve(0x2000);
         for (uint32_t i = 0; i < this->sram.capacity(); i++)
         {

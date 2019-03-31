@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 #include "mapeador.hpp"
-#include "../cartucho.hpp"
+#include "cartucho.hpp"
 
 namespace nesbrasa::nucleo
 {
