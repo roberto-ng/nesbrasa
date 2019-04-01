@@ -19,8 +19,6 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdlib>
-#include <cstdbool>
 #include <vector>
 #include <memory>
 

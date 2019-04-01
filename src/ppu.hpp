@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <cstdbool>
 #include <cstdint>
 #include <array>
 #include <memory>
