@@ -35,8 +35,6 @@ using std::shared_ptr;
 namespace nesbrasa::nucleo
 {
 
-    class Nes;
-
     class Ppu
     {
     public:
