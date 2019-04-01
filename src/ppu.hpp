@@ -40,7 +40,7 @@ namespace nesbrasa::nucleo
     class Ppu
     {
     public:
-        shared_ptr<Memoria> memoria;
+        Memoria* memoria;
 
         array<uint8_t, 0x100>  oam;
         array<uint8_t, 0x4000> vram;
@@ -83,7 +83,7 @@ namespace nesbrasa::nucleo
         uint8_t  x;
         bool     w;
 
-        Ppu(shared_ptr<Memoria>& memoria);
+        Ppu(Memoria* memoria);
 
         uint8_t ler(Nes *nes, uint16_t endereco);
         void escrever(Nes *nes, uint16_t endereco, uint8_t valor);

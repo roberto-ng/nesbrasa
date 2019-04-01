@@ -52,6 +52,8 @@ namespace nesbrasa::nucleo
 
     int Cartucho::carregar_rom(vector<uint8_t> rom)
     {
+        this->rom_carregada = false;
+
         // limpa os arrays e o mapeador
         this->mapeador.reset();
         this->resetar_arrays();
@@ -135,7 +137,7 @@ namespace nesbrasa::nucleo
             default:
                 this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
                 this->mapeador = nullptr;
-                return -1;
+                return -2;
         }
 
         if (buscar_bit(rom[6], 3) == true)
@@ -155,6 +157,7 @@ namespace nesbrasa::nucleo
         }
 
         //TODO: Completar suporte a ROMs no formato NES 2.0
+        this->rom_carregada = true;
         return 0;
     }
 

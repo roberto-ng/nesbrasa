@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <memory>
 #include <array>
+#include <vector>
 
 #include "cpu.hpp"
 #include "ppu.hpp"
@@ -29,6 +30,7 @@
 using std::shared_ptr;
 using std::unique_ptr;
 using std::array;
+using std::vector;
 
 namespace nesbrasa::nucleo
 {
@@ -43,6 +45,10 @@ namespace nesbrasa::nucleo
         unique_ptr<Cartucho> cartucho;
 
         Nes();
+
+        void carregar_rom(vector<uint8_t> rom);
+
+        void ciclo();
     };
 
 }

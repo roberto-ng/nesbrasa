@@ -16,22 +16,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#include <string>
 
 #include "nesbrasa.hpp"
 #include "cartucho.hpp"
 #include "util.hpp"
+
+using std::make_unique;
 
 namespace nesbrasa::nucleo
 {
 
     Nes::Nes()
     {
-        this->memoria = std::make_shared<Memoria>(this);
-
-        this->cpu = std::make_unique<Cpu>(this->memoria);
-        this->ppu = std::make_unique<Ppu>(this->memoria);
-        this->cartucho = std::make_unique<Cartucho>();
+        this->memoria = make_unique<Memoria>(this);
+        
+        this->cpu = make_unique<Cpu>(this->memoria.get());
+        this->ppu = make_unique<Ppu>(this->memoria.get());
+        this->cartucho = make_unique<Cartucho>();
     }
 
+    void Nes::carregar_rom(vector<uint8_t> rom)
+    {
+        int resultado = this->cartucho->carregar_rom(rom);
+        
+        if (resultado == -1)
+        {
+            throw "Erro: formato não reconhecido";
+        }
+        
+        if (resultado == -2)
+        {
+            throw "Erro: mapeador não reconhecido";
+        }
+        
+        if (resultado != 0)
+        {
+            throw "Erro";
+        }
+
+        this->cpu->resetar();
+    }
+
+    void Nes::ciclo()
+    {
+        if (!this->cartucho->rom_carregada)
+        {
+            return;
+        }
+    }
 }

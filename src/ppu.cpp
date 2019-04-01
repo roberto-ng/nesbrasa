@@ -27,7 +27,7 @@
 namespace nesbrasa::nucleo
 {
 
-    Ppu::Ppu(shared_ptr<Memoria>& memoria)
+    Ppu::Ppu(Memoria* memoria)
     {
         this->memoria = memoria;
 

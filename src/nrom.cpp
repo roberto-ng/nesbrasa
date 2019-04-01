@@ -56,4 +56,9 @@ namespace nesbrasa::nucleo
         }
     }
 
+    string NRom::get_nome()
+    {
+        return "nrom";
+    }
+
 }

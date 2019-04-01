@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#include <cstdio>
 
 #include "cpu.hpp"
 #include "nesbrasa.hpp"
@@ -27,7 +27,7 @@
 namespace nesbrasa::nucleo
 {
 
-    Cpu::Cpu(shared_ptr<Memoria>& memoria)
+    Cpu::Cpu(Memoria* memoria)
     {
         this->memoria = memoria;
         this->pc = 0;
@@ -47,7 +47,7 @@ namespace nesbrasa::nucleo
         this->instrucoes = carregar_instrucoes();
     }
 
-    void Cpu::ciclo(Nes* nes)
+    void Cpu::ciclo()
     {
         if (this->esperar > 0)
         {
@@ -59,13 +59,13 @@ namespace nesbrasa::nucleo
 
         uint8_t opcode = this->memoria->ler(this->pc);
         if (!this->instrucoes[opcode].has_value())
+        {
+            printf("Erro: Uso de opcode inválido - %02X", opcode);
             return;
+        }
 
         Instrucao& instrucao = this->instrucoes[opcode].value();
-        
-        uint16_t endereco = instrucao.buscar_endereco(this);
-        this->pc += instrucao.bytes;
-        this->executar(&instrucao, endereco);
+        this->executar(&instrucao);
         
         if (this->pag_alterada) 
         {
@@ -82,9 +82,18 @@ namespace nesbrasa::nucleo
         this->esperar += this->ciclos - ciclos_qtd_anterior;
     }
 
-    void Cpu::executar(Instrucao* instrucao, uint16_t endereco)
+    void Cpu::executar(Instrucao* instrucao)
     {
+        uint16_t endereco = instrucao->buscar_endereco(this);
+        this->pc += instrucao->bytes;
         instrucao->funcao(instrucao, this, endereco);
+    }
+
+    void Cpu::resetar()
+    {
+        this->sp = 0xFD;
+        this->pc = this->memoria->ler_16_bits(0xFFFC);
+        this->set_estado(0b00100100);
     }
 
     void Cpu::branch_somar_ciclos(uint16_t endereco)

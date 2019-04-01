@@ -32,6 +32,8 @@ namespace nesbrasa::nucleo
 		uint8_t ler(Cartucho *cartucho, uint16_t endereco);
 
 		void escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
+
+		string get_nome();
 	};
 
 }

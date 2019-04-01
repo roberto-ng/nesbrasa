@@ -42,9 +42,10 @@ namespace nesbrasa::nucleo
     class Cpu
     {
     private:
-        void executar(Instrucao* instrucao, uint16_t endereco);
+        void executar(Instrucao* instrucao);
+
     public:
-        shared_ptr<Memoria> memoria;
+        Memoria* memoria;
     
         uint16_t pc; // contador de programa
         uint8_t  sp; // ponteiro da stack
@@ -67,9 +68,11 @@ namespace nesbrasa::nucleo
 
         array<optional<Instrucao>, 256> instrucoes;
 
-        Cpu(shared_ptr<Memoria>& memoria);
+        Cpu(Memoria* memoria);
             
-        void ciclo(Nes* nes);
+        void ciclo();
+
+        void resetar();
 
         /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
             \param endereco O endereço em que o branch sera realizado
