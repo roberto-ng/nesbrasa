@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
-
 #include "cpu.hpp"
 #include "nesbrasa.hpp"
 #include "util.hpp"
@@ -162,8 +160,8 @@ namespace nesbrasa::nucleo
 
     void Cpu::stack_empurrar_16_bits(uint16_t valor)
     {
-        uint8_t menor = this->memoria->ler(valor & 0x00FF);
-        uint8_t maior = this->memoria->ler((valor & 0xFF00) >> 8);
+        uint8_t menor = valor & 0x00FF;
+        uint8_t maior = (valor & 0xFF00) >> 8;
 
         this->stack_empurrar(maior);
         this->stack_empurrar(menor);
