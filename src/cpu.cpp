@@ -138,9 +138,9 @@ namespace nesbrasa::nucleo
     {
         // checa se um valor é '0'
         if (valor == 0)
-            this->z = false;
-        else
             this->z = true;
+        else
+            this->z = false;
     }
 
     void Cpu::set_n(uint8_t valor)

@@ -112,8 +112,10 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::IMED:
             {
+                int valor = this->memoria->ler(this->cpu->pc + 1);
+
                 stringstream ss;
-                ss << instrucao->nome << " #$" << std::uppercase << std::hex << this->cpu->pc + 1;
+                ss << instrucao->nome << " #$" << std::uppercase << std::hex << valor;
 
                 return ss.str();
             }
@@ -152,16 +154,20 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::REL:
             {
+                int endereco = instrucao->buscar_endereco(this->cpu.get());
+
                 stringstream ss;
-                ss << instrucao->nome << " ##" << std::uppercase << std::hex << cpu->pc+1 << "";
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << "";
 
                 return ss.str();
             }
 
             case InstrucaoModo::P_ZERO:
             {
+                int valor = this->memoria->ler(this->cpu->pc + 1);
+
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << cpu->pc + 1;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor;
 
                 return ss.str();
             }
