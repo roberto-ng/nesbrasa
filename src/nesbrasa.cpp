@@ -17,12 +17,14 @@
  */
 
 #include <string>
+#include <sstream>
 
 #include "nesbrasa.hpp"
 #include "cartucho.hpp"
 #include "util.hpp"
 
 using std::make_unique;
+using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
@@ -42,17 +44,17 @@ namespace nesbrasa::nucleo
         
         if (resultado == -1)
         {
-            throw "Erro: formato não reconhecido";
+            throw string("Erro: formato não reconhecido");
         }
         
         if (resultado == -2)
         {
-            throw "Erro: mapeador não reconhecido";
+            throw string("Erro: mapeador não reconhecido");
         }
         
         if (resultado != 0)
         {
-            throw "Erro";
+            throw string("Erro");
         }
 
         this->cpu->resetar();
@@ -62,7 +64,127 @@ namespace nesbrasa::nucleo
     {
         if (!this->cartucho->rom_carregada)
         {
-            return;
+            throw string("Erro: nenhuma ROM foi carregada");
+        }
+
+        this->cpu->ciclo();
+    }
+
+    string Nes::instrucao_para_asm(Instrucao* instrucao)
+    {
+
+        switch (instrucao->modo)
+        {
+            case InstrucaoModo::ACM:
+            {   
+                stringstream ss;
+                ss << instrucao->nome << " " << this->cpu->a;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::ABS:
+            {
+                stringstream ss;
+                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
+                ss << instrucao->nome << " " << endereco;
+            
+                return ss.str();
+            }
+
+            case InstrucaoModo::ABS_X:
+            {
+                stringstream ss;
+                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
+                ss << instrucao->nome << " " << endereco << ", X";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::ABS_Y:
+            {
+                stringstream ss;
+                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
+                ss << instrucao->nome << " " << endereco << ", Y";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IMED:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " #" << this->cpu->pc + 1;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IMPL:
+            {
+                stringstream ss;
+                ss << instrucao->nome;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IND:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " (" << cpu->pc+1 << ")";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IND_X:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " (" << cpu->pc+1 << ", X)";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IND_Y:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " (" << cpu->pc+1 << "), Y";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::REL:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " " << cpu->pc+1 << "";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::P_ZERO:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " " << cpu->pc + 1;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::P_ZERO_X:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " " << cpu->pc + 1 << ", X";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::P_ZERO_Y:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " " << cpu->pc + 1 << ", Y";
+
+                return ss.str();
+            }
+
+            default:
+                return "???";
         }
     }
+
 }

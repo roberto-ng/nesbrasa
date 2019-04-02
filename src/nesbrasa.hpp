@@ -49,6 +49,8 @@ namespace nesbrasa::nucleo
         void carregar_rom(vector<uint8_t> rom);
 
         void ciclo();
+
+        string instrucao_para_asm(Instrucao* instrucao);
     };
 
 }

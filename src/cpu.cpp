@@ -183,5 +183,5 @@ namespace nesbrasa::nucleo
 
         return (maior << 8) | menor;
     }
-
+    
 }
