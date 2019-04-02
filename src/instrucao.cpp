@@ -292,7 +292,7 @@ namespace nesbrasa::nucleo
     //! Pula para o endereço indicado se a flag 'v' não estiver ativa
     static void instrucao_bvc (Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
     {
-        if (cpu->n == false)
+        if (cpu->v == false)
         {
             cpu->branch_somar_ciclos(endereco);
             cpu->pc = endereco;
@@ -302,7 +302,7 @@ namespace nesbrasa::nucleo
     //! Pula para o endereço indicado se a flag 'v' estiver ativa
     static void instrucao_bvs(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
     {
-        if (cpu->n == true)
+        if (cpu->v == true)
         {
             cpu->branch_somar_ciclos(endereco);
             cpu->pc = endereco;
