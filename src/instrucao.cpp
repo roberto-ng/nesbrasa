@@ -262,7 +262,7 @@ namespace nesbrasa::nucleo
     //! Pula para o endereço indicado se a flag 'z' não estiver ativa
     static void instrucao_bne(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
     {
-        if (cpu->z == true)
+        if (cpu->z == false)
         {
             cpu->branch_somar_ciclos(endereco);
             cpu->pc = endereco;
