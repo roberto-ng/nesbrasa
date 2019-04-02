@@ -143,7 +143,7 @@ namespace nesbrasa::nucleo
 
         // checa se houve um overflow/transbordamento e atualiza a flag v
         // solução baseada em: https://stackoverflow.com/a/16861251
-        if ((~(a ^ valor)) & (a ^ c) & 0x80)
+        if ((~(a ^ valor) & (a ^ soma_total) & 0x80) != 0)
             cpu->v = 1;
         else
             cpu->v = 0;
@@ -692,8 +692,7 @@ namespace nesbrasa::nucleo
             cpu->c = 0;
 
         // checa se houve um overflow/transbordamento e atualiza a flag v
-        // solução baseada em: https://stackoverflow.com/a/16861251
-        if ((~(a ^ (valor*-1 - 1))) & (a ^ c) & 0x80)
+        if ((~(a ^ valor) & (a ^ subtracao_total) & 0x80) != 0)
             cpu->v = 1;
         else
             cpu->v = 0;
