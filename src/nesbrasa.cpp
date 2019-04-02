@@ -78,7 +78,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ACM:
             {   
                 stringstream ss;
-                ss << instrucao->nome << " " << this->cpu->a;
+                ss << instrucao->nome << " $" << std::hex << this->cpu->a;
 
                 return ss.str();
             }
@@ -87,7 +87,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
                 uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
-                ss << instrucao->nome << " " << endereco;
+                ss << instrucao->nome << " $" << std::hex << endereco;
             
                 return ss.str();
             }
@@ -96,7 +96,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
                 uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
-                ss << instrucao->nome << " " << endereco << ", X";
+                ss << instrucao->nome << " $" << std::hex << endereco << ", X";
 
                 return ss.str();
             }
@@ -105,7 +105,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
                 uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
-                ss << instrucao->nome << " " << endereco << ", Y";
+                ss << instrucao->nome << " $" << std::hex << endereco << ", Y";
 
                 return ss.str();
             }
@@ -113,7 +113,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IMED:
             {
                 stringstream ss;
-                ss << instrucao->nome << " #" << this->cpu->pc + 1;
+                ss << instrucao->nome << " #$" << std::hex << this->cpu->pc + 1;
 
                 return ss.str();
             }
@@ -129,7 +129,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IND:
             {
                 stringstream ss;
-                ss << instrucao->nome << " (" << cpu->pc+1 << ")";
+                ss << instrucao->nome << " ($" << std::hex << cpu->pc+1 << ")";
 
                 return ss.str();
             }
@@ -137,7 +137,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IND_X:
             {
                 stringstream ss;
-                ss << instrucao->nome << " (" << cpu->pc+1 << ", X)";
+                ss << instrucao->nome << " ($" << std::hex << cpu->pc+1 << ", X)";
 
                 return ss.str();
             }
@@ -145,7 +145,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IND_Y:
             {
                 stringstream ss;
-                ss << instrucao->nome << " (" << cpu->pc+1 << "), Y";
+                ss << instrucao->nome << " ($" << std::hex << cpu->pc+1 << "), Y";
 
                 return ss.str();
             }
@@ -153,7 +153,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::REL:
             {
                 stringstream ss;
-                ss << instrucao->nome << " " << cpu->pc+1 << "";
+                ss << instrucao->nome << " ##" << std::hex << cpu->pc+1 << "";
 
                 return ss.str();
             }
@@ -161,7 +161,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::P_ZERO:
             {
                 stringstream ss;
-                ss << instrucao->nome << " " << cpu->pc + 1;
+                ss << instrucao->nome << " $" << std::hex << cpu->pc + 1;
 
                 return ss.str();
             }
@@ -169,7 +169,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::P_ZERO_X:
             {
                 stringstream ss;
-                ss << instrucao->nome << " " << cpu->pc + 1 << ", X";
+                ss << instrucao->nome << " $" << std::hex << cpu->pc + 1 << ", X";
 
                 return ss.str();
             }
@@ -177,7 +177,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::P_ZERO_Y:
             {
                 stringstream ss;
-                ss << instrucao->nome << " " << cpu->pc + 1 << ", Y";
+                ss << instrucao->nome << " $" << std::hex << cpu->pc + 1 << ", Y";
 
                 return ss.str();
             }
