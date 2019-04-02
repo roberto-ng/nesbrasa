@@ -28,6 +28,7 @@ namespace nesbrasa::nucleo
     Cpu::Cpu(Memoria* memoria)
     {
         this->memoria = memoria;
+        this->ciclos = 0;
         this->pc = 0;
         this->sp = 0;
         this->a = 0;
