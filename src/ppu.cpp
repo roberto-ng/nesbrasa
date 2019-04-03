@@ -142,8 +142,8 @@ namespace nesbrasa::nucleo
 
             if (endereco >= 0x3F20)
             {
-            // espelhar o endereço se necessario
-            endereco = (endereco%0x20) + 0x3F00;
+                // espelhar o endereço se necessario
+                endereco = (endereco%0x20) + 0x3F00;
             }
 
             if (endereco == 0x3F10)
@@ -189,7 +189,7 @@ namespace nesbrasa::nucleo
             // espelhar o endereço se for necessario
             if (endereco >= 0x3F20)
             {
-            endereco = (endereco%0x20) + 0x3F00;
+                endereco = (endereco%0x20) + 0x3F00;
             }
 
             if (endereco == 0x3F10)
