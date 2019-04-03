@@ -25,8 +25,7 @@ using std::array;
 
 namespace nesbrasa::nucleo
 {
-
-class Nes;
+    class Nes;
 
     class Memoria
     {

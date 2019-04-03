@@ -20,7 +20,6 @@
 
 namespace nesbrasa::nucleo
 {
-
     uint8_t NRom::ler(Cartucho *cartucho, uint16_t endereco)
     {
         if (endereco < 0x2000)
@@ -60,5 +59,4 @@ namespace nesbrasa::nucleo
     {
         return "nrom";
     }
-
 }

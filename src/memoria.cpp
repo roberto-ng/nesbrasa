@@ -21,7 +21,6 @@
 
 namespace nesbrasa::nucleo
 {
-
     Memoria::Memoria(Nes *nes)
     {
         this->nes = nes;
@@ -132,5 +131,4 @@ namespace nesbrasa::nucleo
             this->nes->cartucho->mapeador_escrever(endereco, valor);
         }
     }
-
 }

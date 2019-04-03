@@ -30,7 +30,6 @@ using std::unique_ptr;
 
 namespace nesbrasa::nucleo
 {
-
     enum class Espelhamento
     {
         HORIZONTAL,
@@ -75,5 +74,4 @@ namespace nesbrasa::nucleo
 
         void mapeador_escrever(uint16_t endereco, uint8_t valor);
     };
-
 }

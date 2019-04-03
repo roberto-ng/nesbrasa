@@ -33,7 +33,6 @@ using std::shared_ptr;
 
 namespace nesbrasa::nucleo
 {
-
     class Ppu
     {
     public:
@@ -103,5 +102,4 @@ namespace nesbrasa::nucleo
             
         uint16_t endereco_espelhado(Nes *nes, uint16_t endereco);
     };
-
 }

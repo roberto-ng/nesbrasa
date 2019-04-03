@@ -28,7 +28,6 @@ using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
-
     Nes::Nes()
     {
         this->memoria = make_unique<Memoria>(this);
@@ -192,5 +191,4 @@ namespace nesbrasa::nucleo
                 return "???";
         }
     }
-
 }

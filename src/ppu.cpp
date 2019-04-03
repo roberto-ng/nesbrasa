@@ -24,7 +24,6 @@
 
 namespace nesbrasa::nucleo
 {
-
     Ppu::Ppu(Memoria* memoria)
     {
         this->memoria = memoria;
@@ -465,5 +464,4 @@ namespace nesbrasa::nucleo
 
         return base | (endereco & 0b0000001111111111);
     }
-
 }

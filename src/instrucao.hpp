@@ -32,12 +32,11 @@ using std::optional;
 using std::array;
 using std::shared_ptr;
 
-namespace nesbrasa::nucleo
-{
-
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
 
+namespace nesbrasa::nucleo
+{
     //! Modos de endereçamento das instruções
     enum class InstrucaoModo
     {
@@ -74,7 +73,7 @@ namespace nesbrasa::nucleo
 
         /*! Uma fução de alto nivel que sera usada para reimplementar
             uma instrução da arquitetura 6502 */
-        function<void(Instrucao*,Cpu*,uint16_t)> funcao;
+        function< void(Instrucao*,Cpu*,uint16_t) > funcao;
       
         Instrucao(
             string  nome,
@@ -82,7 +81,7 @@ namespace nesbrasa::nucleo
             int32_t ciclos,
             int32_t ciclos_pag_alterada,
             InstrucaoModo  modo,
-            function<void(Instrucao*,Cpu*,uint16_t)> funcao
+            function< void(Instrucao*,Cpu*,uint16_t) > funcao
         );
 
         /*!
@@ -92,6 +91,5 @@ namespace nesbrasa::nucleo
         uint16_t buscar_endereco(Cpu* cpu);
     };
 
-    array<optional<Instrucao>, 256> carregar_instrucoes();
-
+    array< optional<Instrucao>, 256 > carregar_instrucoes();
 }

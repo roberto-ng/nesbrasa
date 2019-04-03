@@ -20,7 +20,6 @@
 
 namespace nesbrasa::nucleo
 {
-
     bool buscar_bit(uint8_t byte, uint8_t pos)
     {
         // dar a volta quando a posição do bit for maior que 7
@@ -34,5 +33,4 @@ namespace nesbrasa::nucleo
     {
         return (endereco_1 & 0xFF00) == (endereco_2 & 0xFF00);
     }
-
 }

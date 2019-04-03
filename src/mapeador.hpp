@@ -7,7 +7,6 @@ using std::string;
 
 namespace nesbrasa::nucleo
 {
-
     class Cartucho;
 
     class IMapeador
@@ -21,5 +20,4 @@ namespace nesbrasa::nucleo
 
         virtual string get_nome() = 0;
     };
-
 }

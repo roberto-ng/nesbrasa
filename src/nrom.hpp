@@ -25,7 +25,6 @@
 
 namespace nesbrasa::nucleo
 {
-
 	class NRom : public IMapeador
 	{
 	public:
@@ -35,5 +34,4 @@ namespace nesbrasa::nucleo
 
 		string get_nome();
 	};
-
 }

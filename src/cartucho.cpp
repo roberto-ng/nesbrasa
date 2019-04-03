@@ -25,7 +25,6 @@
 
 namespace nesbrasa::nucleo
 {
-
     Cartucho::Cartucho()
     {
         this->espelhamento = Espelhamento::VERTICAL;
@@ -180,5 +179,4 @@ namespace nesbrasa::nucleo
             return this->mapeador->escrever(this, endereco, valor);
         }
     }
-
 }

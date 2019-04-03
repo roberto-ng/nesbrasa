@@ -24,7 +24,6 @@
 
 namespace nesbrasa::nucleo
 {
-
     Cpu::Cpu(Memoria* memoria)
     {
         this->memoria = memoria;
@@ -182,5 +181,4 @@ namespace nesbrasa::nucleo
 
         return (maior << 8) | menor;
     }
-    
 }

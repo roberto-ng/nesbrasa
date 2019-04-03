@@ -34,7 +34,6 @@ using std::vector;
 
 namespace nesbrasa::nucleo
 {
-
     class Nes
     {
     public:
@@ -52,5 +51,4 @@ namespace nesbrasa::nucleo
 
         string instrucao_para_asm(Instrucao* instrucao);
     };
-
 }

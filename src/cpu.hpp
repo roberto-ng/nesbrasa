@@ -35,12 +35,8 @@ using std::shared_ptr;
 
 namespace nesbrasa::nucleo
 {
-
     class Cpu
     {
-    private:
-        void executar(Instrucao* instrucao);
-
     public:
         Memoria* memoria;
     
@@ -63,7 +59,7 @@ namespace nesbrasa::nucleo
         uint32_t ciclos;
         bool     pag_alterada;
 
-        array<optional<Instrucao>, 256> instrucoes;
+        array< optional<Instrucao>, 256 > instrucoes;
 
         Cpu(Memoria* memoria);
             
@@ -97,6 +93,8 @@ namespace nesbrasa::nucleo
 
         //! Puxa um valor da stack
         uint16_t stack_puxar_16_bits();
-    };
 
+    private:
+        void executar(Instrucao* instrucao);
+    };
 }

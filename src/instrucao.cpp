@@ -33,7 +33,7 @@ namespace nesbrasa::nucleo
         int32_t ciclos,
         int32_t ciclos_pag_alterada,
         InstrucaoModo  modo,
-        function<void(Instrucao*,Cpu*,uint16_t)> funcao
+        function< void(Instrucao*,Cpu*,uint16_t) > funcao
     )
     {
         this->nome = nome;
@@ -798,10 +798,10 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
-    array<optional<Instrucao>, 256> carregar_instrucoes()
+    array< optional<Instrucao>, 256 > carregar_instrucoes()
     {
         // cria um array com 0x100 (256 em decimal) ponteiros para instruções
-        array<optional<Instrucao>, 256> instrucoes;
+        array< optional<Instrucao>, 256 > instrucoes;
         for (auto& instrucao : instrucoes)
         {
             instrucao = std::nullopt;
