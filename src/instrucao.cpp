@@ -271,7 +271,7 @@ namespace nesbrasa::nucleo
 
     //! Pula para o endereço indicado se a flag 'n' não estiver ativa
     static void instrucao_bpl(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
-        {
+    {
         if (cpu->n == false)
         {
             cpu->branch_somar_ciclos(endereco);
@@ -782,10 +782,6 @@ namespace nesbrasa::nucleo
     static void instrucao_txs(Instrucao* instrucao, Cpu* cpu, uint16_t endereco)
     {
         cpu->sp = cpu->x;
-
-        // atualizar flags
-        cpu->set_n(cpu->sp);
-        cpu->set_z(cpu->sp);
     }
 
     //! Atribui o valor do registrador 'y' ao acumulador
