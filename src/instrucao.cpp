@@ -680,19 +680,19 @@ namespace nesbrasa::nucleo
         uint8_t valor = cpu->memoria->ler(endereco);
 
         const uint8_t a = cpu->a;
-        const uint8_t c = (cpu->c) ? 1 : 0;
+        const uint8_t c = (!cpu->c) ? 1 : 0;
 
-        cpu->a = a - valor - 1 - c;
+        cpu->a = a - valor - c;
 
         // atualiza a flag c
-        int32_t subtracao_total = (int32_t)a - (int32_t)valor - 1 - (int32_t)c;
+        int32_t subtracao_total = (int32_t)a - (int32_t)valor - (int32_t)c;
         if (subtracao_total >= 0)
             cpu->c = 1;
         else
             cpu->c = 0;
 
         // checa se houve um overflow/transbordamento e atualiza a flag v
-        if ((~(a ^ valor) & (a ^ subtracao_total) & 0x80) != 0)
+        if (((a ^ valor) & (a ^ subtracao_total) & 0x80) != 0)
             cpu->v = 1;
         else
             cpu->v = 0;
