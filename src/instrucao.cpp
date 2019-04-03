@@ -246,7 +246,7 @@ namespace nesbrasa::nucleo
 
         cpu->n = buscar_bit(valor, 7);
         cpu->v = buscar_bit(valor, 6);
-        cpu->z = valor & cpu->a;
+        cpu->z = (valor & cpu->a) == 0;
     }
 
     //! Pula para o endereço indicado se a flag 'n' estiver ativa
