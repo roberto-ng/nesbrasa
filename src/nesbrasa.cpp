@@ -137,16 +137,20 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::IND_X:
             {
+                int valor = cpu->memoria->ler(cpu->pc + 1);
+
                 stringstream ss;
-                ss << instrucao->nome << " ($" << std::uppercase << std::hex << cpu->pc+1 << ", X)";
+                ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << ", X)";
 
                 return ss.str();
             }
 
             case InstrucaoModo::IND_Y:
             {
+                int valor = cpu->memoria->ler(cpu->pc + 1);
+
                 stringstream ss;
-                ss << instrucao->nome << " ($" << std::uppercase << std::hex << cpu->pc+1 << "), Y";
+                ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << "), Y";
 
                 return ss.str();
             }
