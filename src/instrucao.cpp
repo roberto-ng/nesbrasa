@@ -95,7 +95,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IND_X:
             {
                 const uint16_t valor = cpu->memoria->ler(cpu->pc + 1);
-                return cpu->memoria->ler_16_bits_bug(valor + cpu->x);
+                return cpu->memoria->ler_16_bits_bug((valor + cpu->x)%0x100);
             }
 
             case InstrucaoModo::IND_Y:
