@@ -77,7 +77,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ACM:
             {   
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << this->cpu->a;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << (int)this->cpu->a;
 
                 return ss.str();
             }
