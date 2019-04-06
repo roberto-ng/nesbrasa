@@ -821,7 +821,7 @@ namespace nesbrasa::nucleo
         instrucoes[0x3D] = Instrucao("AND", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_and);
         instrucoes[0x39] = Instrucao("AND", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_and);
         instrucoes[0x21] = Instrucao("AND", 2, 6, 0, InstrucaoModo::IND_X, instrucao_and);
-        instrucoes[0x21] = Instrucao("AND", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_and);
+        instrucoes[0x31] = Instrucao("AND", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_and);
 
         // modos da instrução ASL
         instrucoes[0x0A] = Instrucao("ASL", 1, 2, 0, InstrucaoModo::ACM, instrucao_asl);
