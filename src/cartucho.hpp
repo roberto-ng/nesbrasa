@@ -68,7 +68,7 @@ namespace nesbrasa::nucleo
 
         Cartucho();
 
-        int carregar_rom(vector<uint8_t> rom);
+        void carregar_rom(vector<uint8_t> rom);
 
         uint8_t mapeador_ler(uint16_t endereco);
 

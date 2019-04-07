@@ -49,7 +49,7 @@ namespace nesbrasa::nucleo
         vector<uint8_t>().swap(this->sram);
     }
 
-    int Cartucho::carregar_rom(vector<uint8_t> rom)
+    void Cartucho::carregar_rom(vector<uint8_t> rom)
     {
         this->rom_carregada = false;
 
@@ -64,7 +64,9 @@ namespace nesbrasa::nucleo
         }
 
         if (rom.size() < 16)
-            return -1;
+        {
+            throw string("Erro: formato não reconhecido");
+        }
 
         bool formato_ines = false;
         bool formato_nes20 = false;
@@ -87,7 +89,7 @@ namespace nesbrasa::nucleo
         if (!formato_ines && !formato_nes20)
         {
             // formato inválido
-            return -1;
+            throw string("Erro: formato não reconhecido");
         }
 
         this->possui_sram = buscar_bit(rom[6], 1);
@@ -108,7 +110,7 @@ namespace nesbrasa::nucleo
         if ((offset + prg_tamanho + chr_tamanho) > rom.size())
         {
             // formato inválido
-            return -1;
+            throw string("Erro: formato não reconhecido");
         }
 
         // Copia os dados referentes à ROM PRG do arquivo para o array
@@ -136,7 +138,7 @@ namespace nesbrasa::nucleo
             default:
                 this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
                 this->mapeador = nullptr;
-                return -2;
+                throw string("Erro: mapeador não reconhecido");
         }
 
         if (buscar_bit(rom[6], 3) == true)
@@ -157,7 +159,6 @@ namespace nesbrasa::nucleo
 
         //TODO: Completar suporte a ROMs no formato NES 2.0
         this->rom_carregada = true;
-        return 0;
     }
 
     uint8_t Cartucho::mapeador_ler(uint16_t endereco)

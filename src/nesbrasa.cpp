@@ -39,23 +39,7 @@ namespace nesbrasa::nucleo
 
     void Nes::carregar_rom(vector<uint8_t> rom)
     {
-        int resultado = this->cartucho->carregar_rom(rom);
-        
-        if (resultado == -1)
-        {
-            throw string("Erro: formato não reconhecido");
-        }
-        
-        if (resultado == -2)
-        {
-            throw string("Erro: mapeador não reconhecido");
-        }
-        
-        if (resultado != 0)
-        {
-            throw string("Erro");
-        }
-
+        this->cartucho->carregar_rom(rom);
         this->cpu->resetar();
     }
 
