@@ -844,7 +844,7 @@ namespace nesbrasa::nucleo
         instrucoes[0x2C] = Instrucao("BIT", 3, 4, 0, InstrucaoModo::ABS, instrucao_bit);
 
         // modos da instrução BMI
-        instrucoes[0x30] = Instrucao("BIM", 2, 2, 0, InstrucaoModo::REL, instrucao_bmi);
+        instrucoes[0x30] = Instrucao("BMI", 2, 2, 0, InstrucaoModo::REL, instrucao_bmi);
 
         // modos da instrução BNE
         instrucoes[0xD0] = Instrucao("BNE", 2, 2, 0, InstrucaoModo::REL, instrucao_bne);
@@ -881,7 +881,7 @@ namespace nesbrasa::nucleo
         instrucoes[0xDD] = Instrucao("CMP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_cmp);
         instrucoes[0xD9] = Instrucao("CMP", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_cmp);
         instrucoes[0xC1] = Instrucao("CMP", 2, 6, 0, InstrucaoModo::IND_X, instrucao_cmp);
-        instrucoes[0xD1] = Instrucao("CMP", 3, 5, 1, InstrucaoModo::IND_Y, instrucao_cmp);
+        instrucoes[0xD1] = Instrucao("CMP", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_cmp);
 
         // modos da instrução CPX
         instrucoes[0xE0] = Instrucao("CPX", 2, 2, 0, InstrucaoModo::IMED, instrucao_cpx);
@@ -896,7 +896,7 @@ namespace nesbrasa::nucleo
         // modos da instrução DEC
         instrucoes[0xC6] = Instrucao("DEC", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_dec);
         instrucoes[0xD6] = Instrucao("DEC", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_dec);
-        instrucoes[0xCE] = Instrucao("DEC", 3, 3, 0, InstrucaoModo::ABS, instrucao_dec);
+        instrucoes[0xCE] = Instrucao("DEC", 3, 6, 0, InstrucaoModo::ABS, instrucao_dec);
         instrucoes[0xDE] = Instrucao("DEC", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_dec);
 
         // modos da instrução DEX
