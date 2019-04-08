@@ -63,10 +63,10 @@ namespace nesbrasa::nucleo
                 return cpu->memoria->ler(cpu->pc + 1);
 
             case InstrucaoModo::P_ZERO_X:
-                return cpu->memoria->ler(cpu->pc + 1 + cpu->x) & 0xFF;
+                return (cpu->memoria->ler(cpu->pc + 1) + cpu->x) & 0xFF;
 
             case InstrucaoModo::P_ZERO_Y:
-                return cpu->memoria->ler(cpu->pc + 1 + cpu->y) & 0xFF;
+                return (cpu->memoria->ler(cpu->pc + 1) + cpu->y) & 0xFF;
 
             case InstrucaoModo::ABS:
                 return cpu->memoria->ler_16_bits(cpu->pc + 1);
