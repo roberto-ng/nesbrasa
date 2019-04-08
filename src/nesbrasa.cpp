@@ -87,8 +87,8 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS_Y:
             {
                 stringstream ss;
-                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << ", Y";
+                uint16_t valor = this->memoria->ler_16_bits(this->cpu->pc + 1);
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";
 
                 return ss.str();
             }
