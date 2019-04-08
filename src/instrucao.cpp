@@ -39,6 +39,7 @@ namespace nesbrasa::nucleo
         this->nome = nome;
         this->bytes = bytes;
         this->ciclos = ciclos;
+        this->ciclos_pag_alterada = ciclos_pag_alterada;
         this->modo = modo;
         this->funcao = funcao;
     }
