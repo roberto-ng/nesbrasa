@@ -27,7 +27,6 @@
 #include "ppu.hpp"
 #include "cartucho.hpp"
 
-using std::shared_ptr;
 using std::unique_ptr;
 using std::array;
 using std::vector;
@@ -37,7 +36,7 @@ namespace nesbrasa::nucleo
     class Nes
     {
     public:
-        shared_ptr<Memoria> memoria;
+        unique_ptr<Memoria> memoria;
 
         unique_ptr<Cpu>      cpu;
         unique_ptr<Ppu>      ppu;
