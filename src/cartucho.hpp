@@ -45,6 +45,13 @@ namespace nesbrasa::nucleo
         DESCONHECIDO,
     };
 
+    enum class ArquivoFormato
+    {
+        DESCONHECIDO,
+        INES,
+        NES_2_0,
+    };
+
     class Cartucho
     {
     private:
@@ -57,6 +64,8 @@ namespace nesbrasa::nucleo
 
         uint8_t prg_quantidade;
         uint8_t chr_quantidade;
+
+        ArquivoFormato formato;
 
         unique_ptr<IMapeador> mapeador;
 

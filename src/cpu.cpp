@@ -82,9 +82,10 @@ namespace nesbrasa::nucleo
 
     void Cpu::executar(Instrucao* instrucao)
     {
-        uint16_t endereco = instrucao->buscar_endereco(this);
+        auto endereco = instrucao->buscar_endereco(this);
+        
         this->pc += instrucao->bytes;
-        instrucao->funcao(instrucao, this, endereco);
+        instrucao->implementacao(instrucao, this, endereco);
     }
 
     void Cpu::resetar()

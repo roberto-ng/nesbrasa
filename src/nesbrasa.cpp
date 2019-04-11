@@ -69,7 +69,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS:
             {
                 stringstream ss;
-                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
+                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get()).value();
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco;
             
                 return ss.str();
@@ -78,7 +78,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS_X:
             {
                 stringstream ss;
-                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get());
+                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get()).value();
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << ", X";
 
                 return ss.str();
@@ -141,7 +141,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::REL:
             {
-                int endereco = instrucao->buscar_endereco(this->cpu.get());
+                int endereco = instrucao->buscar_endereco(this->cpu.get()).value();
 
                 stringstream ss;
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << "";

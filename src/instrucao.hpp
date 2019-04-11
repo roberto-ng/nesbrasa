@@ -37,6 +37,13 @@ using std::shared_ptr;
 
 namespace nesbrasa::nucleo
 {
+    class Cpu;
+    class Instrucao;
+
+    // Tipo usado para referenciar funções de alto nível 
+    // que reimplementam instruções da arquitetura 6502
+    using InstrucaoImplementacao = function< void(Instrucao*, Cpu*, optional<uint16_t>) >;
+
     //! Modos de endereçamento das instruções
     enum class InstrucaoModo
     {
@@ -55,7 +62,6 @@ namespace nesbrasa::nucleo
         P_ZERO_Y,  // página 0, indexado pelo registrador y
     };
 
-    class Cpu;
 
     //! Uma instrução da arquitetura 6502
     class Instrucao
@@ -73,22 +79,22 @@ namespace nesbrasa::nucleo
 
         /*! Uma fução de alto nivel que sera usada para reimplementar
             uma instrução da arquitetura 6502 */
-        function< void(Instrucao*,Cpu*,uint16_t) > funcao;
+        InstrucaoImplementacao implementacao;
       
         Instrucao(
-            string  nome,
+            string nome,
             uint8_t bytes,
             int32_t ciclos,
             int32_t ciclos_pag_alterada,
             InstrucaoModo  modo,
-            function< void(Instrucao*,Cpu*,uint16_t) > funcao
+            InstrucaoImplementacao implementacao
         );
 
         /*!
         Busca o endereço que vai ser usado por uma instrução de
         acordo com o modo de endereçamento da CPU
         */
-        uint16_t buscar_endereco(Cpu* cpu);
+        optional<uint16_t> buscar_endereco(Cpu* cpu);
     };
 
     array< optional<Instrucao>, 256 > carregar_instrucoes();

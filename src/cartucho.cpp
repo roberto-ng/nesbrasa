@@ -29,6 +29,7 @@ namespace nesbrasa::nucleo
     {
         this->espelhamento = Espelhamento::VERTICAL;
         this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
+        this->formato = ArquivoFormato::DESCONHECIDO;
         this->prg_quantidade = 0;
         this->chr_quantidade = 0;
         this->rom_carregada = false;
@@ -52,6 +53,7 @@ namespace nesbrasa::nucleo
     void Cartucho::carregar_rom(vector<uint8_t> rom)
     {
         this->rom_carregada = false;
+        this->formato = ArquivoFormato::DESCONHECIDO;
 
         // limpa os arrays e o mapeador
         this->mapeador.reset();
@@ -63,30 +65,34 @@ namespace nesbrasa::nucleo
             this->sram[i] = 0;
         }
 
+        // checa se o arquivo é grande o suficiente para ter um cabeçalho
         if (rom.size() < 16)
         {
             throw string("Erro: formato não reconhecido");
         }
 
-        bool formato_ines = false;
-        bool formato_nes20 = false;
+        // lê os 4 primeiros bytes do arquivo como uma string
+        string formato_string;
+        for (int i = 0; i < 4; i++)
+        {
+            formato_string += static_cast<char>(rom[i]);
+        }
 
-        // arquivos nos formatos iNES e NES 2.0 começam com a string "NES<EOF>"
-        if (rom[0] == 'N' && rom[1] == 'E' && rom[2] == 'S' && rom[3] == 0x1A)
+        // arquivos nos formatos iNES e NES 2.0 começam com a string "NES\x1A"
+        if (formato_string == "NES\x1A")
         {
             if (buscar_bit(rom[7], 2) == false && buscar_bit(rom[7], 3) == true)
             {
                 // o arquivo está no formato NES 2.0
-                formato_nes20 = true;
+                this->formato = ArquivoFormato::NES_2_0;
             }
             else
             {
                 // o arquivo está no formato iNES
-                formato_ines = true;
+                this->formato = ArquivoFormato::INES;
             }
         }
-
-        if (!formato_ines && !formato_nes20)
+        else
         {
             // formato inválido
             throw string("Erro: formato não reconhecido");

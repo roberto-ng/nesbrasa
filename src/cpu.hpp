@@ -59,6 +59,7 @@ namespace nesbrasa::nucleo
         uint32_t ciclos;
         bool     pag_alterada;
 
+        // tabela de instruções
         array< optional<Instrucao>, 256 > instrucoes;
 
         Cpu(Memoria* memoria);
