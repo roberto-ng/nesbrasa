@@ -36,6 +36,8 @@ namespace nesbrasa::nucleo
           
         array<uint8_t, 0x0800> ram; 
 
+        Memoria() = default;
+        
         Memoria(Nes* nes);
 
         //! Lê um valor de 8 bits na memoria

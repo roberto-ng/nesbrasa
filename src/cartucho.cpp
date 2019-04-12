@@ -23,6 +23,8 @@
 #include "nrom.hpp"
 #include "util.hpp"
 
+using std::make_unique;
+
 namespace nesbrasa::nucleo
 {
     Cartucho::Cartucho()
@@ -138,7 +140,7 @@ namespace nesbrasa::nucleo
         {
             case 0:
                 this->mapeador_tipo = MapeadorTipo::NROM;
-                this->mapeador = std::make_unique<NRom>();
+                this->mapeador = make_unique<NRom>();
                 break;
 
             default:

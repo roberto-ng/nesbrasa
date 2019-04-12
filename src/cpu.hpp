@@ -62,6 +62,8 @@ namespace nesbrasa::nucleo
         // tabela de instruções
         array< optional<Instrucao>, 256 > instrucoes;
 
+        Cpu() = default;
+
         Cpu(Memoria* memoria);
             
         void ciclo();

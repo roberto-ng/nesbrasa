@@ -30,27 +30,26 @@ namespace nesbrasa::nucleo
 {
     Nes::Nes()
     {
-        this->memoria = make_unique<Memoria>(this);
-        
-        this->cpu = make_unique<Cpu>(this->memoria.get());
-        this->ppu = make_unique<Ppu>(this->memoria.get());
-        this->cartucho = make_unique<Cartucho>();
+        this->memoria = Memoria(this);
+        this->cpu = Cpu(&this->memoria);
+        this->ppu = Ppu(&this->memoria);
+        this->cartucho = Cartucho();
     }
 
     void Nes::carregar_rom(vector<uint8_t> rom)
     {
-        this->cartucho->carregar_rom(rom);
-        this->cpu->resetar();
+        this->cartucho.carregar_rom(rom);
+        this->cpu.resetar();
     }
 
     void Nes::ciclo()
     {
-        if (!this->cartucho->rom_carregada)
+        if (!this->cartucho.rom_carregada)
         {
             throw string("Erro: nenhuma ROM foi carregada");
         }
 
-        this->cpu->ciclo();
+        this->cpu.ciclo();
     }
 
     string Nes::instrucao_para_asm(Instrucao* instrucao)
@@ -61,7 +60,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ACM:
             {   
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << (int)this->cpu->a;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << (int)this->cpu.a;
 
                 return ss.str();
             }
@@ -69,7 +68,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS:
             {
                 stringstream ss;
-                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get()).value();
+                uint16_t endereco = instrucao->buscar_endereco(&this->cpu).value();
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco;
             
                 return ss.str();
@@ -78,7 +77,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS_X:
             {
                 stringstream ss;
-                uint16_t endereco = instrucao->buscar_endereco(this->cpu.get()).value();
+                uint16_t endereco = instrucao->buscar_endereco(&this->cpu).value();
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << ", X";
 
                 return ss.str();
@@ -87,7 +86,8 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS_Y:
             {
                 stringstream ss;
-                uint16_t valor = this->memoria->ler_16_bits(this->cpu->pc + 1);
+
+                uint16_t valor = this->memoria.ler_16_bits(this->cpu.pc + 1);
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";
 
                 return ss.str();
@@ -95,7 +95,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::IMED:
             {
-                int valor = this->memoria->ler(this->cpu->pc + 1);
+                int valor = this->memoria.ler(this->cpu.pc + 1);
 
                 stringstream ss;
                 ss << instrucao->nome << " #$" << std::uppercase << std::hex << valor;
@@ -114,14 +114,14 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IND:
             {
                 stringstream ss;
-                ss << instrucao->nome << " ($" << std::uppercase << std::hex << cpu->pc+1 << ")";
+                ss << instrucao->nome << " ($" << std::uppercase << std::hex << cpu.pc+1 << ")";
 
                 return ss.str();
             }
 
             case InstrucaoModo::IND_X:
             {
-                int valor = cpu->memoria->ler(cpu->pc + 1);
+                int valor = this->memoria.ler(cpu.pc + 1);
 
                 stringstream ss;
                 ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << ", X)";
@@ -131,7 +131,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::IND_Y:
             {
-                int valor = cpu->memoria->ler(cpu->pc + 1);
+                int valor = this->memoria.ler(cpu.pc + 1);
 
                 stringstream ss;
                 ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << "), Y";
@@ -141,7 +141,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::REL:
             {
-                int endereco = instrucao->buscar_endereco(this->cpu.get()).value();
+                int endereco = instrucao->buscar_endereco(&this->cpu).value();
 
                 stringstream ss;
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << "";
@@ -151,7 +151,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::P_ZERO:
             {
-                int valor = this->memoria->ler(this->cpu->pc + 1);
+                int valor = this->memoria.ler(this->cpu.pc + 1);
 
                 stringstream ss;
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << valor;
@@ -161,7 +161,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::P_ZERO_X:
             {
-                int valor = this->memoria->ler(this->cpu->pc + 1);
+                int valor = this->memoria.ler(this->cpu.pc + 1);
 
                 stringstream ss;
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", X";
@@ -171,7 +171,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::P_ZERO_Y:
             {
-                int valor = this->memoria->ler(this->cpu->pc + 1);
+                int valor = this->memoria.ler(this->cpu.pc + 1);
 
                 stringstream ss;
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";

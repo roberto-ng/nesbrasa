@@ -65,10 +65,9 @@ namespace nesbrasa::nucleo
         uint8_t prg_quantidade;
         uint8_t chr_quantidade;
 
-        ArquivoFormato formato;
-
         unique_ptr<IMapeador> mapeador;
 
+        ArquivoFormato formato;
         MapeadorTipo mapeador_tipo;
         Espelhamento espelhamento;
 

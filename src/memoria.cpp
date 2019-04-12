@@ -45,13 +45,13 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {
-            return this->nes->ppu->registrador_ler(nes, endereco);
+            return this->nes->ppu.registrador_ler(nes, endereco);
         }
         else if (endereco >= 0x2008 && endereco <= 0x3FFF)
         {
             // endereço espelhado do registrador
             uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
-            return this->nes->ppu->registrador_ler(nes, ender_espelhado);
+            return this->nes->ppu.registrador_ler(nes, ender_espelhado);
         }
         else if (endereco >= 0x4000 && endereco <= 0x4017)
         {
@@ -64,7 +64,7 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
         {
-            return this->nes->cartucho->mapeador_ler(endereco);
+            return this->nes->cartucho.mapeador_ler(endereco);
         }
 
         return 0;
@@ -109,13 +109,13 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {
-            this->nes->ppu->registrador_escrever(nes, endereco, valor);
+            this->nes->ppu.registrador_escrever(nes, endereco, valor);
         }
         else if (endereco >= 0x2008 && endereco <= 0x3FFF)
         {
             // endereço espelhado do registrador
             uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
-            this->nes->ppu->registrador_escrever(nes, ender_espelhado, valor);
+            this->nes->ppu.registrador_escrever(nes, ender_espelhado, valor);
         }
         else if (endereco >= 0x4000 && endereco <= 0x4017)
         {
@@ -128,7 +128,7 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
         {
-            this->nes->cartucho->mapeador_escrever(endereco, valor);
+            this->nes->cartucho.mapeador_escrever(endereco, valor);
         }
     }
 }

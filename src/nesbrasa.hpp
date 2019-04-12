@@ -19,7 +19,6 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <array>
 #include <vector>
 
@@ -27,7 +26,6 @@
 #include "ppu.hpp"
 #include "cartucho.hpp"
 
-using std::unique_ptr;
 using std::array;
 using std::vector;
 
@@ -36,11 +34,10 @@ namespace nesbrasa::nucleo
     class Nes
     {
     public:
-        unique_ptr<Memoria> memoria;
-
-        unique_ptr<Cpu>      cpu;
-        unique_ptr<Ppu>      ppu;
-        unique_ptr<Cartucho> cartucho;
+        Cpu cpu;
+        Ppu ppu;
+        Memoria memoria;
+        Cartucho cartucho;
 
         Nes();
 
