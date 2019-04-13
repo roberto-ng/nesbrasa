@@ -37,9 +37,18 @@ namespace nesbrasa::nucleo
 {
     class Cpu
     {
-    public:
+    private:
         Memoria* memoria;
+
+        uint16_t esperar;
+        uint32_t ciclos;
+
+        // tabela de instruções
+        array< optional<Instrucao>, 256 > instrucoes;
     
+    public:
+        bool pag_alterada;
+
         uint16_t pc; // contador de programa
         uint8_t  sp; // ponteiro da stack
 
@@ -54,13 +63,6 @@ namespace nesbrasa::nucleo
         bool b; // flag da instrução break (break command flag)
         bool v; // flag de transbordamento (overflow flag)
         bool n; // flag de negativo
-
-        uint16_t esperar;
-        uint32_t ciclos;
-        bool     pag_alterada;
-
-        // tabela de instruções
-        array< optional<Instrucao>, 256 > instrucoes;
 
         Cpu() = default;
 
@@ -79,12 +81,6 @@ namespace nesbrasa::nucleo
 
         void set_estado(uint8_t valor);
 
-        //! Ativa a flag de zero caso seja necessario
-        void set_z(uint8_t valor);
-
-        //! Ativa a flag de valor negativo caso seja necessario
-        void set_n(uint8_t valor);
-
         //! Empurra um valor na stack
         void stack_empurrar(uint8_t valor);
 
@@ -96,6 +92,18 @@ namespace nesbrasa::nucleo
 
         //! Puxa um valor da stack
         uint16_t stack_puxar_16_bits();
+
+        void esperar_adicionar(uint16_t esperar);
+
+        //! Ativa a flag de zero caso seja necessario
+        void set_z(uint8_t valor);
+
+        //! Ativa a flag de valor negativo caso seja necessario
+        void set_n(uint8_t valor);
+        
+        uint32_t get_ciclos();
+
+        Memoria* get_memoria();
 
     private:
         void executar(Instrucao* instrucao);

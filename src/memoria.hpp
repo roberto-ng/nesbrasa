@@ -31,11 +31,9 @@ namespace nesbrasa::nucleo
     {
     private:
         Nes* nes;
+        array<uint8_t, 0x0800> ram; 
     
     public:
-          
-        array<uint8_t, 0x0800> ram; 
-
         Memoria() = default;
         
         Memoria(Nes* nes);

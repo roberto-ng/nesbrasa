@@ -56,13 +56,13 @@ namespace nesbrasa::nucleo
         uint32_t ciclos_qtd_anterior = this->ciclos;
 
         uint8_t opcode = this->memoria->ler(this->pc);
-        if (!this->instrucoes[opcode].has_value())
+        if (!this->instrucoes.at(opcode).has_value())
         {
             printf("Erro: Uso de opcode inválido - %02X", opcode);
             return;
         }
 
-        Instrucao& instrucao = this->instrucoes[opcode].value();
+        Instrucao& instrucao = this->instrucoes.at(opcode).value();
         this->executar(&instrucao);
         
         if (this->pag_alterada) 
@@ -133,24 +133,6 @@ namespace nesbrasa::nucleo
         this->n = buscar_bit(valor, 7);
     }
 
-    void Cpu::set_z(uint8_t valor)
-    {
-        // checa se um valor é '0'
-        if (valor == 0)
-            this->z = true;
-        else
-            this->z = false;
-    }
-
-    void Cpu::set_n(uint8_t valor)
-    {
-        // o valor é negativo se o bit mais significativo não for '0'
-        if ((valor & 0b10000000) != 0)
-            this->n = true;
-        else
-            this->n = false;
-    }
-
     void Cpu::stack_empurrar(uint8_t valor)
     {
         uint16_t endereco = 0x0100 | this->sp;
@@ -181,5 +163,37 @@ namespace nesbrasa::nucleo
         uint8_t maior = this->stack_puxar();
 
         return (maior << 8) | menor;
+    }
+
+    void Cpu::esperar_adicionar(uint16_t esperar)
+    {
+        this->esperar += esperar;
+    }
+
+    void Cpu::set_z(uint8_t valor)
+    {
+        // checa se um valor é '0'
+        if (valor == 0)
+            this->z = true;
+        else
+            this->z = false;
+    }
+
+    void Cpu::set_n(uint8_t valor)
+    {
+        // o valor é negativo se o bit mais significativo não for '0'
+        if ((valor & 0b10000000) != 0)
+            this->n = true;
+        else
+            this->n = false;
+    }
+    uint32_t Cpu::get_ciclos()
+    {
+        return this->ciclos;
+    }
+
+    Memoria* Cpu::get_memoria()
+    {
+        return this->memoria;
     }
 }

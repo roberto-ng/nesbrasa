@@ -118,6 +118,10 @@ namespace nesbrasa::nucleo
             case 0x2007:
                 this->set_dados(nes, valor);
                 break;
+            
+            case 0x4014:
+                this->set_omd_dma(nes, valor);
+                break;
 
             default:
                 break;
@@ -128,12 +132,12 @@ namespace nesbrasa::nucleo
     {
         if (endereco < 0x2000)
         {
-            return nes->cartucho.mapeador_ler(endereco);
+            return nes->cartucho.ler(endereco);
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
             uint16_t espelhado = this->endereco_espelhado(nes, endereco);
-            return this->vram[espelhado];
+            return this->vram.at(espelhado);
         }
         else if (endereco >= 0x3F00 && endereco < 0x4000)
         {
@@ -147,23 +151,23 @@ namespace nesbrasa::nucleo
 
             if (endereco == 0x3F10)
             {
-                return this->vram[0x3F00];
+                return this->vram.at(0x3F00);
             }
             else if (endereco == 0x3F14)
             {
-                return this->vram[0x3F04];
+                return this->vram.at(0x3F04);
             }
             else if (endereco == 0x3F18)
             {
-                return this->vram[0x3F08];
+                return this->vram.at(0x3F08);
             }
             else if (endereco == 0x3F1C)
             {
-                return this->vram[0x3F0C];
+                return this->vram.at(0x3F0C);
             }
             else
             {
-                return this->vram[endereco];
+                return this->vram.at(endereco);
             }
         }
 
@@ -174,12 +178,12 @@ namespace nesbrasa::nucleo
     {
         if (endereco < 0x2000)
         {
-            nes->cartucho.mapeador_escrever(endereco, valor);
+            nes->cartucho.escrever(endereco, valor);
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
             uint16_t espelhado = this->endereco_espelhado(nes, endereco);
-            this->vram[espelhado] = valor;
+            this->vram.at(espelhado) = valor;
         }
         else if (endereco >= 0x3F00 && endereco < 0x4000)
         {
@@ -193,23 +197,23 @@ namespace nesbrasa::nucleo
 
             if (endereco == 0x3F10)
             {
-                this->vram[0x3F00] = valor;
+                this->vram.at(0x3F00) = valor;
             }
             else if (endereco == 0x3F14)
             {
-                this->vram[0x3F04] = valor;
+                this->vram.at(0x3F04) = valor;
             }
             else if (endereco == 0x3F18)
             {
-                this->vram[0x3F08] = valor;
+                this->vram.at(0x3F08) = valor;
             }
             else if (endereco == 0x3F1C)
             {
-                this->vram[0x3F0C] = valor;
+                this->vram.at(0x3F0C) = valor;
             }
             else
             {
-                this->vram[endereco] = valor;
+                this->vram.at(endereco) = valor;
             }
         }
     }
@@ -280,13 +284,13 @@ namespace nesbrasa::nucleo
 
     void Ppu::set_oam_dados(Nes *nes, uint8_t valor)
     {
-        this->oam[this->oam_endereco] = valor;
+        this->oam.at(this->oam_endereco) = valor;
         this->oam_endereco += 1;
     }
 
     uint8_t Ppu::get_oam_dados(Nes *nes)
     {
-        return this->oam[this->oam_endereco];
+        return this->oam.at(this->oam_endereco);
     }
 
     void Ppu::set_scroll(Nes *nes, uint8_t valor)
@@ -359,15 +363,19 @@ namespace nesbrasa::nucleo
 
         for (uint32_t i = 0; i < this->oam.size(); i++)
         {
-            this->oam[this->oam_endereco] = this->memoria->ler(ponteiro + i);
+            this->oam.at(this->oam_endereco) = this->memoria->ler(ponteiro + i);
             this->oam_endereco += 1;
         }
 
         // se o ciclo for impar
-        if ((nes->cpu.ciclos % 2) != 0)
-            nes->cpu.esperar = 514;
+        if ((nes->cpu.get_ciclos() % 2) != 0)
+        {
+            nes->cpu.esperar_adicionar(514);
+        }
         else
-            nes->cpu.esperar = 513;
+        {
+            nes->cpu.esperar_adicionar(513);
+        }
     }
 
     uint8_t Ppu::get_dados(Nes *nes)
@@ -398,7 +406,7 @@ namespace nesbrasa::nucleo
     uint16_t Ppu::endereco_espelhado(Nes *nes, uint16_t endereco)
     {
         uint16_t base = 0;
-        switch (nes->cartucho.espelhamento)
+        switch (nes->cartucho.get_espelhamento())
         {
             case Espelhamento::HORIZONTAL:
                 if (endereco >= 0x2000 && endereco < 0x2400)

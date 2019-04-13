@@ -3,7 +3,7 @@
 #include "nesbrasa.hpp"
 #include "memoria.hpp"
 
-using namespace nesbrasa::nucleo;
+using nesbrasa::nucleo::Nes;
 using std::unique_ptr;
 using std::make_unique;
 

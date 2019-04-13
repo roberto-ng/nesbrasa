@@ -16,8 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+
 #include "memoria.hpp"
 #include "nesbrasa.hpp"
+
+using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
@@ -31,17 +35,17 @@ namespace nesbrasa::nucleo
         }
     }
 
-    uint8_t Memoria::ler(uint16_t  endereco)
+    uint8_t Memoria::ler(uint16_t endereco)
     {
         if (endereco <= 0x07FF)
         {
-            return this->ram[endereco];
+            return this->ram.at(endereco);
         }
         else if (endereco >= 0x0800 && endereco <=0x1FFF)
         {
             // endereços nesta area são espelhos dos endereços
             // localizados entre 0x0000 e 0x07FF
-            return this->ram[endereco % 0x0800];
+            return this->ram.at(endereco % 0x0800);
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {
@@ -56,6 +60,7 @@ namespace nesbrasa::nucleo
         else if (endereco >= 0x4000 && endereco <= 0x4017)
         {
             // TODO: registradores da APU e de input/output
+            return 0;
         }
         else if (endereco >= 0x4018 && endereco <= 0x401F)
         {
@@ -64,10 +69,16 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
         {
-            return this->nes->cartucho.mapeador_ler(endereco);
+            return this->nes->cartucho.ler(endereco);
         }
 
-        return 0;
+        // endereço não existe, jogar erro
+        stringstream ss;
+        ss << "Tentativa de leitura em um endereço não existente na memória";
+        ss << " (" << std::hex << endereco << ") ";
+        ss << endereco;
+
+        throw ss.str();
     }
 
     uint16_t Memoria::ler_16_bits(uint16_t endereco)
@@ -99,13 +110,13 @@ namespace nesbrasa::nucleo
     {
         if (endereco <= 0x07FF)
         {
-            this->ram[endereco] = valor;
+            this->ram.at(endereco) = valor;
         }
         else if (endereco >= 0x0800 && endereco <=0x1FFF)
         {
             // endereços nesta area são espelhos dos endereços
             // localizados entre 0x0000 e 0x07FF
-            this->ram[endereco % 0x0800] = valor;
+            this->ram.at(endereco % 0x0800) = valor;
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {
@@ -128,7 +139,17 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
         {
-            this->nes->cartucho.mapeador_escrever(endereco, valor);
+            this->nes->cartucho.escrever(endereco, valor);
+        }
+        else
+        {
+            // endereço não existe, jogar erro
+            stringstream ss;
+            ss << "Tentativa de escrita do valor " << std::hex << valor;
+            ss << " em um endereço não existente na memória";
+            ss << " (" << std::hex << endereco << ")";
+
+            throw ss.str();
         }
     }
 }

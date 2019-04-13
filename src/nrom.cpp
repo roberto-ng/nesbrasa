@@ -20,12 +20,32 @@
 
 namespace nesbrasa::nucleo
 {
+    NRom::NRom(Cartucho *cartucho)
+    {
+        if (cartucho->possui_chr_ram())
+        {
+            // aloca a memória a ser útilizada pelo emulador
+            cartucho->chr_ram.resize(0x2000);
+            for (auto& valor : cartucho->chr_ram)
+            {
+                valor = 0;
+            }
+        }
+    }
+
     uint8_t NRom::ler(Cartucho *cartucho, uint16_t endereco)
     {
         if (endereco < 0x2000)
         {
             // ler a rom CHR
-            return cartucho->chr[endereco];
+            if (cartucho->possui_chr_ram())
+            {
+                return cartucho->chr_ram.at(endereco);
+            }
+            else
+            {
+                return cartucho->chr.at(endereco);   
+            }
         }
         else if (endereco >= 0x8000)
         {
@@ -33,13 +53,13 @@ namespace nesbrasa::nucleo
             uint16_t endereco_mapeado = endereco - 0x8000;
 
             // espelhar o endereço caso a rom PRG só possua 1 banco
-            if (cartucho->prg_quantidade == 1)
+            if (cartucho->get_prg_quantidade() == 1)
             {
-                return cartucho->prg[endereco_mapeado % 0x4000];
+                return cartucho->prg.at(endereco_mapeado % 0x4000);
             }
             else
             {
-                return cartucho->prg[endereco_mapeado];
+                return cartucho->prg.at(endereco_mapeado);
             }
         }
 
@@ -48,15 +68,20 @@ namespace nesbrasa::nucleo
 
     void NRom::escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor)
     {
+        if (!cartucho->possui_chr_ram())
+        {
+            throw string("CHR RAM inexistente");
+        }
+
         if (endereco < 0x2000)
         {
             // escrever na rom CHR
-            cartucho->chr[endereco] = valor;
+            cartucho->chr.at(endereco) = valor;
         }
     }
 
     string NRom::get_nome()
     {
-        return "nrom";
+        return "NROM";
     }
 }

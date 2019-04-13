@@ -44,7 +44,7 @@ namespace nesbrasa::nucleo
 
     void Nes::ciclo()
     {
-        if (!this->cartucho.rom_carregada)
+        if (!this->cartucho.possui_rom_carregada())
         {
             throw string("Erro: nenhuma ROM foi carregada");
         }

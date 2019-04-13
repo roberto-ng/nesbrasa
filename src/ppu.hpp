@@ -35,7 +35,7 @@ namespace nesbrasa::nucleo
 {
     class Ppu
     {
-    public:
+    private:
         Memoria* memoria;
 
         array<uint8_t, 0x100>  oam;
@@ -79,6 +79,7 @@ namespace nesbrasa::nucleo
         uint8_t  x;
         bool     w;
 
+    public:
         Ppu() = default;
         
         Ppu(Memoria* memoria);

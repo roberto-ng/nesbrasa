@@ -37,19 +37,13 @@ namespace nesbrasa::nucleo
         this->rom_carregada = false;
         this->possui_sram = false;
         this->mapeador = nullptr;
+        this->_possui_chr_ram = false;
 
         this->sram.reserve(0x2000);
         for (uint32_t i = 0; i < this->sram.capacity(); i++)
         {
-            this->sram[i] = 0;
+            this->sram.at(i) = 0;
         }
-    }
-
-    void Cartucho::resetar_arrays()
-    {
-        vector<uint8_t>().swap(this->prg);
-        vector<uint8_t>().swap(this->chr);
-        vector<uint8_t>().swap(this->sram);
     }
 
     void Cartucho::carregar_rom(vector<uint8_t> rom)
@@ -64,7 +58,7 @@ namespace nesbrasa::nucleo
         this->sram.reserve(0x2000);
         for (uint32_t i = 0; i < this->sram.capacity(); i++)
         {
-            this->sram[i] = 0;
+            this->sram.at(i) = 0;
         }
 
         // checa se o arquivo é grande o suficiente para ter um cabeçalho
@@ -77,13 +71,13 @@ namespace nesbrasa::nucleo
         string formato_string;
         for (int i = 0; i < 4; i++)
         {
-            formato_string += static_cast<char>(rom[i]);
+            formato_string += static_cast<char>(rom.at(i));
         }
 
         // arquivos nos formatos iNES e NES 2.0 começam com a string "NES\x1A"
         if (formato_string == "NES\x1A")
         {
-            if (buscar_bit(rom[7], 2) == false && buscar_bit(rom[7], 3) == true)
+            if (buscar_bit(rom.at(7), 2) == false && buscar_bit(rom.at(7), 3) == true)
             {
                 // o arquivo está no formato NES 2.0
                 this->formato = ArquivoFormato::NES_2_0;
@@ -100,13 +94,18 @@ namespace nesbrasa::nucleo
             throw string("Erro: formato não reconhecido");
         }
 
-        this->possui_sram = buscar_bit(rom[6], 1);
+        this->possui_sram = buscar_bit(rom.at(6), 1);
 
-        bool contem_trainer = buscar_bit(rom[6], 2);
+        bool contem_trainer = buscar_bit(rom.at(6), 2);
         int offset = 16 + ((contem_trainer) ? 512 : 0);
 
-        this->prg_quantidade = rom[4];
-        this->chr_quantidade = rom[5];
+        this->prg_quantidade = rom.at(4);
+        this->chr_quantidade = rom.at(5);
+
+        if (this->chr_quantidade == 0)
+        {
+            this->_possui_chr_ram = true;
+        }
 
         const uint32_t prg_tamanho = this->prg_quantidade * 0x4000;
         const uint32_t chr_tamanho = this->chr_quantidade * 0x2000;
@@ -124,38 +123,25 @@ namespace nesbrasa::nucleo
         // Copia os dados referentes à ROM PRG do arquivo para o array
         for (uint32_t i = 0; i < this->prg.capacity(); i++)
         {
-            this->prg[i] = rom[offset+i];
+            this->prg.at(i) = rom.at(offset+i);
         }
 
         // Copia os dados referentes à ROM CHR do arquivo para o array
         for (uint32_t i = 0; i < this->chr.capacity(); i++) {
-            this->chr[i] = rom[offset+prg_tamanho+i];
+            this->chr.at(i) = rom.at(offset+prg_tamanho+i);
         }
 
-        uint8_t mapeador_byte_menor = (rom[6] & 0xFF00) >> 8;
-        uint8_t mapeador_byte_maior = (rom[7] & 0xFF00) >> 8;
+        uint8_t mapeador_byte_menor = (rom.at(6) & 0xFF00) >> 8;
+        uint8_t mapeador_byte_maior = (rom.at(7) & 0xFF00) >> 8;
         uint8_t mapeador_codigo = (mapeador_byte_maior << 8) | mapeador_byte_menor;
 
-        switch (mapeador_codigo)
-        {
-            case 0:
-                this->mapeador_tipo = MapeadorTipo::NROM;
-                this->mapeador = make_unique<NRom>();
-                break;
-
-            default:
-                this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
-                this->mapeador = nullptr;
-                throw string("Erro: mapeador não reconhecido");
-        }
-
-        if (buscar_bit(rom[6], 3) == true)
+        if (buscar_bit(rom.at(6), 3) == true)
         {
             this->espelhamento = Espelhamento::QUATRO_TELAS;
         }
         else
         {
-            if (buscar_bit(rom[6], 0) == false)
+            if (buscar_bit(rom.at(6), 0) == false)
             {
                 this->espelhamento = Espelhamento::VERTICAL;
             }
@@ -165,27 +151,85 @@ namespace nesbrasa::nucleo
             }
         }
 
+        switch (mapeador_codigo)
+        {
+            case 0:
+                this->mapeador = make_unique<NRom>(this);
+                this->mapeador_tipo = MapeadorTipo::NROM;
+                break;
+
+            default:
+                this->mapeador = nullptr;
+                this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
+                throw string("Erro: mapeador não reconhecido");
+        }
+
         //TODO: Completar suporte a ROMs no formato NES 2.0
         this->rom_carregada = true;
     }
 
-    uint8_t Cartucho::mapeador_ler(uint16_t endereco)
+    uint8_t Cartucho::ler(uint16_t endereco)
     {
         if (this->mapeador != nullptr)
         {
             return this->mapeador->ler(this, endereco);
         }
-        else
-        {
-            return 0;
-        }
+        
+        throw string("Mapeador não existente");
     }
 
-    void Cartucho::mapeador_escrever(uint16_t endereco, uint8_t valor)
+    void Cartucho::escrever(uint16_t endereco, uint8_t valor)
     {
         if (this->mapeador != nullptr)
         {
-            return this->mapeador->escrever(this, endereco, valor);
+            this->mapeador->escrever(this, endereco, valor);
         }
+        else 
+        {
+            throw string("Mapeador não existente");
+        }
+    }
+
+    uint8_t Cartucho::get_prg_quantidade()
+    {
+        return this->prg_quantidade;
+    }
+
+    uint8_t Cartucho::get_chr_quantidade()
+    {
+        return this->chr_quantidade;
+    }
+
+    ArquivoFormato Cartucho::get_formato()
+    {
+        return this->formato;
+    }
+
+    MapeadorTipo Cartucho::get_mapeador_tipo()
+    {
+        return this->mapeador_tipo;
+    }
+
+    Espelhamento Cartucho::get_espelhamento()
+    {
+        return this->espelhamento;
+    }
+
+    bool Cartucho::possui_rom_carregada()
+    {
+        return this->rom_carregada;
+    }
+
+    bool Cartucho::possui_chr_ram()
+    {
+        return this->_possui_chr_ram;
+    }
+
+    void Cartucho::resetar_arrays()
+    {
+        vector<uint8_t>().swap(this->prg);
+        vector<uint8_t>().swap(this->chr);
+        vector<uint8_t>().swap(this->sram);
+        vector<uint8_t>().swap(this->chr_ram);
     }
 }

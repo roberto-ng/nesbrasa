@@ -55,31 +55,48 @@ namespace nesbrasa::nucleo
     class Cartucho
     {
     private:
-        void resetar_arrays();
+        unique_ptr<IMapeador> mapeador;
+        
+        uint8_t prg_quantidade;
+        uint8_t chr_quantidade;
+
+        bool rom_carregada;
+        bool possui_sram;
+        bool _possui_chr_ram;
+
+        ArquivoFormato formato;
+        MapeadorTipo   mapeador_tipo;
+        Espelhamento   espelhamento;
 
     public:
         vector<uint8_t> prg;
         vector<uint8_t> chr;
+        vector<uint8_t> chr_ram;
         vector<uint8_t> sram;
-
-        uint8_t prg_quantidade;
-        uint8_t chr_quantidade;
-
-        unique_ptr<IMapeador> mapeador;
-
-        ArquivoFormato formato;
-        MapeadorTipo mapeador_tipo;
-        Espelhamento espelhamento;
-
-        bool rom_carregada;
-        bool possui_sram;
 
         Cartucho();
 
         void carregar_rom(vector<uint8_t> rom);
 
-        uint8_t mapeador_ler(uint16_t endereco);
+        uint8_t ler(uint16_t endereco);
 
-        void mapeador_escrever(uint16_t endereco, uint8_t valor);
+        void escrever(uint16_t endereco, uint8_t valor);
+
+        uint8_t get_prg_quantidade();
+
+        uint8_t get_chr_quantidade();
+
+        ArquivoFormato get_formato();
+
+        MapeadorTipo get_mapeador_tipo();
+
+        Espelhamento get_espelhamento();
+
+        bool possui_rom_carregada();
+
+        bool possui_chr_ram();
+    
+    private:
+        void resetar_arrays();
     };
 }
