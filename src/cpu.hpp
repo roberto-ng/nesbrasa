@@ -95,7 +95,7 @@ namespace nesbrasa::nucleo
 
         void esperar_adicionar(uint16_t esperar);
 
-        string instrucao_para_asm(Instrucao* instrucao);
+        string instrucao_para_asm(uint8_t opcode);
 
         //! Ativa a flag de zero caso seja necessario
         void set_z(uint8_t valor);
