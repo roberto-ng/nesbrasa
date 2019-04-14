@@ -137,7 +137,7 @@ namespace nesbrasa::nucleo
         cpu->a = a + valor + c;
 
         // atualiza a flag c
-        int32_t soma_total = (int32_t)a + (int32_t)valor + (int32_t)c;
+        int32_t soma_total = (int)a + (int)valor + (int)c;
         if (soma_total > 0xFF)
             cpu->c = 1;
         else
@@ -687,7 +687,7 @@ namespace nesbrasa::nucleo
         cpu->a = a - valor - c;
 
         // atualiza a flag c
-        int32_t subtracao_total = (int32_t)a - (int32_t)valor - (int32_t)c;
+        int32_t subtracao_total = (int)a - (int)valor - (int)c;
         if (subtracao_total >= 0)
             cpu->c = 1;
         else
@@ -894,6 +894,27 @@ namespace nesbrasa::nucleo
         cpu->a = cpu->a | valor;
 
         //atualizar flags
+        cpu->set_n(cpu->a);
+        cpu->set_z(cpu->a);
+    }
+
+    //! Instrução não-oficial *RLA 
+    // Gira um valor na memória para a esquerda, e depois realiza a operação AND entre A e o valor
+    static void instrucao_rla(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+
+        bool carregar = cpu->c;
+        cpu->c = buscar_bit(valor, 7);
+        valor <<= 1;
+        valor = valor | ((carregar) ? 1 : 0);
+
+        // atualizar o valor na memoria
+        cpu->get_memoria()->escrever(endereco.value(), valor);
+
+        cpu->a = cpu->a & valor;
+
+        // atualizar flags
         cpu->set_n(cpu->a);
         cpu->set_z(cpu->a);
     }
@@ -1244,6 +1265,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0x1B) = Instrucao("*SLO", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_slo);
         instrucoes.at(0x03) = Instrucao("*SLO", 2, 8, 0, InstrucaoModo::IND_X, instrucao_slo);
         instrucoes.at(0x13) = Instrucao("*SLO", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_slo);
+
+        // modos da instrução não-oficial *RLA
+        instrucoes.at(0x27) = Instrucao("*RLA", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_rla);
+        instrucoes.at(0x37) = Instrucao("*RLA", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_rla);
+        instrucoes.at(0x2F) = Instrucao("*RLA", 3, 6, 0, InstrucaoModo::ABS, instrucao_rla);
+        instrucoes.at(0x3F) = Instrucao("*RLA", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_rla);
+        instrucoes.at(0x3B) = Instrucao("*RLA", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_rla);
+        instrucoes.at(0x23) = Instrucao("*RLA", 2, 8, 0, InstrucaoModo::IND_X, instrucao_rla);
+        instrucoes.at(0x33) = Instrucao("*RLA", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_rla);
 
         return instrucoes;
     }
