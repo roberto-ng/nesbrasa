@@ -207,6 +207,11 @@ namespace nesbrasa::nucleo
         return this->memoria;
     }
 
+    optional<Instrucao> Cpu::get_instrucao(uint8_t opcode)
+    {
+        return this->instrucoes.at(opcode);
+    }
+
     string Cpu::instrucao_para_asm(uint8_t opcode)
     {
         auto instrucao = &this->instrucoes.at(opcode).value();

@@ -109,6 +109,8 @@ namespace nesbrasa::nucleo
 
         Memoria* get_memoria();
 
+        optional<Instrucao> get_instrucao(uint8_t opcode);
+
     private:
         void executar(Instrucao* instrucao);
     };
