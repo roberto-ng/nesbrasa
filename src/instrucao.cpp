@@ -61,20 +61,20 @@ namespace nesbrasa::nucleo
                 return cpu->pc + 1;
 
             case InstrucaoModo::P_ZERO:
-                return cpu->get_memoria()->ler(cpu->pc + 1);
+                return cpu->memoria->ler(cpu->pc + 1);
 
             case InstrucaoModo::P_ZERO_X:
-                return (cpu->get_memoria()->ler(cpu->pc + 1) + cpu->x) & 0xFF;
+                return cpu->memoria->ler(cpu->pc + 1) + cpu->x;
 
             case InstrucaoModo::P_ZERO_Y:
-                return (cpu->get_memoria()->ler(cpu->pc + 1) + cpu->y) & 0xFF;
+                return cpu->memoria->ler(cpu->pc + 1) + cpu->y;
 
             case InstrucaoModo::ABS:
-                return cpu->get_memoria()->ler_16_bits(cpu->pc + 1);
+                return cpu->memoria->ler_16_bits(cpu->pc + 1);
 
             case InstrucaoModo::ABS_X:
             {
-                uint16_t endereco = cpu->get_memoria()->ler_16_bits(cpu->pc + 1) + cpu->x;
+                uint16_t endereco = cpu->memoria->ler_16_bits(cpu->pc + 1) + cpu->x;
                 cpu->pag_alterada = !comparar_paginas(endereco - cpu->x, endereco);
 
                 return endereco;
@@ -82,7 +82,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::ABS_Y:
             {
-                uint16_t endereco =  cpu->get_memoria()->ler_16_bits(cpu->pc + 1) + cpu->y;
+                uint16_t endereco =  cpu->memoria->ler_16_bits(cpu->pc + 1) + cpu->y;
                 cpu->pag_alterada = !comparar_paginas(endereco - cpu->y, endereco);
 
                 return endereco;
@@ -90,20 +90,20 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::IND:
             {
-                const uint16_t valor = cpu->get_memoria()->ler_16_bits(cpu->pc+1);
-                return cpu->get_memoria()->ler_16_bits_bug(valor);
+                const uint16_t valor = cpu->memoria->ler_16_bits(cpu->pc+1);
+                return cpu->memoria->ler_16_bits_bug(valor);
             }
 
             case InstrucaoModo::IND_X:
             {
-                const uint16_t valor = cpu->get_memoria()->ler(cpu->pc + 1);
-                return cpu->get_memoria()->ler_16_bits_bug((valor + cpu->x)%0x100);
+                const uint16_t valor = cpu->memoria->ler(cpu->pc + 1);
+                return cpu->memoria->ler_16_bits_bug((valor + cpu->x)%0x100);
             }
 
             case InstrucaoModo::IND_Y:
             {
-                const uint16_t valor = cpu->get_memoria()->ler(cpu->pc + 1);
-                uint16_t endereco = cpu->get_memoria()->ler_16_bits_bug(valor) + cpu->y;
+                const uint16_t valor = cpu->memoria->ler(cpu->pc + 1);
+                uint16_t endereco = cpu->memoria->ler_16_bits_bug(valor) + cpu->y;
                 cpu->pag_alterada = !comparar_paginas(endereco - cpu->y, endereco);
 
                 return endereco;
@@ -111,7 +111,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::REL:
             {
-                const uint16_t valor = cpu->get_memoria()->ler(cpu->pc + 1);
+                const uint16_t valor = cpu->memoria->ler(cpu->pc + 1);
 
                 if (valor < 0x80)
                     return cpu->pc + 2 + valor;
@@ -129,7 +129,7 @@ namespace nesbrasa::nucleo
     */
     static void instrucao_adc(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         const uint8_t a = cpu->a;
         const uint8_t c = (cpu->c) ? 1 : 0;
@@ -161,7 +161,7 @@ namespace nesbrasa::nucleo
     */
     static void instrucao_and(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         const uint8_t a = cpu->a;
         const uint8_t m = valor;
@@ -192,14 +192,14 @@ namespace nesbrasa::nucleo
         }
         else
         {
-            uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+            uint8_t valor = cpu->memoria->ler(endereco.value());
 
             // checa se a posição 7 do byte é '1' ou '0'
             cpu->c = buscar_bit(valor, 7);
 
             valor <<= 1;
 
-            cpu->get_memoria()->escrever(endereco.value(), valor);
+            cpu->memoria->escrever(endereco.value(), valor);
 
             // atualizar flags
             cpu->set_n(valor);
@@ -244,7 +244,7 @@ namespace nesbrasa::nucleo
     */
     static void instrucao_bit(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         cpu->n = buscar_bit(valor, 7);
         cpu->v = buscar_bit(valor, 6);
@@ -288,7 +288,7 @@ namespace nesbrasa::nucleo
         cpu->stack_empurrar(cpu->get_estado());
 
         cpu->b = 1;
-        cpu->pc = cpu->get_memoria()->ler_16_bits(0xFFFE);
+        cpu->pc = cpu->memoria->ler_16_bits(0xFFFE);
     }
 
     //! Pula para o endereço indicado se a flag 'v' não estiver ativa
@@ -338,7 +338,7 @@ namespace nesbrasa::nucleo
     //! Compara o acumulador com um valor
     static void instrucao_cmp(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         if (cpu->a >= valor)
             cpu->c = true;
@@ -355,7 +355,7 @@ namespace nesbrasa::nucleo
     //! Compara o indice X com um valor
     static void instrucao_cpx(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         if (cpu->x >= valor)
             cpu->c = true;
@@ -372,7 +372,7 @@ namespace nesbrasa::nucleo
     //! Compara o indice Y com um valor
     static void instrucao_cpy(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         if (cpu->y >= valor)
             cpu->c = true;
@@ -387,12 +387,12 @@ namespace nesbrasa::nucleo
     //! Diminui um valor na memoria por 1
     static void instrucao_dec(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         valor -= 1;
 
         // atualizar o valor na memoria
-        cpu->get_memoria()->escrever(endereco.value(), valor);
+        cpu->memoria->escrever(endereco.value(), valor);
 
         // atualizar flags
         cpu->set_n(valor);
@@ -422,7 +422,7 @@ namespace nesbrasa::nucleo
     //! OR exclusivo de um valor na memoria com o acumulador
     static void instrucao_eor(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         cpu->a = cpu->a ^ valor;
 
@@ -434,12 +434,12 @@ namespace nesbrasa::nucleo
     //! Incrementa um valor na memoria por 1
     static void instrucao_inc(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         valor += 1;
 
         // atualizar o valor na memoria
-        cpu->get_memoria()->escrever(endereco.value(), valor);
+        cpu->memoria->escrever(endereco.value(), valor);
 
         // atualizar flags
         cpu->set_n(valor);
@@ -488,7 +488,7 @@ namespace nesbrasa::nucleo
     //! Carrega um valor da memoria no acumulador
     static void instrucao_lda(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        cpu->a = cpu->get_memoria()->ler(endereco.value());
+        cpu->a = cpu->memoria->ler(endereco.value());
 
         // atualizar flags
         cpu->set_n(cpu->a);
@@ -499,7 +499,7 @@ namespace nesbrasa::nucleo
     //! Carrega um valor da memoria no indice X
     static void instrucao_ldx(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        cpu->x = cpu->get_memoria()->ler(endereco.value());
+        cpu->x = cpu->memoria->ler(endereco.value());
 
         // atualizar flags
         cpu->set_n(cpu->x);
@@ -509,7 +509,7 @@ namespace nesbrasa::nucleo
     //! Carrega um valor da memoria no acumulador
     static void instrucao_ldy(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        cpu->y = cpu->get_memoria()->ler(endereco.value());
+        cpu->y = cpu->memoria->ler(endereco.value());
 
         // atualizar flags
         cpu->set_n(cpu->y);
@@ -535,14 +535,14 @@ namespace nesbrasa::nucleo
         }
         else
         {
-            uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+            uint8_t valor = cpu->memoria->ler(endereco.value());
 
             // checa se a posição 0 do byte é '1' ou '0'
             cpu->c = buscar_bit(valor, 0);
 
             valor >>= 1;
 
-            cpu->get_memoria()->escrever(endereco.value(), valor);
+            cpu->memoria->escrever(endereco.value(), valor);
 
             // atualizar flags
             cpu->set_n(valor);
@@ -558,7 +558,7 @@ namespace nesbrasa::nucleo
     //! Operanção OR entre um valor na memoria e o acumulador
     static void instrucao_ora(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         cpu->a = cpu->a | valor;
 
@@ -613,7 +613,7 @@ namespace nesbrasa::nucleo
         }
         else
         {
-            uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+            uint8_t valor = cpu->memoria->ler(endereco.value());
 
             bool carregar = cpu->c;
             cpu->c = buscar_bit(valor, 7);
@@ -621,7 +621,7 @@ namespace nesbrasa::nucleo
             valor = valor | ((carregar) ? 1 : 0);
 
             // atualizar o valor na memoria
-            cpu->get_memoria()->escrever(endereco.value(), valor);
+            cpu->memoria->escrever(endereco.value(), valor);
 
             // atualizar flags
             cpu->set_n(cpu->a);
@@ -645,7 +645,7 @@ namespace nesbrasa::nucleo
         }
         else
         {
-            uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+            uint8_t valor = cpu->memoria->ler(endereco.value());
 
             bool carregar = cpu->c;
             cpu->c = buscar_bit(cpu->a, 0);
@@ -653,7 +653,7 @@ namespace nesbrasa::nucleo
             valor = valor | ((carregar) ? 0b10000000 : 0);
 
             // atualizar o valor na memoria
-            cpu->get_memoria()->escrever(endereco.value(), valor);
+            cpu->memoria->escrever(endereco.value(), valor);
 
             // atualizar flags
             cpu->set_n(cpu->a);
@@ -679,7 +679,7 @@ namespace nesbrasa::nucleo
     //! Subtrai um valor da memoria usando o acumulador
     static void instrucao_sbc(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         const uint8_t a = cpu->a;
         const uint8_t c = (!cpu->c) ? 1 : 0;
@@ -725,19 +725,19 @@ namespace nesbrasa::nucleo
     //! Guarda o valor do acumulador na memoria
     static void instrucao_sta(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        cpu->get_memoria()->escrever(endereco.value(), cpu->a);
+        cpu->memoria->escrever(endereco.value(), cpu->a);
     }
 
     //! Guarda o valor do registrador 'x' na memoria
     static void instrucao_stx(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        cpu->get_memoria()->escrever(endereco.value(), cpu->x);
+        cpu->memoria->escrever(endereco.value(), cpu->x);
     }
 
     //! Guarda o valor do registrador 'y' na memoria
     static void instrucao_sty(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        cpu->get_memoria()->escrever(endereco.value(), cpu->y);
+        cpu->memoria->escrever(endereco.value(), cpu->y);
     }
 
     //! Atribui o valor do acumulador ao registrador 'x'
@@ -809,7 +809,7 @@ namespace nesbrasa::nucleo
     //! Instrução não-oficial *LAX - Transfere um valor da memória para A e X
     static void instrucao_lax(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         cpu->a = valor;
         cpu->x = valor;
@@ -823,16 +823,16 @@ namespace nesbrasa::nucleo
     {
         uint8_t valor = cpu->a & cpu->x;
 
-        cpu->get_memoria()->escrever(endereco.value(), valor);
+        cpu->memoria->escrever(endereco.value(), valor);
     }
 
     //! Instrução não-oficial *DCP - Subtrai um valor da memória e compara o resultado com A
     static void instrucao_dcp(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
         uint8_t resultado = valor - 1;
 
-        cpu->get_memoria()->escrever(endereco.value(), resultado);
+        cpu->memoria->escrever(endereco.value(), resultado);
 
         // compara o resultado com A
         uint8_t comparacao = cpu->a - resultado;
@@ -850,10 +850,10 @@ namespace nesbrasa::nucleo
     //! Instrução não-oficial *ISB - Incrementa um valor na memória, depois subtrai este valor por A
     static void instrucao_isb(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
         uint8_t resultado = valor + 1;
 
-        cpu->get_memoria()->escrever(endereco.value(), resultado);
+        cpu->memoria->escrever(endereco.value(), resultado);
 
         const uint8_t a = cpu->a;
         const uint8_t c = (!cpu->c) ? 1 : 0;
@@ -882,14 +882,14 @@ namespace nesbrasa::nucleo
     // Realiza um shift para a esquerda em um valor,e depois a operação OR entre A e o valor
     static void instrucao_slo(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         // checa se a posição 7 do byte é '1' ou '0'
         cpu->c = buscar_bit(valor, 7);
 
         valor <<= 1;
 
-        cpu->get_memoria()->escrever(endereco.value(), valor);
+        cpu->memoria->escrever(endereco.value(), valor);
 
         cpu->a = cpu->a | valor;
 
@@ -902,7 +902,7 @@ namespace nesbrasa::nucleo
     // Gira um valor na memória para a esquerda, e depois realiza a operação AND entre A e o valor
     static void instrucao_rla(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
-        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t valor = cpu->memoria->ler(endereco.value());
 
         bool carregar = cpu->c;
         cpu->c = buscar_bit(valor, 7);
@@ -910,7 +910,7 @@ namespace nesbrasa::nucleo
         valor = valor | ((carregar) ? 1 : 0);
 
         // atualizar o valor na memoria
-        cpu->get_memoria()->escrever(endereco.value(), valor);
+        cpu->memoria->escrever(endereco.value(), valor);
 
         cpu->a = cpu->a & valor;
 

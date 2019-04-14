@@ -38,8 +38,6 @@ namespace nesbrasa::nucleo
     class Cpu
     {
     private:
-        Memoria* memoria;
-
         uint16_t esperar;
         uint32_t ciclos;
 
@@ -47,6 +45,8 @@ namespace nesbrasa::nucleo
         array< optional<Instrucao>, 256 > instrucoes;
     
     public:
+        Memoria* memoria;
+
         bool pag_alterada;
 
         uint16_t pc; // contador de programa
@@ -106,8 +106,6 @@ namespace nesbrasa::nucleo
         uint32_t get_ciclos();
 
         uint16_t get_esperar();
-
-        Memoria* get_memoria();
 
         optional<Instrucao> get_instrucao(uint8_t opcode);
 

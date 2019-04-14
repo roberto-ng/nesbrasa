@@ -212,11 +212,6 @@ namespace nesbrasa::nucleo
         return this->esperar;
     }
 
-    Memoria* Cpu::get_memoria()
-    {
-        return this->memoria;
-    }
-
     optional<Instrucao> Cpu::get_instrucao(uint8_t opcode)
     {
         return this->instrucoes.at(opcode);
