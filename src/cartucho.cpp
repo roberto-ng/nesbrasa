@@ -117,13 +117,13 @@ namespace nesbrasa::nucleo
         }
 
         // Copia os dados referentes à ROM PRG do arquivo para o array
-        for (uint32_t i = 0; i < this->prg.capacity(); i++)
+        for (uint i = 0; i < this->prg.size(); i++)
         {
             this->prg.at(i) = rom.at(offset+i);
         }
 
         // Copia os dados referentes à ROM CHR do arquivo para o array
-        for (uint32_t i = 0; i < this->chr.capacity(); i++) {
+        for (uint i = 0; i < this->chr.size(); i++) {
             this->chr.at(i) = rom.at(offset+prg_tamanho+i);
         }
 
