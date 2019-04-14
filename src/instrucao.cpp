@@ -74,7 +74,7 @@ namespace nesbrasa::nucleo
 
             case InstrucaoModo::ABS_X:
             {
-                uint16_t endereco = cpu->get_memoria()->ler_16_bits(cpu->pc + 1 + cpu->x);
+                uint16_t endereco = cpu->get_memoria()->ler_16_bits(cpu->pc + 1) + cpu->x;
                 cpu->pag_alterada = !comparar_paginas(endereco - cpu->x, endereco);
 
                 return endereco;

@@ -241,7 +241,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
 
-                uint16_t endereco = instrucao->buscar_endereco(this).value();
+                uint16_t endereco = this->memoria->ler_16_bits(this->pc + 1);
                 ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << ", X";
 
                 return ss.str();
