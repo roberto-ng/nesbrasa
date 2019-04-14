@@ -34,6 +34,7 @@ using std::shared_ptr;
 
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
+// http://nesdev.com/undocumented_opcodes.txt
 
 namespace nesbrasa::nucleo
 {

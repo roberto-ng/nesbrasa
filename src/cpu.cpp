@@ -65,8 +65,18 @@ namespace nesbrasa::nucleo
             printf("Erro: Uso de opcode inválido - %02X", opcode);
             return;
         }
+        
+        // jogar erro se a instrução não existir na tabela
+        if (!this->instrucoes.at(opcode).has_value())
+        {
+            stringstream ss;
+            ss << "Instrução não reconhecida: ";
+            ss << "$" << std::hex << opcode;
+            
+            throw ss.str();
+        }
 
-        Instrucao& instrucao = this->instrucoes.at(opcode).value();
+        auto instrucao = this->instrucoes.at(opcode).value();
         this->executar(&instrucao);
         
         if (this->pag_alterada) 
@@ -214,15 +224,25 @@ namespace nesbrasa::nucleo
 
     string Cpu::instrucao_para_asm(uint8_t opcode)
     {
-        auto instrucao = &this->instrucoes.at(opcode).value();
+        // jogar erro se a instrução não existir na tabela
+        if (!this->instrucoes.at(opcode).has_value())
+        {
+            stringstream ss;
+            ss << "Instrução não reconhecida: ";
+            ss << "$" << std::hex << opcode;
+            
+            throw ss.str();
+        }
 
-        switch (instrucao->modo)
+        auto instrucao = this->instrucoes.at(opcode).value();
+
+        switch (instrucao.modo)
         {
             case InstrucaoModo::ACM:
             {   
                 stringstream ss;
                 
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << (int)this->a;
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << (int)this->a;
 
                 return ss.str();
             }
@@ -231,8 +251,8 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
 
-                uint16_t endereco = instrucao->buscar_endereco(this).value();
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco;
+                uint16_t endereco = instrucao.buscar_endereco(this).value();
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << endereco;
             
                 return ss.str();
             }
@@ -242,7 +262,7 @@ namespace nesbrasa::nucleo
                 stringstream ss;
 
                 uint16_t endereco = this->memoria->ler_16_bits(this->pc + 1);
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << ", X";
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << endereco << ", X";
 
                 return ss.str();
             }
@@ -252,7 +272,7 @@ namespace nesbrasa::nucleo
                 stringstream ss;
 
                 uint16_t valor = this->memoria->ler_16_bits(this->pc + 1);
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << valor << ", Y";
 
                 return ss.str();
             }
@@ -262,7 +282,7 @@ namespace nesbrasa::nucleo
                 int valor = this->memoria->ler(this->pc + 1);
 
                 stringstream ss;
-                ss << instrucao->nome << " #$" << std::uppercase << std::hex << valor;
+                ss << instrucao.nome << " #$" << std::uppercase << std::hex << valor;
 
                 return ss.str();
             }
@@ -270,7 +290,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IMPL:
             {
                 stringstream ss;
-                ss << instrucao->nome;
+                ss << instrucao.nome;
 
                 return ss.str();
             }
@@ -278,7 +298,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::IND:
             {
                 stringstream ss;
-                ss << instrucao->nome << " ($" << std::uppercase << std::hex << this->pc+1 << ")";
+                ss << instrucao.nome << " ($" << std::uppercase << std::hex << this->pc+1 << ")";
 
                 return ss.str();
             }
@@ -288,7 +308,7 @@ namespace nesbrasa::nucleo
                 int valor = this->memoria->ler(this->pc + 1);
 
                 stringstream ss;
-                ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << ", X)";
+                ss << instrucao.nome << " ($" << std::uppercase << std::hex << valor << ", X)";
 
                 return ss.str();
             }
@@ -298,17 +318,17 @@ namespace nesbrasa::nucleo
                 int valor = this->memoria->ler(this->pc + 1);
 
                 stringstream ss;
-                ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << "), Y";
+                ss << instrucao.nome << " ($" << std::uppercase << std::hex << valor << "), Y";
 
                 return ss.str();
             }
 
             case InstrucaoModo::REL:
             {
-                int endereco = instrucao->buscar_endereco(this).value();
+                int endereco = instrucao.buscar_endereco(this).value();
 
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << "";
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << endereco << "";
 
                 return ss.str();
             }
@@ -318,7 +338,7 @@ namespace nesbrasa::nucleo
                 int valor = this->memoria->ler(this->pc + 1);
 
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor;
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << valor;
 
                 return ss.str();
             }
@@ -328,7 +348,7 @@ namespace nesbrasa::nucleo
                 int valor = this->memoria->ler(this->pc + 1);
 
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", X";
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << valor << ", X";
 
                 return ss.str();
             }
@@ -338,7 +358,7 @@ namespace nesbrasa::nucleo
                 int valor = this->memoria->ler(this->pc + 1);
 
                 stringstream ss;
-                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << valor << ", Y";
 
                 return ss.str();
             }

@@ -796,6 +796,11 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
+    // Instrução não-oficial DOP - nenhuma operação
+    static void instrucao_dop(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+    }
+
     array< optional<Instrucao>, 256 > carregar_instrucoes()
     {
         // cria um array que será usado como uma tabela de instruções
@@ -1067,6 +1072,22 @@ namespace nesbrasa::nucleo
 
         // modos da instrução TYA
         instrucoes.at(0x98) = Instrucao("TYA", 1, 2, 0, InstrucaoModo::IMPL, instrucao_tya);
+
+        // modos da instrução não-oficial *DOP
+        instrucoes.at(0x04) = Instrucao("*DOP", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_dop);
+        instrucoes.at(0x14) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
+        instrucoes.at(0x34) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
+        instrucoes.at(0x44) = Instrucao("*DOP", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_dop);
+        instrucoes.at(0x54) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
+        instrucoes.at(0x64) = Instrucao("*DOP", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_dop);
+        instrucoes.at(0x74) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
+        instrucoes.at(0x80) = Instrucao("*DOP", 2, 2, 0, InstrucaoModo::IMED, instrucao_dop);
+        instrucoes.at(0x82) = Instrucao("*DOP", 2, 2, 0, InstrucaoModo::IMED, instrucao_dop);
+        instrucoes.at(0x89) = Instrucao("*DOP", 2, 2, 0, InstrucaoModo::IMED, instrucao_dop);
+        instrucoes.at(0xC2) = Instrucao("*DOP", 2, 2, 0, InstrucaoModo::IMED, instrucao_dop);
+        instrucoes.at(0xD4) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
+        instrucoes.at(0xE2) = Instrucao("*DOP", 2, 2, 0, InstrucaoModo::IMED, instrucao_dop);
+        instrucoes.at(0xF4) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
 
         return instrucoes;
     }
