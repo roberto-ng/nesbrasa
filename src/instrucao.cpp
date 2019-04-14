@@ -806,6 +806,18 @@ namespace nesbrasa::nucleo
     {
     }
 
+    // Instrução não-oficial *LAX - Transfere um valor da memória para A e X
+    static void instrucao_lax(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+
+        cpu->a = valor;
+        cpu->x = valor;
+
+        cpu->set_n(valor);
+        cpu->set_z(valor);
+    }
+
     array< optional<Instrucao>, 256 > carregar_instrucoes()
     {
         // cria um array que será usado como uma tabela de instruções
@@ -980,12 +992,12 @@ namespace nesbrasa::nucleo
         // modos da instrução NOP
         instrucoes.at(0xEA) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
         // opcodes não-oficiais da instrução NOP
-        instrucoes.at(0x1A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
-        instrucoes.at(0x3A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
-        instrucoes.at(0x5A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
-        instrucoes.at(0x7A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
-        instrucoes.at(0xDA) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
-        instrucoes.at(0xFA) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x1A) = Instrucao("*NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x3A) = Instrucao("*NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x5A) = Instrucao("*NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x7A) = Instrucao("*NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0xDA) = Instrucao("*NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0xFA) = Instrucao("*NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
 
         // modos da instrução ORA
         instrucoes.at(0x09) = Instrucao("ORA", 2, 2, 0, InstrucaoModo::IMED, instrucao_ora);
@@ -1109,6 +1121,14 @@ namespace nesbrasa::nucleo
         instrucoes.at(0x7C) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
         instrucoes.at(0xDC) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
         instrucoes.at(0xFC) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
+
+        // modos da instrução não-oficial *LAX
+        instrucoes.at(0xA7) = Instrucao("*LAX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_lax);
+        instrucoes.at(0xB7) = Instrucao("*LAX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_lax);
+        instrucoes.at(0xAF) = Instrucao("*LAX", 3, 4, 0, InstrucaoModo::ABS, instrucao_lax);
+        instrucoes.at(0xBF) = Instrucao("*LAX", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_lax);
+        instrucoes.at(0xA3) = Instrucao("*LAX", 2, 6, 0, InstrucaoModo::IND_X, instrucao_lax);
+        instrucoes.at(0xB3) = Instrucao("*LAX", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_lax);
 
         return instrucoes;
     }
