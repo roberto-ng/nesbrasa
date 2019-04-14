@@ -1139,10 +1139,10 @@ namespace nesbrasa::nucleo
         instrucoes.at(0xB3) = Instrucao("*LAX", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_lax);
 
         // modos da instrução não-oficial *SAX
-        instrucoes.at(0x87) = Instrucao("*SAX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_lax);
-        instrucoes.at(0x97) = Instrucao("*SAX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_lax);
-        instrucoes.at(0x83) = Instrucao("*SAX", 2, 6, 0, InstrucaoModo::IND_X, instrucao_lax);
-        instrucoes.at(0x8F) = Instrucao("*SAX", 3, 4, 0, InstrucaoModo::ABS, instrucao_lax);
+        instrucoes.at(0x87) = Instrucao("*SAX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_sax);
+        instrucoes.at(0x97) = Instrucao("*SAX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_sax);
+        instrucoes.at(0x83) = Instrucao("*SAX", 2, 6, 0, InstrucaoModo::IND_X, instrucao_sax);
+        instrucoes.at(0x8F) = Instrucao("*SAX", 3, 4, 0, InstrucaoModo::ABS, instrucao_sax);
 
         return instrucoes;
     }
