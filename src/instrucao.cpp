@@ -818,6 +818,14 @@ namespace nesbrasa::nucleo
         cpu->set_z(valor);
     }
 
+    // Instrução não-oficial *SAX - Faz a operação AND entre o A e o X e guarda o resultado na memória
+    static void instrucao_sax(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->a & cpu->x;
+
+        cpu->get_memoria()->escrever(endereco.value(), valor);
+    }
+
     array< optional<Instrucao>, 256 > carregar_instrucoes()
     {
         // cria um array que será usado como uma tabela de instruções
@@ -1129,6 +1137,12 @@ namespace nesbrasa::nucleo
         instrucoes.at(0xBF) = Instrucao("*LAX", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_lax);
         instrucoes.at(0xA3) = Instrucao("*LAX", 2, 6, 0, InstrucaoModo::IND_X, instrucao_lax);
         instrucoes.at(0xB3) = Instrucao("*LAX", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_lax);
+
+        // modos da instrução não-oficial *SAX
+        instrucoes.at(0x87) = Instrucao("*SAX", 2, 3, 0, InstrucaoModo::P_ZERO, instrucao_lax);
+        instrucoes.at(0x97) = Instrucao("*SAX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_lax);
+        instrucoes.at(0x83) = Instrucao("*SAX", 2, 6, 0, InstrucaoModo::IND_X, instrucao_lax);
+        instrucoes.at(0x8F) = Instrucao("*SAX", 3, 4, 0, InstrucaoModo::ABS, instrucao_lax);
 
         return instrucoes;
     }
