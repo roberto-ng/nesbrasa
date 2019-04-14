@@ -826,6 +826,27 @@ namespace nesbrasa::nucleo
         cpu->get_memoria()->escrever(endereco.value(), valor);
     }
 
+    // Instrução não-oficial *DCP - Subtrai um valor da memória e compara o resultado com A
+    static void instrucao_dcp(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t resultado = (valor - 1) & 0xFF;
+
+        cpu->get_memoria()->escrever(endereco.value(), resultado);
+
+        // compara o resultado com A
+        uint8_t comparacao = cpu->a - resultado;
+
+        if (cpu->a >= comparacao)
+            cpu->c = true;
+        else
+            cpu->c = false;
+
+        // atualizar flags
+        cpu->set_n(comparacao);
+        cpu->set_z(comparacao);
+    }
+
     array< optional<Instrucao>, 256 > carregar_instrucoes()
     {
         // cria um array que será usado como uma tabela de instruções
@@ -1145,6 +1166,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0x97) = Instrucao("*SAX", 2, 4, 0, InstrucaoModo::P_ZERO_Y, instrucao_sax);
         instrucoes.at(0x83) = Instrucao("*SAX", 2, 6, 0, InstrucaoModo::IND_X, instrucao_sax);
         instrucoes.at(0x8F) = Instrucao("*SAX", 3, 4, 0, InstrucaoModo::ABS, instrucao_sax);
+
+        // modos da instrução não-oficial *DCP
+        instrucoes.at(0xC7) = Instrucao("*DCP", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_dcp);
+        instrucoes.at(0xD7) = Instrucao("*DCP", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_dcp);
+        instrucoes.at(0xCF) = Instrucao("*DCP", 3, 6, 0, InstrucaoModo::ABS, instrucao_dcp);
+        instrucoes.at(0xDF) = Instrucao("*DCP", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_dcp);
+        instrucoes.at(0xDB) = Instrucao("*DCP", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_dcp);
+        instrucoes.at(0xC3) = Instrucao("*DCP", 2, 8, 0, InstrucaoModo::IND_X, instrucao_dcp);
+        instrucoes.at(0xD3) = Instrucao("*DCP", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_dcp);
 
         return instrucoes;
     }
