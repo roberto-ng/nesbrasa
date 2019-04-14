@@ -796,17 +796,17 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
-    // Instrução não-oficial *DOP - nenhuma operação
+    //! Instrução não-oficial *DOP - nenhuma operação
     static void instrucao_dop(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
     }
 
-    // Instrução não-oficial *TOP - nenhuma operação
+    //! Instrução não-oficial *TOP - nenhuma operação
     static void instrucao_top(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
     }
 
-    // Instrução não-oficial *LAX - Transfere um valor da memória para A e X
+    //! Instrução não-oficial *LAX - Transfere um valor da memória para A e X
     static void instrucao_lax(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->get_memoria()->ler(endereco.value());
@@ -818,7 +818,7 @@ namespace nesbrasa::nucleo
         cpu->set_z(valor);
     }
 
-    // Instrução não-oficial *SAX - Faz a operação AND entre o A e o X e guarda o resultado na memória
+    //! Instrução não-oficial *SAX - Faz a operação AND entre o A e o X e guarda o resultado na memória
     static void instrucao_sax(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->a & cpu->x;
@@ -826,7 +826,7 @@ namespace nesbrasa::nucleo
         cpu->get_memoria()->escrever(endereco.value(), valor);
     }
 
-    // Instrução não-oficial *DCP - Subtrai um valor da memória e compara o resultado com A
+    //! Instrução não-oficial *DCP - Subtrai um valor da memória e compara o resultado com A
     static void instrucao_dcp(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->get_memoria()->ler(endereco.value());
@@ -847,7 +847,7 @@ namespace nesbrasa::nucleo
         cpu->set_z(comparacao);
     }
 
-    // Instrução não-oficial *ISB - Incrementa um valor na memória, depois subtrai este valor pelo acumulador
+    //! Instrução não-oficial *ISB - Incrementa um valor na memória, depois subtrai este valor por A
     static void instrucao_isb(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->get_memoria()->ler(endereco.value());
@@ -874,6 +874,26 @@ namespace nesbrasa::nucleo
             cpu->v = 0;
 
         // atualiza as flags z e n
+        cpu->set_n(cpu->a);
+        cpu->set_z(cpu->a);
+    }
+
+    //! Instrução não-oficial *SLO 
+    // Realiza um shift para a esquerda em um valor,e depois a operação OR entre A e o valor
+    static void instrucao_slo(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+
+        // checa se a posição 7 do byte é '1' ou '0'
+        cpu->c = buscar_bit(valor, 7);
+
+        valor <<= 1;
+
+        cpu->get_memoria()->escrever(endereco.value(), valor);
+
+        cpu->a = cpu->a | valor;
+
+        //atualizar flags
         cpu->set_n(cpu->a);
         cpu->set_z(cpu->a);
     }
@@ -1215,6 +1235,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0xFB) = Instrucao("*ISB", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_isb);
         instrucoes.at(0xE3) = Instrucao("*ISB", 2, 8, 0, InstrucaoModo::IND_X, instrucao_isb);
         instrucoes.at(0xF3) = Instrucao("*ISB", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_isb);
+
+        // modos da instrução não-oficial *SLO
+        instrucoes.at(0x07) = Instrucao("*SLO", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_slo);
+        instrucoes.at(0x17) = Instrucao("*SLO", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_slo);
+        instrucoes.at(0x0F) = Instrucao("*SLO", 3, 6, 0, InstrucaoModo::ABS, instrucao_slo);
+        instrucoes.at(0x1F) = Instrucao("*SLO", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_slo);
+        instrucoes.at(0x1B) = Instrucao("*SLO", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_slo);
+        instrucoes.at(0x03) = Instrucao("*SLO", 2, 8, 0, InstrucaoModo::IND_X, instrucao_slo);
+        instrucoes.at(0x13) = Instrucao("*SLO", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_slo);
 
         return instrucoes;
     }
