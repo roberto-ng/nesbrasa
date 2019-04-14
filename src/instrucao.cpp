@@ -851,7 +851,7 @@ namespace nesbrasa::nucleo
     static void instrucao_isb(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->get_memoria()->ler(endereco.value());
-        uint8_t resultado = valor - 1;
+        uint8_t resultado = valor + 1;
 
         cpu->get_memoria()->escrever(endereco.value(), resultado);
 
