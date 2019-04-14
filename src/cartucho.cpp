@@ -39,11 +39,7 @@ namespace nesbrasa::nucleo
         this->mapeador = nullptr;
         this->_possui_chr_ram = false;
 
-        this->sram.reserve(0x2000);
-        for (uint32_t i = 0; i < this->sram.capacity(); i++)
-        {
-            this->sram.at(i) = 0;
-        }
+        this->sram.resize(0x2000);
     }
 
     void Cartucho::carregar_rom(vector<uint8_t> rom)
@@ -55,10 +51,10 @@ namespace nesbrasa::nucleo
         this->mapeador.reset();
         this->resetar_arrays();
 
-        this->sram.reserve(0x2000);
-        for (uint32_t i = 0; i < this->sram.capacity(); i++)
+        this->sram.resize(0x2000);
+        for (auto& valor : this->sram)
         {
-            this->sram.at(i) = 0;
+            valor = 0;
         }
 
         // checa se o arquivo é grande o suficiente para ter um cabeçalho
@@ -110,8 +106,8 @@ namespace nesbrasa::nucleo
         const uint32_t prg_tamanho = this->prg_quantidade * 0x4000;
         const uint32_t chr_tamanho = this->chr_quantidade * 0x2000;
 
-        this->prg.reserve(prg_tamanho);
-        this->chr.reserve(chr_tamanho);
+        this->prg.resize(prg_tamanho);
+        this->chr.resize(chr_tamanho);
 
         // checa o tamanho do arquivo
         if ((offset + prg_tamanho + chr_tamanho) > rom.size())
