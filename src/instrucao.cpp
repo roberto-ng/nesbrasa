@@ -830,7 +830,7 @@ namespace nesbrasa::nucleo
     static void instrucao_dcp(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->get_memoria()->ler(endereco.value());
-        uint8_t resultado = (valor - 1) & 0xFF;
+        uint8_t resultado = valor - 1;
 
         cpu->get_memoria()->escrever(endereco.value(), resultado);
 
@@ -845,6 +845,37 @@ namespace nesbrasa::nucleo
         // atualizar flags
         cpu->set_n(comparacao);
         cpu->set_z(comparacao);
+    }
+
+    // Instrução não-oficial *ISB - Incrementa um valor na memória, depois subtrai este valor pelo acumulador
+    static void instrucao_isb(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->get_memoria()->ler(endereco.value());
+        uint8_t resultado = valor - 1;
+
+        cpu->get_memoria()->escrever(endereco.value(), resultado);
+
+        const uint8_t a = cpu->a;
+        const uint8_t c = (!cpu->c) ? 1 : 0;
+
+        cpu->a = a - resultado - c;
+
+        // atualiza a flag c
+        int subtracao_total = (int)a - (int)resultado - (int)c;
+        if (subtracao_total >= 0)
+            cpu->c = 1;
+        else
+            cpu->c = 0;
+
+        // checa se houve um overflow/transbordamento e atualiza a flag v
+        if (((a ^ resultado) & (a ^ subtracao_total) & 0x80) != 0)
+            cpu->v = 1;
+        else
+            cpu->v = 0;
+
+        // atualiza as flags z e n
+        cpu->set_n(cpu->a);
+        cpu->set_z(cpu->a);
     }
 
     array< optional<Instrucao>, 256 > carregar_instrucoes()
@@ -1175,6 +1206,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0xDB) = Instrucao("*DCP", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_dcp);
         instrucoes.at(0xC3) = Instrucao("*DCP", 2, 8, 0, InstrucaoModo::IND_X, instrucao_dcp);
         instrucoes.at(0xD3) = Instrucao("*DCP", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_dcp);
+
+        // modos da instrução não-oficial *ISB
+        instrucoes.at(0xE7) = Instrucao("*ISB", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_isb);
+        instrucoes.at(0xF7) = Instrucao("*ISB", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_isb);
+        instrucoes.at(0xEF) = Instrucao("*ISB", 3, 6, 0, InstrucaoModo::ABS, instrucao_isb);
+        instrucoes.at(0xFF) = Instrucao("*ISB", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_isb);
+        instrucoes.at(0xFB) = Instrucao("*ISB", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_isb);
+        instrucoes.at(0xE3) = Instrucao("*ISB", 2, 8, 0, InstrucaoModo::IND_X, instrucao_isb);
+        instrucoes.at(0xF3) = Instrucao("*ISB", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_isb);
 
         return instrucoes;
     }
