@@ -796,8 +796,13 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
-    // Instrução não-oficial DOP - nenhuma operação
+    // Instrução não-oficial *DOP - nenhuma operação
     static void instrucao_dop(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+    }
+
+    // Instrução não-oficial *TOP - nenhuma operação
+    static void instrucao_top(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
     }
 
@@ -1088,6 +1093,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0xD4) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
         instrucoes.at(0xE2) = Instrucao("*DOP", 2, 2, 0, InstrucaoModo::IMED, instrucao_dop);
         instrucoes.at(0xF4) = Instrucao("*DOP", 2, 4, 0, InstrucaoModo::P_ZERO_X, instrucao_dop);
+
+        // modos da instrução não-oficial *TOP
+        instrucoes.at(0x0C) = Instrucao("*TOP", 3, 4, 0, InstrucaoModo::ABS, instrucao_top);
+        instrucoes.at(0x1C) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
+        instrucoes.at(0x3C) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
+        instrucoes.at(0x5C) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
+        instrucoes.at(0x7C) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
+        instrucoes.at(0xDC) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
+        instrucoes.at(0xFC) = Instrucao("*TOP", 3, 4, 1, InstrucaoModo::ABS_X, instrucao_top);
 
         return instrucoes;
     }
