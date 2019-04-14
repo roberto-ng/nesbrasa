@@ -979,6 +979,13 @@ namespace nesbrasa::nucleo
 
         // modos da instrução NOP
         instrucoes.at(0xEA) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        // opcodes não-oficiais da instrução NOP
+        instrucoes.at(0x1A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x3A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x5A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0x7A) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0xDA) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
+        instrucoes.at(0xFA) = Instrucao("NOP", 1, 2, 0, InstrucaoModo::IMPL, instrucao_nop);
 
         // modos da instrução ORA
         instrucoes.at(0x09) = Instrucao("ORA", 2, 2, 0, InstrucaoModo::IMED, instrucao_ora);
