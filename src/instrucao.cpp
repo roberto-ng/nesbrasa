@@ -878,8 +878,10 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
-    //! Instrução não-oficial *SLO 
-    // Realiza um shift para a esquerda em um valor,e depois a operação OR entre A e o valor
+    /*! 
+      Instrução não-oficial *SLO: 
+      Realiza um shift para a esquerda em um valor,e depois a operação OR entre A e o valor
+    */
     static void instrucao_slo(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->memoria->ler(endereco.value());
@@ -898,14 +900,17 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
-    //! Instrução não-oficial *RLA 
-    // Gira um valor na memória para a esquerda, e depois realiza a operação AND entre A e o valor
+    /*! 
+      Instrução não-oficial *RLA: 
+      Gira um valor na memória para a esquerda, e depois realiza a operação AND entre A e o valor
+    */
     static void instrucao_rla(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->memoria->ler(endereco.value());
 
         bool carregar = cpu->c;
         cpu->c = buscar_bit(valor, 7);
+
         valor <<= 1;
         valor = valor | ((carregar) ? 1 : 0);
 
@@ -913,6 +918,30 @@ namespace nesbrasa::nucleo
         cpu->memoria->escrever(endereco.value(), valor);
 
         cpu->a = cpu->a & valor;
+
+        // atualizar flags
+        cpu->set_n(cpu->a);
+        cpu->set_z(cpu->a);
+    }
+
+    /*! 
+      Instrução não-oficial *SRE: 
+      Gira um valor na memória para a direita, e depois realiza a operação EOR entre A e o valor
+    */
+    static void instrucao_sre(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->memoria->ler(endereco.value());
+
+        bool carregar = cpu->c;
+        cpu->c = buscar_bit(cpu->a, 0);
+
+        valor >>= 1;
+        valor = valor | ((carregar) ? 0b10000000 : 0);
+
+        // atualizar o valor na memoria
+        cpu->memoria->escrever(endereco.value(), valor);
+
+        cpu->a = cpu->a ^ valor; 
 
         // atualizar flags
         cpu->set_n(cpu->a);
@@ -1274,6 +1303,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0x3B) = Instrucao("*RLA", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_rla);
         instrucoes.at(0x23) = Instrucao("*RLA", 2, 8, 0, InstrucaoModo::IND_X, instrucao_rla);
         instrucoes.at(0x33) = Instrucao("*RLA", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_rla);
+
+        // modos da instrução não-oficial *SRE
+        instrucoes.at(0x47) = Instrucao("*SRE", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_sre);
+        instrucoes.at(0x57) = Instrucao("*SRE", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_sre);
+        instrucoes.at(0x4F) = Instrucao("*SRE", 3, 6, 0, InstrucaoModo::ABS, instrucao_sre);
+        instrucoes.at(0x5F) = Instrucao("*SRE", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_sre);
+        instrucoes.at(0x5B) = Instrucao("*SRE", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_sre);
+        instrucoes.at(0x43) = Instrucao("*SRE", 2, 8, 0, InstrucaoModo::IND_X, instrucao_sre);
+        instrucoes.at(0x53) = Instrucao("*SRE", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_sre);
 
         return instrucoes;
     }
