@@ -16,11 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+
 #include "cpu.hpp"
 #include "nesbrasa.hpp"
 #include "util.hpp"
 #include "memoria.hpp"
 #include "instrucao.hpp"
+
+using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
@@ -187,13 +191,154 @@ namespace nesbrasa::nucleo
         else
             this->n = false;
     }
+    
     uint32_t Cpu::get_ciclos()
     {
         return this->ciclos;
     }
 
+    uint16_t Cpu::get_esperar()
+    {
+        return this->esperar;
+    }
+
     Memoria* Cpu::get_memoria()
     {
         return this->memoria;
+    }
+
+    string Cpu::instrucao_para_asm(Instrucao* instrucao)
+    {
+
+        switch (instrucao->modo)
+        {
+            case InstrucaoModo::ACM:
+            {   
+                stringstream ss;
+                
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << (int)this->a;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::ABS:
+            {
+                stringstream ss;
+
+                uint16_t endereco = instrucao->buscar_endereco(this).value();
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco;
+            
+                return ss.str();
+            }
+
+            case InstrucaoModo::ABS_X:
+            {
+                stringstream ss;
+
+                uint16_t endereco = instrucao->buscar_endereco(this).value();
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << ", X";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::ABS_Y:
+            {
+                stringstream ss;
+
+                uint16_t valor = this->memoria->ler_16_bits(this->pc + 1);
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IMED:
+            {
+                int valor = this->memoria->ler(this->pc + 1);
+
+                stringstream ss;
+                ss << instrucao->nome << " #$" << std::uppercase << std::hex << valor;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IMPL:
+            {
+                stringstream ss;
+                ss << instrucao->nome;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IND:
+            {
+                stringstream ss;
+                ss << instrucao->nome << " ($" << std::uppercase << std::hex << this->pc+1 << ")";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IND_X:
+            {
+                int valor = this->memoria->ler(this->pc + 1);
+
+                stringstream ss;
+                ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << ", X)";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::IND_Y:
+            {
+                int valor = this->memoria->ler(this->pc + 1);
+
+                stringstream ss;
+                ss << instrucao->nome << " ($" << std::uppercase << std::hex << valor << "), Y";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::REL:
+            {
+                int endereco = instrucao->buscar_endereco(this).value();
+
+                stringstream ss;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << endereco << "";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::P_ZERO:
+            {
+                int valor = this->memoria->ler(this->pc + 1);
+
+                stringstream ss;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor;
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::P_ZERO_X:
+            {
+                int valor = this->memoria->ler(this->pc + 1);
+
+                stringstream ss;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", X";
+
+                return ss.str();
+            }
+
+            case InstrucaoModo::P_ZERO_Y:
+            {
+                int valor = this->memoria->ler(this->pc + 1);
+
+                stringstream ss;
+                ss << instrucao->nome << " $" << std::uppercase << std::hex << valor << ", Y";
+
+                return ss.str();
+            }
+
+            default:
+                return "???";
+        }
     }
 }

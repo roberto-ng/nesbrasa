@@ -95,6 +95,8 @@ namespace nesbrasa::nucleo
 
         void esperar_adicionar(uint16_t esperar);
 
+        string instrucao_para_asm(Instrucao* instrucao);
+
         //! Ativa a flag de zero caso seja necessario
         void set_z(uint8_t valor);
 
@@ -102,6 +104,8 @@ namespace nesbrasa::nucleo
         void set_n(uint8_t valor);
         
         uint32_t get_ciclos();
+
+        uint16_t get_esperar();
 
         Memoria* get_memoria();
 
