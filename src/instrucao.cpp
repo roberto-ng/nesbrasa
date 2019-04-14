@@ -1058,6 +1058,8 @@ namespace nesbrasa::nucleo
         instrucoes.at(0xF9) = Instrucao("SBC", 3, 4, 1, InstrucaoModo::ABS_Y, instrucao_sbc);
         instrucoes.at(0xE1) = Instrucao("SBC", 2, 6, 0, InstrucaoModo::IND_X, instrucao_sbc);
         instrucoes.at(0xF1) = Instrucao("SBC", 2, 5, 1, InstrucaoModo::IND_Y, instrucao_sbc);
+        // opcode não-oficial da instrução SBC
+        instrucoes.at(0xEB) = Instrucao("*SBC", 2, 2, 0, InstrucaoModo::IMED, instrucao_sbc);
 
         // modos da instrução SEC
         instrucoes.at(0x38) = Instrucao("SEC", 1, 2, 0, InstrucaoModo::IMPL, instrucao_sec);
