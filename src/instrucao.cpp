@@ -948,6 +948,47 @@ namespace nesbrasa::nucleo
         cpu->set_z(cpu->a);
     }
 
+    /*! 
+      Instrução não-oficial *RRA: 
+      Gira um valor na memória para a direita, e depois soma o valor com A e C
+    */
+    static void instrucao_rra(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
+    {
+        uint8_t valor = cpu->memoria->ler(endereco.value());
+
+        bool carregar = cpu->c;
+        cpu->c = buscar_bit(cpu->a, 0);
+
+        valor >>= 1;
+        valor = valor | ((carregar) ? 0b10000000 : 0);
+
+        // atualizar o valor na memoria
+        cpu->memoria->escrever(endereco.value(), valor);
+
+        const uint8_t a = cpu->a;
+        const uint8_t c = (cpu->c) ? 1 : 0;
+
+        cpu->a = a + valor + c;
+
+        // atualiza a flag c
+        int soma_total = (int)a + (int)valor + (int)c;
+        if (soma_total > 0xFF)
+            cpu->c = 1;
+        else
+            cpu->c = 0;
+
+        // checa se houve um overflow/transbordamento e atualiza a flag v
+        // solução baseada em: https://stackoverflow.com/a/16861251
+        if ((~(a ^ valor) & (a ^ soma_total) & 0x80) != 0)
+            cpu->v = 1;
+        else
+            cpu->v = 0;
+
+        // atualiza as flags z e n
+        cpu->set_n(cpu->a);
+        cpu->set_z(cpu->a);
+    }
+
     array< optional<Instrucao>, 256 > carregar_instrucoes()
     {
         // cria um array que será usado como uma tabela de instruções
@@ -1312,6 +1353,15 @@ namespace nesbrasa::nucleo
         instrucoes.at(0x5B) = Instrucao("*SRE", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_sre);
         instrucoes.at(0x43) = Instrucao("*SRE", 2, 8, 0, InstrucaoModo::IND_X, instrucao_sre);
         instrucoes.at(0x53) = Instrucao("*SRE", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_sre);
+
+        // modos da instrução não-oficial *RRA
+        instrucoes.at(0x67) = Instrucao("*RRA", 2, 5, 0, InstrucaoModo::P_ZERO, instrucao_rra);
+        instrucoes.at(0x77) = Instrucao("*RRA", 2, 6, 0, InstrucaoModo::P_ZERO_X, instrucao_rra);
+        instrucoes.at(0x6F) = Instrucao("*RRA", 3, 6, 0, InstrucaoModo::ABS, instrucao_rra);
+        instrucoes.at(0x7F) = Instrucao("*RRA", 3, 7, 0, InstrucaoModo::ABS_X, instrucao_rra);
+        instrucoes.at(0x7B) = Instrucao("*RRA", 3, 7, 0, InstrucaoModo::ABS_Y, instrucao_rra);
+        instrucoes.at(0x63) = Instrucao("*RRA", 2, 8, 0, InstrucaoModo::IND_X, instrucao_rra);
+        instrucoes.at(0x73) = Instrucao("*RRA", 2, 8, 0, InstrucaoModo::IND_Y, instrucao_rra);
 
         return instrucoes;
     }
