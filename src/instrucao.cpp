@@ -926,17 +926,15 @@ namespace nesbrasa::nucleo
 
     /*! 
       Instrução não-oficial *SRE: 
-      Gira um valor na memória para a direita, e depois realiza a operação EOR entre A e o valor
+      Realiza um shift para a direita em um valor, e depois a operação EOR entre A e o valor
     */
     static void instrucao_sre(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->memoria->ler(endereco.value());
 
-        bool carregar = cpu->c;
         cpu->c = buscar_bit(valor, 0);
 
         valor >>= 1;
-        valor = valor | ((carregar) ? 0b10000000 : 0);
 
         // atualizar o valor na memoria
         cpu->memoria->escrever(endereco.value(), valor);
