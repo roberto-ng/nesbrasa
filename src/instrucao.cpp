@@ -648,7 +648,7 @@ namespace nesbrasa::nucleo
             uint8_t valor = cpu->memoria->ler(endereco.value());
 
             bool carregar = cpu->c;
-            cpu->c = buscar_bit(cpu->a, 0);
+            cpu->c = buscar_bit(valor, 0);
             valor >>= 1;
             valor = valor | ((carregar) ? 0b10000000 : 0);
 
@@ -957,7 +957,7 @@ namespace nesbrasa::nucleo
         uint8_t valor = cpu->memoria->ler(endereco.value());
 
         bool carregar = cpu->c;
-        cpu->c = buscar_bit(cpu->a, 0);
+        cpu->c = buscar_bit(valor, 0);
 
         valor >>= 1;
         valor = valor | ((carregar) ? 0b10000000 : 0);
