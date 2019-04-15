@@ -555,7 +555,7 @@ namespace nesbrasa::nucleo
     {
     }
 
-    //! Operanção OR entre um valor na memoria e o acumulador
+    //! Operanção OR entre um valor na memoria e o A
     static void instrucao_ora(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
         uint8_t valor = cpu->memoria->ler(endereco.value());
@@ -933,7 +933,7 @@ namespace nesbrasa::nucleo
         uint8_t valor = cpu->memoria->ler(endereco.value());
 
         bool carregar = cpu->c;
-        cpu->c = buscar_bit(cpu->a, 0);
+        cpu->c = buscar_bit(valor, 0);
 
         valor >>= 1;
         valor = valor | ((carregar) ? 0b10000000 : 0);
