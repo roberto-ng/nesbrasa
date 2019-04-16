@@ -24,10 +24,8 @@
 
 namespace nesbrasa::nucleo
 {
-    Ppu::Ppu(Memoria* memoria)
+    Ppu::Ppu(Memoria* memoria): memoria(memoria)
     {
-        this->memoria = memoria;
-
         this->buffer_dados = 0;
         this->ultimo_valor = 0;
         this->vram_incrementar = 0;

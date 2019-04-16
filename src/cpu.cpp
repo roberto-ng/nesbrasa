@@ -28,9 +28,9 @@ using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
-    Cpu::Cpu(Memoria* memoria)
+    Cpu::Cpu(Memoria* memoria): memoria(memoria),
+                                instrucoes(carregar_instrucoes())
     {
-        this->memoria = memoria;
         this->ciclos = 0;
         this->pc = 0;
         this->sp = 0;
@@ -46,7 +46,6 @@ namespace nesbrasa::nucleo
         this->n = false;
         this->esperar = 0;
         this->pag_alterada = false;
-        this->instrucoes = carregar_instrucoes();
     }
 
     void Cpu::ciclo()
@@ -82,7 +81,7 @@ namespace nesbrasa::nucleo
         if (this->pag_alterada) 
         {
             this->ciclos += instrucao.ciclos;
-            this->ciclos += instrucao.ciclos_pag_alterada;
+            this->ciclos += instrucao.ciclos_pag_alt;
         }
         else
         {

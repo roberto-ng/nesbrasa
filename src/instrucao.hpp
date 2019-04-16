@@ -74,7 +74,7 @@ namespace nesbrasa::nucleo
 
         // quantidade de ciclos adicionais que devem ocorrer quando a
         // página da memoria for alterada durante a leitura do endereço
-        int32_t ciclos_pag_alterada;
+        int32_t ciclos_pag_alt;
 
         InstrucaoModo modo;
 
@@ -86,7 +86,7 @@ namespace nesbrasa::nucleo
             string nome,
             uint8_t bytes,
             int32_t ciclos,
-            int32_t ciclos_pag_alterada,
+            int32_t ciclos_pag_alt,
             InstrucaoModo  modo,
             InstrucaoImplementacao implementacao
         );

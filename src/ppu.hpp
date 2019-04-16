@@ -79,9 +79,7 @@ namespace nesbrasa::nucleo
         uint8_t  x;
         bool     w;
 
-    public:
-        Ppu() = default;
-        
+    public:        
         Ppu(Memoria* memoria);
 
         uint8_t ler(Nes *nes, uint16_t endereco);

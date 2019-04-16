@@ -64,8 +64,6 @@ namespace nesbrasa::nucleo
         bool v; // flag de transbordamento (overflow flag)
         bool n; // flag de negativo
 
-        Cpu() = default;
-
         Cpu(Memoria* memoria);
             
         void ciclo();

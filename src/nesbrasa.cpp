@@ -28,13 +28,11 @@ using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
-    Nes::Nes()
-    {
-        this->memoria = Memoria(this);
-        this->cpu = Cpu(&this->memoria);
-        this->ppu = Ppu(&this->memoria);
-        this->cartucho = Cartucho();
-    }
+    Nes::Nes(): memoria(this),
+                cpu(&this->memoria),
+                ppu(&this->memoria),
+                cartucho()
+    {}
 
     void Nes::carregar_rom(vector<uint8_t> rom)
     {

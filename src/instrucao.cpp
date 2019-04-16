@@ -32,7 +32,7 @@ namespace nesbrasa::nucleo
         string nome,
         uint8_t bytes,
         int32_t ciclos,
-        int32_t ciclos_pag_alterada,
+        int32_t ciclos_pag_alt,
         InstrucaoModo  modo,
         InstrucaoImplementacao implementacao
     )
@@ -40,7 +40,7 @@ namespace nesbrasa::nucleo
         this->nome = nome;
         this->bytes = bytes;
         this->ciclos = ciclos;
-        this->ciclos_pag_alterada = ciclos_pag_alterada;
+        this->ciclos_pag_alt = ciclos_pag_alt;
         this->modo = modo;
         this->implementacao = implementacao;
     }
@@ -879,8 +879,8 @@ namespace nesbrasa::nucleo
     }
 
     /*! 
-      Instrução não-oficial *SLO: 
-      Realiza um shift para a esquerda em um valor,e depois a operação OR entre A e o valor
+    Instrução não-oficial *SLO: 
+    Realiza um shift para a esquerda em um valor,e depois a operação OR entre A e o valor
     */
     static void instrucao_slo(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
@@ -901,8 +901,8 @@ namespace nesbrasa::nucleo
     }
 
     /*! 
-      Instrução não-oficial *RLA: 
-      Gira um valor na memória para a esquerda, e depois realiza a operação AND entre A e o valor
+    Instrução não-oficial *RLA: 
+    Gira um valor na memória para a esquerda, e depois realiza a operação AND entre A e o valor
     */
     static void instrucao_rla(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
@@ -925,8 +925,8 @@ namespace nesbrasa::nucleo
     }
 
     /*! 
-      Instrução não-oficial *SRE: 
-      Realiza um shift para a direita em um valor, e depois a operação EOR entre A e o valor
+    Instrução não-oficial *SRE: 
+    Realiza um shift para a direita em um valor, e depois a operação EOR entre A e o valor
     */
     static void instrucao_sre(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
@@ -947,8 +947,8 @@ namespace nesbrasa::nucleo
     }
 
     /*! 
-      Instrução não-oficial *RRA: 
-      Gira um valor na memória para a direita, e depois soma o valor com A e C
+    Instrução não-oficial *RRA: 
+    Gira um valor na memória para a direita, e depois soma o valor com A e C
     */
     static void instrucao_rra(Instrucao* instrucao, Cpu* cpu, optional<uint16_t> endereco)
     {
