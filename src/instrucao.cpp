@@ -33,7 +33,7 @@ namespace nesbrasa::nucleo
         uint8_t bytes,
         int32_t ciclos,
         int32_t ciclos_pag_alt,
-        InstrucaoModo  modo,
+        InstrucaoModo modo,
         InstrucaoImplementacao implementacao
     )
     {
