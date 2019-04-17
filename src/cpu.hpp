@@ -47,6 +47,8 @@ namespace nesbrasa::nucleo
     public:
         Memoria* memoria;
 
+        array<uint8_t, 0x0800> ram;
+
         bool pag_alterada;
 
         uint16_t pc; // contador de programa

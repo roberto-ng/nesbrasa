@@ -28,24 +28,19 @@ namespace nesbrasa::nucleo
     Memoria::Memoria(Nes *nes)
     {
         this->nes = nes;
-    
-        for (auto& valor : this->ram)
-        {
-            valor = 0;
-        }
     }
 
     uint8_t Memoria::ler(uint16_t endereco)
     {
         if (endereco <= 0x07FF)
         {
-            return this->ram.at(endereco);
+            return this->nes->cpu.ram.at(endereco);
         }
         else if (endereco >= 0x0800 && endereco <=0x1FFF)
         {
             // endereços nesta area são espelhos dos endereços
             // localizados entre 0x0000 e 0x07FF
-            return this->ram.at(endereco % 0x0800);
+            return this->nes->cpu.ram.at(endereco % 0x0800);
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {
@@ -110,13 +105,13 @@ namespace nesbrasa::nucleo
     {
         if (endereco <= 0x07FF)
         {
-            this->ram.at(endereco) = valor;
+            this->nes->cpu.ram.at(endereco) = valor;
         }
         else if (endereco >= 0x0800 && endereco <=0x1FFF)
         {
             // endereços nesta area são espelhos dos endereços
             // localizados entre 0x0000 e 0x07FF
-            this->ram.at(endereco % 0x0800) = valor;
+            this->nes->cpu.ram.at(endereco % 0x0800) = valor;
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {

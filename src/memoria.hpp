@@ -30,8 +30,7 @@ namespace nesbrasa::nucleo
     class Memoria
     {
     private:
-        Nes* nes;
-        array<uint8_t, 0x0800> ram; 
+        Nes* nes; 
     
     public:        
         Memoria(Nes* nes);
