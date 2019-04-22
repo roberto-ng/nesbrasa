@@ -27,6 +27,8 @@ using std::make_unique;
 
 namespace nesbrasa::nucleo
 {
+    using uint = unsigned int;
+
     Cartucho::Cartucho()
     {
         this->espelhamento = Espelhamento::VERTICAL;
