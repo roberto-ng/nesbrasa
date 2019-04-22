@@ -22,15 +22,24 @@
 #include <functional>
 #include <string>
 #include <array>
+#if defined(USAR_EXPERIMENTAL)
+#include <experimental/optional>
+#else
 #include <optional>
+#endif
 
 #include "cpu.hpp"
 
 using std::function;
 using std::string;
-using std::optional;
 using std::array;
 using std::shared_ptr;
+#if defined(USAR_EXPERIMENTAL)
+using std::experimental::optional;
+#else
+using std::optional;
+#endif
+
 
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
