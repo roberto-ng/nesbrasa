@@ -34,13 +34,8 @@ using std::function;
 using std::string;
 using std::array;
 using std::shared_ptr;
-#if defined(USAR_EXPERIMENTAL)
-using std::experimental::optional;
-using std::experimental::nullopt;
-#else
 using std::optional;
 using std::nullopt;
-#endif
 
 
 // referencias utilizadas:

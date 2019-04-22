@@ -21,22 +21,14 @@
 #include <cstdint>
 #include <array>
 #include <memory>
-#if defined(USAR_EXPERIMENTAL)
-#include <experimental/optional>
-#else
 #include <optional>
-#endif
 
 #include "instrucao.hpp"
 #include "memoria.hpp"
 
 using std::array;
 using std::shared_ptr;
-#if defined(USAR_EXPERIMENTAL)
-using std::experimental::optional;
-#else
 using std::optional;
-#endif
 
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
