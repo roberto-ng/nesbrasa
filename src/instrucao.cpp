@@ -24,8 +24,6 @@
 #include "memoria.hpp"
 #include "util.hpp"
 
-using std::nullopt;
-
 namespace nesbrasa::nucleo
 {
     Instrucao::Instrucao(
