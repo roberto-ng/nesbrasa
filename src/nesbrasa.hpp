@@ -34,8 +34,8 @@ namespace nesbrasa::nucleo
     class Nes
     {
     public:
-        Cartucho cartucho;
         Memoria memoria;
+        Cartucho cartucho;
         Cpu cpu;
         Ppu ppu;
 
