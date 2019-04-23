@@ -28,10 +28,8 @@ using std::stringstream;
 
 namespace nesbrasa::nucleo
 {
-    Cpu::Cpu(Memoria* memoria): 
-        instrucoes(carregar_instrucoes()), 
-        memoria(memoria),
-        ram({0})
+    Cpu::Cpu(Memoria* memoria): instrucoes(carregar_instrucoes()), 
+                                memoria(memoria)            
     {
         this->ciclos = 0;
         this->pc = 0;

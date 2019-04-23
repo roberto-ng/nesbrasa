@@ -24,8 +24,7 @@
 
 namespace nesbrasa::nucleo
 {
-    Ppu::Ppu(Memoria* memoria): 
-        memoria(memoria)
+    Ppu::Ppu(Memoria* memoria): memoria(memoria)
     {
         this->buffer_dados = 0;
         this->ultimo_valor = 0;
