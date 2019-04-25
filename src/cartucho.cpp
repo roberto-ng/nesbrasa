@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <sstream>
 
 #include "cartucho.hpp"
 #include "nrom.hpp"
 #include "util.hpp"
 
+using std::stringstream;
 using std::make_unique;
 
 namespace nesbrasa::nucleo
@@ -129,9 +129,9 @@ namespace nesbrasa::nucleo
             this->chr.at(i) = rom.at(offset+prg_tamanho+i);
         }
 
-        uint8_t mapeador_byte_menor = (rom.at(6) & 0xFF00) >> 8;
-        uint8_t mapeador_byte_maior = (rom.at(7) & 0xFF00) >> 8;
-        uint8_t mapeador_codigo = (mapeador_byte_maior << 8) | mapeador_byte_menor;
+        uint8_t mapeador_nibble_menor = (rom.at(6) & 0xF0) >> 4;
+        uint8_t mapeador_nibble_maior = (rom.at(7) & 0xF0) >> 4;
+        uint8_t mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
 
         if (buscar_bit(rom.at(6), 3) == true)
         {
@@ -157,9 +157,16 @@ namespace nesbrasa::nucleo
                 break;
 
             default:
+            {
                 this->mapeador = nullptr;
                 this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
-                throw string("Erro: mapeador não reconhecido");
+
+                // jogar mensagem de erro
+                stringstream ss;
+                ss << "Erro: mapeador não reconhecido\n";
+                ss << "Código do mapeador: " << (int)mapeador_codigo << "\n";
+                throw ss.str();
+            }
         }
 
         //TODO: Completar suporte a ROMs no formato NES 2.0
