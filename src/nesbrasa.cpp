@@ -25,9 +25,12 @@
 
 using std::make_unique;
 using std::stringstream;
+using std::runtime_error;
 
 namespace nesbrasa::nucleo
 {
+    using namespace std::string_literals;
+
     Nes::Nes(): memoria(this),
                 cartucho(),
                 cpu(&this->memoria),
@@ -44,7 +47,7 @@ namespace nesbrasa::nucleo
     {
         if (!this->cartucho.possui_rom_carregada())
         {
-            throw string("Erro: nenhuma ROM foi carregada");
+            throw runtime_error("Erro: nenhuma ROM foi carregada"s);
         }
 
         this->cpu.ciclo();

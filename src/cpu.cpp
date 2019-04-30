@@ -17,6 +17,7 @@
  */
 
 #include <sstream>
+#include <stdexcept>
 
 #include "cpu.hpp"
 #include "nesbrasa.hpp"
@@ -25,6 +26,7 @@
 #include "instrucao.hpp"
 
 using std::stringstream;
+using std::runtime_error;
 
 namespace nesbrasa::nucleo
 {
@@ -68,11 +70,11 @@ namespace nesbrasa::nucleo
         // jogar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
         {
-            stringstream ss;
-            ss << "Instrução não reconhecida: ";
-            ss << "$" << std::hex << opcode;
+            stringstream erro_ss;
+            erro_ss << "Instrução não reconhecida: ";
+            erro_ss << "$" << std::hex << opcode;
             
-            throw ss.str();
+            throw runtime_error(erro_ss.str());
         }
 
         auto instrucao = this->instrucoes.at(opcode).value();
@@ -221,11 +223,11 @@ namespace nesbrasa::nucleo
         // jogar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
         {
-            stringstream ss;
-            ss << "Instrução não reconhecida: ";
-            ss << "$" << std::hex << opcode;
+            stringstream erro_ss;
+            erro_ss << "Instrução não reconhecida: ";
+            erro_ss << "$" << std::hex << opcode;
             
-            throw ss.str();
+            throw runtime_error(erro_ss.str());
         }
 
         auto instrucao = this->instrucoes.at(opcode).value();

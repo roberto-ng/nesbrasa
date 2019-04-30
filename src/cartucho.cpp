@@ -17,6 +17,8 @@
  */
 
 #include <sstream>
+#include <string>
+#include <stdexcept>
 
 #include "cartucho.hpp"
 #include "nrom.hpp"
@@ -24,9 +26,11 @@
 
 using std::stringstream;
 using std::make_unique;
+using std::runtime_error;
 
 namespace nesbrasa::nucleo
 {
+    using namespace std::string_literals;
     using uint = unsigned int;
 
     Cartucho::Cartucho()
@@ -62,7 +66,7 @@ namespace nesbrasa::nucleo
         // checa se o arquivo é grande o suficiente para ter um cabeçalho
         if (rom.size() < 16)
         {
-            throw string("Erro: formato não reconhecido");
+            throw runtime_error("Erro: formato não reconhecido"s);
         }
 
         // lê os 4 primeiros bytes do arquivo como uma string
@@ -89,7 +93,7 @@ namespace nesbrasa::nucleo
         else
         {
             // formato inválido
-            throw string("Erro: formato não reconhecido");
+            throw runtime_error("Erro: formato não reconhecido"s);
         }
 
         this->possui_sram = buscar_bit(rom.at(6), 1);
@@ -115,7 +119,7 @@ namespace nesbrasa::nucleo
         if ((offset + prg_tamanho + chr_tamanho) > rom.size())
         {
             // formato inválido
-            throw string("Erro: formato não reconhecido");
+            throw runtime_error("Erro: formato não reconhecido"s);
         }
 
         // Copia os dados referentes à ROM PRG do arquivo para o array
@@ -162,10 +166,10 @@ namespace nesbrasa::nucleo
                 this->mapeador_tipo = MapeadorTipo::DESCONHECIDO;
 
                 // jogar mensagem de erro
-                stringstream ss;
-                ss << "Erro: mapeador não reconhecido\n";
-                ss << "Código do mapeador: " << (int)mapeador_codigo << "\n";
-                throw ss.str();
+                stringstream erro_ss;
+                erro_ss << "Erro: mapeador não reconhecido\n";
+                erro_ss << "Código do mapeador: " << (int)mapeador_codigo << "\n";
+                throw runtime_error(erro_ss.str());
             }
         }
 
@@ -180,7 +184,7 @@ namespace nesbrasa::nucleo
             return this->mapeador->ler(this, endereco);
         }
         
-        throw string("Mapeador não existente");
+        throw runtime_error("Mapeador não existente"s);
     }
 
     void Cartucho::escrever(uint16_t endereco, uint8_t valor)
@@ -191,7 +195,7 @@ namespace nesbrasa::nucleo
         }
         else 
         {
-            throw string("Mapeador não existente");
+            throw runtime_error("Mapeador não existente"s);
         }
     }
 

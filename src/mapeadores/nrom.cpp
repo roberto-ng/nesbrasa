@@ -18,8 +18,12 @@
 
 #include "nrom.hpp"
 
+using std::runtime_error;
+
 namespace nesbrasa::nucleo
 {
+    using namespace std::string_literals;
+
     NRom::NRom(Cartucho *cartucho)
     {
         if (cartucho->possui_chr_ram())
@@ -70,7 +74,7 @@ namespace nesbrasa::nucleo
     {
         if (!cartucho->possui_chr_ram())
         {
-            throw string("CHR RAM inexistente");
+            throw runtime_error("CHR RAM inexistente"s);
         }
 
         if (endereco < 0x2000)

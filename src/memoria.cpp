@@ -22,6 +22,7 @@
 #include "nesbrasa.hpp"
 
 using std::stringstream;
+using std::runtime_error;
 
 namespace nesbrasa::nucleo
 {
@@ -73,12 +74,12 @@ namespace nesbrasa::nucleo
         }
 
         // endereço não existe, jogar erro
-        stringstream ss;
-        ss << "Tentativa de leitura em um endereço não existente na memória";
-        ss << " (" << std::hex << endereco << ") ";
-        ss << endereco;
+        stringstream erro_ss;
+        erro_ss << "Tentativa de leitura em um endereço não existente na memória";
+        erro_ss << " (" << std::hex << endereco << ") ";
+        erro_ss << endereco;
 
-        throw ss.str();
+        throw runtime_error(erro_ss.str());
     }
 
     uint16_t Memoria::ler_16_bits(uint16_t endereco)
@@ -144,12 +145,12 @@ namespace nesbrasa::nucleo
         else
         {
             // endereço não existe, jogar erro
-            stringstream ss;
-            ss << "Tentativa de escrita do valor " << std::hex << valor;
-            ss << " em um endereço não existente na memória";
-            ss << " (" << std::hex << endereco << ")";
+            stringstream erro_ss;
+            erro_ss << "Tentativa de escrita do valor " << std::hex << valor;
+            erro_ss << " em um endereço não existente na memória";
+            erro_ss << " (" << std::hex << endereco << ")";
 
-            throw ss.str();
+            throw runtime_error(erro_ss.str());
         }
     }
 }
