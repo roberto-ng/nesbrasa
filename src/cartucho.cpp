@@ -31,7 +31,11 @@ namespace nesbrasa::nucleo
     using std::make_unique;
     using std::runtime_error;
     using namespace std::string_literals;
+
     using uint = unsigned int;
+
+    const int Cartucho::PRG_BANCOS_TAMANHO = 0x4000;
+    const int Cartucho::CHR_BANCOS_TAMANHO = 0x2000;
 
     Cartucho::Cartucho()
     {
@@ -98,9 +102,6 @@ namespace nesbrasa::nucleo
 
         this->possui_sram = buscar_bit(rom.at(6), 1);
 
-        bool contem_trainer = buscar_bit(rom.at(6), 2);
-        int offset = 16 + ((contem_trainer) ? 512 : 0);
-
         this->prg_quantidade = rom.at(4);
         this->chr_quantidade = rom.at(5);
 
@@ -109,49 +110,44 @@ namespace nesbrasa::nucleo
             this->_possui_chr_ram = true;
         }
 
-        const uint32_t prg_tamanho = this->prg_quantidade * 0x4000;
-        const uint32_t chr_tamanho = this->chr_quantidade * 0x2000;
+        const uint32_t rom_prg_tamanho = this->prg_quantidade * Cartucho::PRG_BANCOS_TAMANHO;
+        const uint32_t rom_chr_tamanho = this->chr_quantidade * Cartucho::CHR_BANCOS_TAMANHO;
 
-        this->prg.resize(prg_tamanho);
-        this->chr.resize(chr_tamanho);
+        this->prg.resize(rom_prg_tamanho);
+        this->chr.resize(rom_chr_tamanho);
 
         // checa o tamanho do arquivo
-        if ((offset + prg_tamanho + chr_tamanho) > rom.size())
+        if ((buscar_bit(rom.at(6), 2) + rom_prg_tamanho + rom_chr_tamanho) > rom.size())
         {
             // formato inválido
             throw runtime_error("Erro: formato não reconhecido"s);
         }
 
+        // busca o inicio da ROM PRG
+        int rom_prg_inicio;
+        if (buscar_bit(rom.at(6), 2) == true)
+            rom_prg_inicio = 16 + 512;
+        else
+            rom_prg_inicio = 16;
+
+        // calcula o inicio da ROM CHR
+        int rom_chr_inicio = rom_prg_inicio + rom_prg_tamanho;
+
         // Copia os dados referentes à ROM PRG do arquivo para o array
         for (uint i = 0; i < this->prg.size(); i++)
         {
-            this->prg.at(i) = rom.at(offset+i);
+            this->prg.at(i) = rom.at(rom_prg_inicio+i);
         }
 
         // Copia os dados referentes à ROM CHR do arquivo para o array
-        for (uint i = 0; i < this->chr.size(); i++) {
-            this->chr.at(i) = rom.at(offset+prg_tamanho+i);
+        for (uint i = 0; i < this->chr.size(); i++) 
+        {
+            this->chr.at(i) = rom.at(rom_chr_inicio+i);
         }
 
         uint8_t mapeador_nibble_menor = (rom.at(6) & 0xF0) >> 4;
         uint8_t mapeador_nibble_maior = (rom.at(7) & 0xF0) >> 4;
         uint8_t mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
-
-        if (buscar_bit(rom.at(6), 3) == true)
-        {
-            this->espelhamento = Espelhamento::QUATRO_TELAS;
-        }
-        else
-        {
-            if (buscar_bit(rom.at(6), 0) == false)
-            {
-                this->espelhamento = Espelhamento::VERTICAL;
-            }
-            else
-            {
-                this->espelhamento = Espelhamento::HORIZONTAL;
-            }
-        }
 
         // converte o valor para uma enumeração do tipo MapeadorTipo
         this->mapeador_tipo = static_cast<MapeadorTipo>(mapeador_codigo);
@@ -174,6 +170,18 @@ namespace nesbrasa::nucleo
                 erro_ss << "Código do mapeador: " << static_cast<int>(mapeador_codigo);
                 throw runtime_error(erro_ss.str());
             }
+        }
+
+        if (buscar_bit(rom.at(6), 3) == true)
+        {
+            this->espelhamento = Espelhamento::QUATRO_TELAS;
+        }
+        else
+        {
+            if (buscar_bit(rom.at(6), 0) == false)
+                this->espelhamento = Espelhamento::VERTICAL;
+            else
+                this->espelhamento = Espelhamento::HORIZONTAL;
         }
 
         //TODO: Completar suporte a ROMs no formato NES 2.0

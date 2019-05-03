@@ -64,6 +64,11 @@ namespace nesbrasa::nucleo
         Espelhamento   espelhamento;
 
     public:
+        // tamanho em bytes de um banco da ROM PRG
+        static const int PRG_BANCOS_TAMANHO;
+        // tamanho em bytes de um banco da ROM CHR
+        static const int CHR_BANCOS_TAMANHO;
+
         vector<uint8_t> prg;
         vector<uint8_t> chr;
         vector<uint8_t> chr_ram;
