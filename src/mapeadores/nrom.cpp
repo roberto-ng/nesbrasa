@@ -18,10 +18,9 @@
 
 #include "nrom.hpp"
 
-using std::runtime_error;
-
 namespace nesbrasa::nucleo
 {
+    using std::runtime_error;
     using namespace std::string_literals;
 
     NRom::NRom(Cartucho *cartucho)

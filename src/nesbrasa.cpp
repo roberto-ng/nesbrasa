@@ -23,19 +23,19 @@
 #include "cartucho.hpp"
 #include "util.hpp"
 
-using std::make_unique;
-using std::stringstream;
-using std::runtime_error;
-
 namespace nesbrasa::nucleo
 {
+    using std::make_unique;
+    using std::stringstream;
+    using std::runtime_error;
     using namespace std::string_literals;
 
     Nes::Nes(): memoria(this),
                 cartucho(),
                 cpu(&this->memoria),
                 ppu(&this->memoria)
-    {}
+    {
+    }
 
     void Nes::carregar_rom(vector<uint8_t> rom)
     {

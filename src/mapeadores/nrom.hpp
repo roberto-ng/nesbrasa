@@ -25,7 +25,7 @@
 
 namespace nesbrasa::nucleo
 {
-	class NRom : public IMapeador
+	class NRom : public Mapeador
 	{
 	public:
 		NRom(Cartucho *cartucho);

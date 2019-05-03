@@ -21,10 +21,11 @@
 #include <cstdint>
 #include <array>
 
-using std::array;
 
 namespace nesbrasa::nucleo
 {
+    using std::array;
+        
     class Nes;
 
     class Memoria
@@ -32,7 +33,7 @@ namespace nesbrasa::nucleo
     private:
         Nes* nes;
         array<uint8_t, 0x0800> ram; 
-    
+        
     public:        
         Memoria(Nes* nes);
 
@@ -40,13 +41,13 @@ namespace nesbrasa::nucleo
         uint8_t ler(uint16_t endereco);
 
         /*! Lê um valor de 16 bits na memoria
-          \return O valor 16 bits do enrereço lido no formato little-endian
+            \return O valor 16 bits do enrereço lido no formato little-endian
         */
         uint16_t ler_16_bits(uint16_t endereco);
 
         //! Lê um valor de 16 bits na memoria com o bug do no modo indireto da cpu
         /*!
-          \return O valor 16 bits do enrereço lido no formato little-endian
+            \return O valor 16 bits do enrereço lido no formato little-endian
         */
         uint16_t ler_16_bits_bug(uint16_t endereco);
 

@@ -30,12 +30,6 @@
 
 #include "cpu.hpp"
 
-using std::function;
-using std::string;
-using std::array;
-using std::shared_ptr;
-using std::optional;
-using std::nullopt;
 
 
 // referencias utilizadas:
@@ -44,6 +38,13 @@ using std::nullopt;
 
 namespace nesbrasa::nucleo
 {
+    using std::function;
+    using std::string;
+    using std::array;
+    using std::shared_ptr;
+    using std::optional;
+    using std::nullopt;
+
     class Cpu;
     class Instrucao;
 

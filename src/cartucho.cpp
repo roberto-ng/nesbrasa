@@ -24,12 +24,11 @@
 #include "nrom.hpp"
 #include "util.hpp"
 
-using std::stringstream;
-using std::make_unique;
-using std::runtime_error;
-
 namespace nesbrasa::nucleo
 {
+    using std::stringstream;
+    using std::make_unique;
+    using std::runtime_error;
     using namespace std::string_literals;
     using uint = unsigned int;
 

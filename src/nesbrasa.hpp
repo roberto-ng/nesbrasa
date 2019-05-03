@@ -26,11 +26,11 @@
 #include "ppu.hpp"
 #include "cartucho.hpp"
 
-using std::array;
-using std::vector;
-
 namespace nesbrasa::nucleo
 {
+    using std::array;
+    using std::vector;
+
     class Nes
     {
     public:

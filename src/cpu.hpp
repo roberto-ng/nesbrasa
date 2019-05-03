@@ -26,15 +26,15 @@
 #include "instrucao.hpp"
 #include "memoria.hpp"
 
-using std::array;
-using std::shared_ptr;
-using std::optional;
-
 // referencias utilizadas:
 // http://www.obelisk.me.uk/6502/registers.html
 
 namespace nesbrasa::nucleo
 {
+    using std::array;
+    using std::shared_ptr;
+    using std::optional;
+
     class Cpu
     {
     private:

@@ -25,11 +25,11 @@
 #include "memoria.hpp"
 #include "instrucao.hpp"
 
-using std::stringstream;
-using std::runtime_error;
-
 namespace nesbrasa::nucleo
 {
+    using std::stringstream;
+    using std::runtime_error;
+
     Cpu::Cpu(Memoria* memoria): instrucoes(carregar_instrucoes()), 
                                 memoria(memoria)            
     {

@@ -25,11 +25,11 @@
 #include "mapeador.hpp"
 #include "nrom.hpp"
 
-using std::vector;
-using std::unique_ptr;
-
 namespace nesbrasa::nucleo
 {
+    using std::vector;
+    using std::unique_ptr;
+
     enum class Espelhamento
     {
         HORIZONTAL,
@@ -55,7 +55,7 @@ namespace nesbrasa::nucleo
     class Cartucho
     {
     private:
-        unique_ptr<IMapeador> mapeador;
+        unique_ptr<Mapeador> mapeador;
         
         uint8_t prg_quantidade;
         uint8_t chr_quantidade;

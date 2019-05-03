@@ -21,11 +21,12 @@
 #include "memoria.hpp"
 #include "nesbrasa.hpp"
 
-using std::stringstream;
-using std::runtime_error;
 
 namespace nesbrasa::nucleo
 {
+    using std::stringstream;
+    using std::runtime_error;
+
     Memoria::Memoria(Nes *nes)
     {
         this->nes = nes;

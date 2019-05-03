@@ -24,15 +24,15 @@
 
 #include "memoria.hpp"
 
-using std::array;
-using std::shared_ptr;
-
 // referencias utilizadas:
 // https://wiki.nesdev.com/w/index.php/PPU_registers
 // http://nemulator.com/files/nes_emu.txt
 
 namespace nesbrasa::nucleo
 {
+    using std::array;
+    using std::shared_ptr;
+    
     class Ppu
     {
     private:

@@ -3,16 +3,16 @@
 #include <cstdint>
 #include <string>
 
-using std::string;
-
 namespace nesbrasa::nucleo
 {
+    using std::string;
+    
     class Cartucho;
 
-    class IMapeador
+    class Mapeador
     {
     public:
-        virtual ~IMapeador() = default;
+        virtual ~Mapeador() = default;
 
         virtual uint8_t ler(Cartucho *cartucho, uint16_t endereco) = 0;
 
