@@ -26,6 +26,7 @@
 
 namespace nesbrasa::nucleo
 {
+    using std::string;
     using std::stringstream;
     using std::make_unique;
     using std::runtime_error;
@@ -152,11 +153,14 @@ namespace nesbrasa::nucleo
             }
         }
 
-        switch (mapeador_codigo)
+        // converte o valor para uma enumeração do tipo MapeadorTipo
+        this->mapeador_tipo = static_cast<MapeadorTipo>(mapeador_codigo);
+
+        // construir o objeto do mapeador do cartucho
+        switch (this->mapeador_tipo)
         {
-            case 0:
-                this->mapeador = make_unique<NRom>(this);
-                this->mapeador_tipo = MapeadorTipo::NROM;
+            case MapeadorTipo::NROM:
+                this->mapeador = make_unique<mapeadores::NRom>(this);
                 break;
 
             default:
@@ -167,7 +171,7 @@ namespace nesbrasa::nucleo
                 // jogar mensagem de erro
                 stringstream erro_ss;
                 erro_ss << "Erro: mapeador não reconhecido\n";
-                erro_ss << "Código do mapeador: " << (int)mapeador_codigo;
+                erro_ss << "Código do mapeador: " << static_cast<int>(mapeador_codigo);
                 throw runtime_error(erro_ss.str());
             }
         }

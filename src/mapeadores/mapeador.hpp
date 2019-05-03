@@ -5,10 +5,21 @@
 
 namespace nesbrasa::nucleo
 {
-    using std::string;
-    
     class Cartucho;
+} 
 
+namespace nesbrasa::nucleo::mapeadores
+{
+    using std::string;
+
+
+    enum class MapeadorTipo
+    {
+        NROM = 0,
+        MMC1 = 1,
+        DESCONHECIDO,
+    };
+    
     class Mapeador
     {
     public:

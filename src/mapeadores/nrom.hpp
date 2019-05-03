@@ -23,7 +23,7 @@
 #include "mapeador.hpp"
 #include "cartucho.hpp"
 
-namespace nesbrasa::nucleo
+namespace nesbrasa::nucleo::mapeadores
 {
 	class NRom : public Mapeador
 	{

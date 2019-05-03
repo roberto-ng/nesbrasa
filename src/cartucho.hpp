@@ -29,6 +29,8 @@ namespace nesbrasa::nucleo
 {
     using std::vector;
     using std::unique_ptr;
+    using mapeadores::Mapeador;
+    using mapeadores::MapeadorTipo;
 
     enum class Espelhamento
     {
@@ -36,13 +38,6 @@ namespace nesbrasa::nucleo
         VERTICAL,
         TELA_UNICA,
         QUATRO_TELAS,
-    };
-
-    enum class MapeadorTipo
-    {
-        NROM,
-        MMC1,
-        DESCONHECIDO,
     };
 
     enum class ArquivoFormato

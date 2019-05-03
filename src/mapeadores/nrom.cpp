@@ -18,10 +18,11 @@
 
 #include "nrom.hpp"
 
-namespace nesbrasa::nucleo
+namespace nesbrasa::nucleo::mapeadores
 {
     using std::runtime_error;
     using namespace std::string_literals;
+    using namespace nesbrasa::nucleo;
 
     NRom::NRom(Cartucho *cartucho)
     {

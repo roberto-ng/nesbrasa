@@ -238,7 +238,7 @@ namespace nesbrasa::nucleo
             {   
                 stringstream ss;
                 
-                ss << instrucao.nome << " $" << std::uppercase << std::hex << (int)this->a;
+                ss << instrucao.nome << " $" << std::uppercase << std::hex << static_cast<int>(this->a);
 
                 return ss.str();
             }
