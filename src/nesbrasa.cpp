@@ -30,14 +30,15 @@ namespace nesbrasa::nucleo
     using std::runtime_error;
     using namespace std::string_literals;
 
-    Nes::Nes(): memoria(this),
-                cartucho(),
-                cpu(&this->memoria),
-                ppu(&this->memoria)
+    Nes::Nes(): 
+        memoria(this),
+        cartucho(),
+        cpu(&this->memoria),
+        ppu(&this->memoria)
     {
     }
 
-    void Nes::carregar_rom(vector<uint8_t> rom)
+    void Nes::carregar_rom(vector<byte> rom)
     {
         this->cartucho.carregar_rom(rom);
         this->cpu.resetar();

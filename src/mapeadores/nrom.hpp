@@ -30,9 +30,9 @@ namespace nesbrasa::nucleo::mapeadores
 	public:
 		NRom(Cartucho *cartucho);
 
-		uint8_t ler(Cartucho *cartucho, uint16_t endereco);
+		byte ler(Cartucho *cartucho, uint16 endereco);
 
-		void escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor);
+		void escrever(Cartucho *cartucho, uint16 endereco, byte valor);
 
 		string get_nome();
 	};

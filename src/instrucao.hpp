@@ -18,19 +18,13 @@
 
 #pragma once
 
-#include <cstdint>
 #include <functional>
 #include <string>
 #include <array>
-#if defined(USAR_EXPERIMENTAL)
-#include <experimental/optional>
-#else
 #include <optional>
-#endif
 
 #include "cpu.hpp"
-
-
+#include "tipos_numeros.hpp"
 
 // referencias utilizadas:
 // https://www.masswerk.at/6502/6502_instruction_set.html
@@ -44,13 +38,14 @@ namespace nesbrasa::nucleo
     using std::shared_ptr;
     using std::optional;
     using std::nullopt;
+    using namespace nesbrasa::tipos;
 
     class Cpu;
     class Instrucao;
 
     // Tipo usado para referenciar funções de alto nível 
     // que reimplementam instruções da arquitetura 6502
-    using InstrucaoImplementacao = function< void(Instrucao*, Cpu*, optional<uint16_t>) >;
+    using InstrucaoImplementacao = function< void(Instrucao*, Cpu*, optional<uint16>) >;
 
     //! Modos de endereçamento das instruções
     enum class InstrucaoModo
@@ -75,13 +70,13 @@ namespace nesbrasa::nucleo
     class Instrucao
     {
     public:
-        string  nome;
-        uint8_t bytes;
-        int32_t ciclos;
+        string nome;
+        byte   bytes;
+        int32  ciclos;
 
         // quantidade de ciclos adicionais que devem ocorrer quando a
         // página da memoria for alterada durante a leitura do endereço
-        int32_t ciclos_pag_alt;
+        int32 ciclos_pag_alt;
 
         InstrucaoModo modo;
 
@@ -91,10 +86,10 @@ namespace nesbrasa::nucleo
       
         Instrucao(
             string nome,
-            uint8_t bytes,
-            int32_t ciclos,
-            int32_t ciclos_pag_alt,
-            InstrucaoModo  modo,
+            byte bytes,
+            int32 ciclos,
+            int32 ciclos_pag_alt,
+            InstrucaoModo modo,
             InstrucaoImplementacao implementacao
         );
 
@@ -102,7 +97,7 @@ namespace nesbrasa::nucleo
         Busca o endereço que vai ser usado por uma instrução de
         acordo com o modo de endereçamento da CPU
         */
-        optional<uint16_t> buscar_endereco(Cpu* cpu);
+        optional<uint16> buscar_endereco(Cpu* cpu);
     };
 
     array< optional<Instrucao>, 256 > carregar_instrucoes();

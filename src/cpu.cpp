@@ -30,8 +30,9 @@ namespace nesbrasa::nucleo
     using std::stringstream;
     using std::runtime_error;
 
-    Cpu::Cpu(Memoria* memoria): instrucoes(carregar_instrucoes()), 
-                                memoria(memoria)            
+    Cpu::Cpu(Memoria* memoria): 
+        instrucoes(carregar_instrucoes()), 
+        memoria(memoria)            
     {
         this->ciclos = 0;
         this->pc = 0;
@@ -60,7 +61,7 @@ namespace nesbrasa::nucleo
 
         uint32_t ciclos_qtd_anterior = this->ciclos;
 
-        uint8_t opcode = this->memoria->ler(this->pc);
+        byte opcode = this->memoria->ler(this->pc);
         if (!this->instrucoes.at(opcode).has_value())
         {
             printf("Erro: Uso de opcode inválido - %02X", opcode);
@@ -110,7 +111,7 @@ namespace nesbrasa::nucleo
         this->set_estado(0b00100100);
     }
 
-    void Cpu::branch_somar_ciclos(uint16_t endereco)
+    void Cpu::branch_somar_ciclos(uint16 endereco)
     {
         // somar 1 se os 2 endereços forem da mesma pagina,
         // somar 2 se forem de paginas diferentes
@@ -120,24 +121,24 @@ namespace nesbrasa::nucleo
             this->ciclos += 2;
     }
 
-    uint8_t Cpu::get_estado()
+    byte Cpu::get_estado()
     {
-        uint8_t flags = 0;
+        byte flags = 0;
 
-        const uint8_t c = this->c;
-        const uint8_t z = this->z << 1;
-        const uint8_t i = this->i << 2;
-        const uint8_t d = this->d << 3;
-        const uint8_t b = this->b << 4;
-        const uint8_t v = this->v << 6;
-        const uint8_t n = this->n << 7;
+        const byte c = this->c;
+        const byte z = this->z << 1;
+        const byte i = this->i << 2;
+        const byte d = this->d << 3;
+        const byte b = this->b << 4;
+        const byte v = this->v << 6;
+        const byte n = this->n << 7;
         // o bit na posiçao 5 sempre está ativo
-        const uint8_t bit_5 = 1 << 5;
+        const byte bit_5 = 1 << 5;
 
         return flags | c | z | i | d | b | bit_5 | v | n;
     }
 
-    void Cpu::set_estado(uint8_t valor)
+    void Cpu::set_estado(byte valor)
     {
         this->c = buscar_bit(valor, 0);
         this->z = buscar_bit(valor, 1);
@@ -148,44 +149,44 @@ namespace nesbrasa::nucleo
         this->n = buscar_bit(valor, 7);
     }
 
-    void Cpu::stack_empurrar(uint8_t valor)
+    void Cpu::stack_empurrar(byte valor)
     {
-        uint16_t endereco = 0x0100 | this->sp;
+        uint16 endereco = 0x0100 | this->sp;
         this->memoria->escrever(endereco, valor);
 
         this->sp -= 1;
     }
 
-    void Cpu::stack_empurrar_16_bits(uint16_t valor)
+    void Cpu::stack_empurrar_16_bits(uint16 valor)
     {
-        uint8_t menor = valor & 0x00FF;
-        uint8_t maior = (valor & 0xFF00) >> 8;
+        byte menor = valor & 0x00FF;
+        byte maior = (valor & 0xFF00) >> 8;
 
         this->stack_empurrar(maior);
         this->stack_empurrar(menor);
     }
 
-    uint8_t Cpu::stack_puxar()
+    byte Cpu::stack_puxar()
     {
         this->sp += 1;
-        uint16_t endereco = 0x0100 | this->sp;
+        uint16 endereco = 0x0100 | this->sp;
         return this->memoria->ler(endereco);
     }
 
-    uint16_t Cpu::stack_puxar_16_bits()
+    uint16 Cpu::stack_puxar_16_bits()
     {
-        uint8_t menor = this->stack_puxar();
-        uint8_t maior = this->stack_puxar();
+        byte menor = this->stack_puxar();
+        byte maior = this->stack_puxar();
 
         return (maior << 8) | menor;
     }
 
-    void Cpu::esperar_adicionar(uint16_t esperar)
+    void Cpu::esperar_adicionar(uint16 esperar)
     {
         this->esperar += esperar;
     }
 
-    void Cpu::set_z(uint8_t valor)
+    void Cpu::set_z(byte valor)
     {
         // checa se um valor é '0'
         if (valor == 0)
@@ -194,7 +195,7 @@ namespace nesbrasa::nucleo
             this->z = false;
     }
 
-    void Cpu::set_n(uint8_t valor)
+    void Cpu::set_n(byte valor)
     {
         // o valor é negativo se o bit mais significativo não for '0'
         if ((valor & 0b10000000) != 0)
@@ -203,22 +204,22 @@ namespace nesbrasa::nucleo
             this->n = false;
     }
     
-    uint32_t Cpu::get_ciclos()
+    uint32 Cpu::get_ciclos()
     {
         return this->ciclos;
     }
 
-    uint16_t Cpu::get_esperar()
+    uint16 Cpu::get_esperar()
     {
         return this->esperar;
     }
 
-    optional<Instrucao> Cpu::get_instrucao(uint8_t opcode)
+    optional<Instrucao> Cpu::get_instrucao(byte opcode)
     {
         return this->instrucoes.at(opcode);
     }
 
-    string Cpu::instrucao_para_asm(uint8_t opcode)
+    string Cpu::instrucao_para_asm(byte opcode)
     {
         // jogar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
@@ -247,7 +248,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
 
-                uint16_t endereco = instrucao.buscar_endereco(this).value();
+                uint16 endereco = instrucao.buscar_endereco(this).value();
                 ss << instrucao.nome << " $" << std::uppercase << std::hex << endereco;
             
                 return ss.str();
@@ -257,7 +258,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
 
-                uint16_t endereco = this->memoria->ler_16_bits(this->pc + 1);
+                uint16 endereco = this->memoria->ler_16_bits(this->pc + 1);
                 ss << instrucao.nome << " $" << std::uppercase << std::hex << endereco << ", X";
 
                 return ss.str();
@@ -267,7 +268,7 @@ namespace nesbrasa::nucleo
             {
                 stringstream ss;
 
-                uint16_t valor = this->memoria->ler_16_bits(this->pc + 1);
+                uint16 valor = this->memoria->ler_16_bits(this->pc + 1);
                 ss << instrucao.nome << " $" << std::uppercase << std::hex << valor << ", Y";
 
                 return ss.str();

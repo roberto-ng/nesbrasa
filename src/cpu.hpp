@@ -38,8 +38,8 @@ namespace nesbrasa::nucleo
     class Cpu
     {
     private:
-        uint16_t esperar;
-        uint32_t ciclos;
+        uint16 esperar;
+        uint32 ciclos;
 
         // tabela de instruções
         array< optional<Instrucao>, 256 > instrucoes;
@@ -49,12 +49,12 @@ namespace nesbrasa::nucleo
 
         bool pag_alterada;
 
-        uint16_t pc; // contador de programa
-        uint8_t  sp; // ponteiro da stack
+        uint16 pc; // contador de programa
+        byte   sp; // ponteiro da stack
 
-        uint8_t a; // registrador acumulador
-        uint8_t x; // registrador de indice x
-        uint8_t y; // registrador de indice y
+        byte a; // registrador acumulador
+        byte x; // registrador de indice x
+        byte y; // registrador de indice y
 
         bool c; // flag de carregamento (carry flag)
         bool z; // flag zero
@@ -73,39 +73,39 @@ namespace nesbrasa::nucleo
         /*! Calcula a quantidade de ciclos em um branch e a soma em 'cpu->ciclos'.
             \param endereco O endereço em que o branch sera realizado
         */
-        void branch_somar_ciclos(uint16_t endereco);
+        void branch_somar_ciclos(uint16 endereco);
 
-        uint8_t get_estado();
+        byte get_estado();
 
-        void set_estado(uint8_t valor);
-
-        //! Empurra um valor na stack
-        void stack_empurrar(uint8_t valor);
+        void set_estado(byte valor);
 
         //! Empurra um valor na stack
-        void stack_empurrar_16_bits(uint16_t valor);
+        void stack_empurrar(byte valor);
+
+        //! Empurra um valor na stack
+        void stack_empurrar_16_bits(uint16 valor);
 
         //! Puxa um valor da stack
-        uint8_t stack_puxar();
+        byte stack_puxar();
 
         //! Puxa um valor da stack
-        uint16_t stack_puxar_16_bits();
+        uint16 stack_puxar_16_bits();
 
-        void esperar_adicionar(uint16_t esperar);
+        void esperar_adicionar(uint16 esperar);
 
-        string instrucao_para_asm(uint8_t opcode);
+        string instrucao_para_asm(byte opcode);
 
         //! Ativa a flag de zero caso seja necessario
-        void set_z(uint8_t valor);
+        void set_z(byte valor);
 
         //! Ativa a flag de valor negativo caso seja necessario
-        void set_n(uint8_t valor);
+        void set_n(byte valor);
         
-        uint32_t get_ciclos();
+        uint32 get_ciclos();
 
-        uint16_t get_esperar();
+        uint16 get_esperar();
 
-        optional<Instrucao> get_instrucao(uint8_t opcode);
+        optional<Instrucao> get_instrucao(byte opcode);
 
     private:
         void executar(Instrucao* instrucao);

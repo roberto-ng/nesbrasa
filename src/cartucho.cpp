@@ -31,9 +31,7 @@ namespace nesbrasa::nucleo
     using std::make_unique;
     using std::runtime_error;
     using namespace std::string_literals;
-
-    using uint = unsigned int;
-
+    
     const int Cartucho::PRG_BANCOS_TAMANHO = 0x4000;
     const int Cartucho::CHR_BANCOS_TAMANHO = 0x2000;
 
@@ -52,7 +50,7 @@ namespace nesbrasa::nucleo
         this->sram.resize(0x2000);
     }
 
-    void Cartucho::carregar_rom(vector<uint8_t> rom)
+    void Cartucho::carregar_rom(vector<byte> rom)
     {
         this->rom_carregada = false;
         this->formato = ArquivoFormato::DESCONHECIDO;
@@ -110,8 +108,8 @@ namespace nesbrasa::nucleo
             this->_possui_chr_ram = true;
         }
 
-        const uint32_t rom_prg_tamanho = this->prg_quantidade * Cartucho::PRG_BANCOS_TAMANHO;
-        const uint32_t rom_chr_tamanho = this->chr_quantidade * Cartucho::CHR_BANCOS_TAMANHO;
+        uint rom_prg_tamanho = this->prg_quantidade * Cartucho::PRG_BANCOS_TAMANHO;
+        uint rom_chr_tamanho = this->chr_quantidade * Cartucho::CHR_BANCOS_TAMANHO;
 
         this->prg.resize(rom_prg_tamanho);
         this->chr.resize(rom_chr_tamanho);
@@ -145,9 +143,9 @@ namespace nesbrasa::nucleo
             this->chr.at(i) = rom.at(rom_chr_inicio+i);
         }
 
-        uint8_t mapeador_nibble_menor = (rom.at(6) & 0xF0) >> 4;
-        uint8_t mapeador_nibble_maior = (rom.at(7) & 0xF0) >> 4;
-        uint8_t mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
+        byte mapeador_nibble_menor = (rom.at(6) & 0xF0) >> 4;
+        byte mapeador_nibble_maior = (rom.at(7) & 0xF0) >> 4;
+        byte mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
 
         // converte o valor para uma enumeração do tipo MapeadorTipo
         this->mapeador_tipo = static_cast<MapeadorTipo>(mapeador_codigo);
@@ -188,7 +186,7 @@ namespace nesbrasa::nucleo
         this->rom_carregada = true;
     }
 
-    uint8_t Cartucho::ler(uint16_t endereco)
+    byte Cartucho::ler(uint16_t endereco)
     {
         if (this->mapeador != nullptr)
         {
@@ -198,7 +196,7 @@ namespace nesbrasa::nucleo
         throw runtime_error("Mapeador não existente"s);
     }
 
-    void Cartucho::escrever(uint16_t endereco, uint8_t valor)
+    void Cartucho::escrever(uint16_t endereco, byte valor)
     {
         if (this->mapeador != nullptr)
         {
@@ -210,12 +208,12 @@ namespace nesbrasa::nucleo
         }
     }
 
-    uint8_t Cartucho::get_prg_quantidade()
+    byte Cartucho::get_prg_quantidade()
     {
         return this->prg_quantidade;
     }
 
-    uint8_t Cartucho::get_chr_quantidade()
+    byte Cartucho::get_chr_quantidade()
     {
         return this->chr_quantidade;
     }
@@ -247,9 +245,9 @@ namespace nesbrasa::nucleo
 
     void Cartucho::resetar_arrays()
     {
-        vector<uint8_t>().swap(this->prg);
-        vector<uint8_t>().swap(this->chr);
-        vector<uint8_t>().swap(this->sram);
-        vector<uint8_t>().swap(this->chr_ram);
+        vector<byte>().swap(this->prg);
+        vector<byte>().swap(this->chr);
+        vector<byte>().swap(this->sram);
+        vector<byte>().swap(this->chr_ram);
     }
 }

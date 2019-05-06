@@ -41,7 +41,7 @@ namespace nesbrasa::nucleo
 
         Nes();
 
-        void carregar_rom(vector<uint8_t> rom);
+        void carregar_rom(vector<byte> rom);
 
         void ciclo();
     };

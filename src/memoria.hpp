@@ -32,26 +32,26 @@ namespace nesbrasa::nucleo
     {
     private:
         Nes* nes;
-        array<uint8_t, 0x0800> ram; 
+        array<byte, 0x0800> ram; 
         
     public:        
         Memoria(Nes* nes);
 
         //! Lê um valor de 8 bits na memoria
-        uint8_t ler(uint16_t endereco);
+        byte ler(uint16 endereco);
 
         /*! Lê um valor de 16 bits na memoria
             \return O valor 16 bits do enrereço lido no formato little-endian
         */
-        uint16_t ler_16_bits(uint16_t endereco);
+        uint16 ler_16_bits(uint16 endereco);
 
         //! Lê um valor de 16 bits na memoria com o bug do no modo indireto da cpu
         /*!
             \return O valor 16 bits do enrereço lido no formato little-endian
         */
-        uint16_t ler_16_bits_bug(uint16_t endereco);
+        uint16 ler_16_bits_bug(uint16 endereco);
 
         //! Escreve um valor na memoria
-        void escrever(uint16_t endereco, uint8_t valor);
+        void escrever(uint16 endereco, byte valor);
     };
 }

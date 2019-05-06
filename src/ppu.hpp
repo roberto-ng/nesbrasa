@@ -38,26 +38,26 @@ namespace nesbrasa::nucleo
     private:
         Memoria* memoria;
 
-        array<uint8_t, 0x100> oam;
-        array<uint8_t, 0x800> tabelas_de_nomes;
-        array<uint8_t, 0x20>  paletas;
+        array<byte, 0x100> oam;
+        array<byte, 0x800> tabelas_de_nomes;
+        array<byte, 0x20>  paletas;
 
-        uint8_t  buffer_dados;
-        uint8_t  ultimo_valor; // último valor escrito na ppu
-        uint16_t vram_incrementar;
-        uint16_t oam_endereco;
-        uint16_t nametable_endereco;
-        uint16_t padrao_fundo_endereco;
-        uint16_t padrao_sprite_endereco;
+        byte buffer_dados;
+        byte ultimo_valor; // último valor escrito na ppu
+        uint16 vram_incrementar;
+        uint16 oam_endereco;
+        uint16 nametable_endereco;
+        uint16 padrao_fundo_endereco;
+        uint16 padrao_sprite_endereco;
 
         // PPUCTRL - $2000
-        bool    flag_nmi;
-        bool    flag_mestre_escravo;
-        bool    flag_sprite_altura;
-        bool    flag_padrao_fundo;
-        bool    flag_padrao_sprite;
-        bool    flag_incrementar;
-        uint8_t flag_nametable_base;
+        bool flag_nmi;
+        bool flag_mestre_escravo;
+        bool flag_sprite_altura;
+        bool flag_padrao_fundo;
+        bool flag_padrao_sprite;
+        bool flag_incrementar;
+        byte flag_nametable_base;
 
         // PPUMASK - $2001
         bool flag_enfase_b;
@@ -75,36 +75,36 @@ namespace nesbrasa::nucleo
         bool flag_sprite_transbordamento;
 
         // registradores internos
-        uint16_t v;
-        uint16_t t;
-        uint8_t  x;
-        bool     w;
+        uint16 v;
+        uint16 t;
+        byte   x;
+        bool   w;
 
     public:        
         Ppu(Memoria* memoria);
 
-        uint8_t ler(Nes *nes, uint16_t endereco);
-        void escrever(Nes *nes, uint16_t endereco, uint8_t valor);
+        byte ler(Nes *nes, uint16 endereco);
+        void escrever(Nes *nes, uint16 endereco, byte valor);
 
-        uint8_t registrador_ler(Nes *nes, uint16_t endereco);
-        void registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor);
+        byte registrador_ler(Nes *nes, uint16 endereco);
+        void registrador_escrever(Nes *nes, uint16 endereco, byte valor);
 
-        uint8_t ler_paleta(uint16_t endereco);
-        void escrever_paleta(uint16_t endereco, uint8_t valor);
+        byte ler_paleta(uint16 endereco);
+        void escrever_paleta(uint16 endereco, byte valor);
 
     private:
-        void set_controle(Nes *nes, uint8_t valor);
-        void set_mascara(Nes *nes, uint8_t  valor);
-        uint8_t get_estado(Nes *nes);
-        void set_oam_enderco(Nes *nes, uint8_t valor);
-        void set_oam_dados(Nes *nes, uint8_t valor);
-        uint8_t get_oam_dados(Nes *nes);
-        void set_scroll(Nes *nes, uint8_t valor);
-        void set_endereco(Nes *nes, uint8_t valor);
-        void set_omd_dma(Nes *nes, uint8_t valor);
-        uint8_t get_dados(Nes *nes);
-        void set_dados(Nes *nes, uint8_t valor);
+        void set_controle(Nes *nes, byte valor);
+        void set_mascara(Nes *nes, byte  valor);
+        byte get_estado(Nes *nes);
+        void set_oam_enderco(Nes *nes, byte valor);
+        void set_oam_dados(Nes *nes, byte valor);
+        byte get_oam_dados(Nes *nes);
+        void set_scroll(Nes *nes, byte valor);
+        void set_endereco(Nes *nes, byte valor);
+        void set_omd_dma(Nes *nes, byte valor);
+        byte get_dados(Nes *nes);
+        void set_dados(Nes *nes, byte valor);
             
-        uint16_t endereco_espelhado(Nes *nes, uint16_t endereco);
+        uint16 endereco_espelhado(Nes *nes, uint16 endereco);
     };
 }

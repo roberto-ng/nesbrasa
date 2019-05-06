@@ -25,9 +25,9 @@ namespace nesbrasa::nucleo::mapeadores
     public:
         virtual ~Mapeador() = default;
 
-        virtual uint8_t ler(Cartucho *cartucho, uint16_t endereco) = 0;
+        virtual byte ler(Cartucho *cartucho, uint16 endereco) = 0;
 
-        virtual void escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor) = 0;
+        virtual void escrever(Cartucho *cartucho, uint16 endereco, byte valor) = 0;
 
         virtual string get_nome() = 0;
     };

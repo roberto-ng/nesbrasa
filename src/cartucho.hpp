@@ -24,6 +24,7 @@
 
 #include "mapeador.hpp"
 #include "nrom.hpp"
+#include "tipos_numeros.hpp"
 
 namespace nesbrasa::nucleo
 {
@@ -31,6 +32,7 @@ namespace nesbrasa::nucleo
     using std::unique_ptr;
     using mapeadores::Mapeador;
     using mapeadores::MapeadorTipo;
+    using namespace tipos;
 
     enum class Espelhamento
     {
@@ -52,8 +54,8 @@ namespace nesbrasa::nucleo
     private:
         unique_ptr<Mapeador> mapeador;
         
-        uint8_t prg_quantidade;
-        uint8_t chr_quantidade;
+        byte prg_quantidade;
+        byte chr_quantidade;
 
         bool rom_carregada;
         bool possui_sram;
@@ -69,22 +71,22 @@ namespace nesbrasa::nucleo
         // tamanho em bytes de um banco da ROM CHR
         static const int CHR_BANCOS_TAMANHO;
 
-        vector<uint8_t> prg;
-        vector<uint8_t> chr;
-        vector<uint8_t> chr_ram;
-        vector<uint8_t> sram;
+        vector<byte> prg;
+        vector<byte> chr;
+        vector<byte> chr_ram;
+        vector<byte> sram;
 
         Cartucho();
 
-        void carregar_rom(vector<uint8_t> rom);
+        void carregar_rom(vector<byte> rom);
 
-        uint8_t ler(uint16_t endereco);
+        byte ler(uint16 endereco);
 
-        void escrever(uint16_t endereco, uint8_t valor);
+        void escrever(uint16 endereco, byte valor);
 
-        uint8_t get_prg_quantidade();
+        byte get_prg_quantidade();
 
-        uint8_t get_chr_quantidade();
+        byte get_chr_quantidade();
 
         ArquivoFormato get_formato();
 

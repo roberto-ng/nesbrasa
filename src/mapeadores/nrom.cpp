@@ -37,7 +37,7 @@ namespace nesbrasa::nucleo::mapeadores
         }
     }
 
-    uint8_t NRom::ler(Cartucho *cartucho, uint16_t endereco)
+    uint8_t NRom::ler(Cartucho *cartucho, uint16 endereco)
     {
         if (endereco < 0x2000)
         {
@@ -70,7 +70,7 @@ namespace nesbrasa::nucleo::mapeadores
         return 0;
     }
 
-    void NRom::escrever(Cartucho *cartucho, uint16_t endereco, uint8_t valor)
+    void NRom::escrever(Cartucho *cartucho, uint16 endereco, byte valor)
     {
         if (!cartucho->possui_chr_ram())
         {

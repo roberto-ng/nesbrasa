@@ -21,7 +21,6 @@
 #include "memoria.hpp"
 #include "nesbrasa.hpp"
 
-
 namespace nesbrasa::nucleo
 {
     using std::stringstream;
@@ -37,7 +36,7 @@ namespace nesbrasa::nucleo
         }
     }
 
-    uint8_t Memoria::ler(uint16_t endereco)
+    byte Memoria::ler(uint16 endereco)
     {
         if (endereco <= 0x07FF)
         {
@@ -56,7 +55,7 @@ namespace nesbrasa::nucleo
         else if (endereco >= 0x2008 && endereco <= 0x3FFF)
         {
             // endereço espelhado do registrador
-            uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
+            uint16 ender_espelhado = (endereco%0x8) + 0x2000;
             return this->nes->ppu.registrador_ler(nes, ender_espelhado);
         }
         else if (endereco >= 0x4000 && endereco <= 0x4017)
@@ -83,18 +82,18 @@ namespace nesbrasa::nucleo
         throw runtime_error(erro_ss.str());
     }
 
-    uint16_t Memoria::ler_16_bits(uint16_t endereco)
+    uint16 Memoria::ler_16_bits(uint16 endereco)
     {
-        uint16_t menor = this->ler(endereco);
-        uint16_t maior = this->ler(endereco + 1);
+        uint16 menor = this->ler(endereco);
+        uint16 maior = this->ler(endereco + 1);
 
         return (maior << 8) | menor;
     }
 
-    uint16_t Memoria::ler_16_bits_bug(uint16_t endereco)
+    uint16 Memoria::ler_16_bits_bug(uint16 endereco)
     {
-        uint16_t menor = this->ler(endereco);
-        uint16_t maior = 0;
+        uint16 menor = this->ler(endereco);
+        uint16 maior = 0;
 
         if ((endereco & 0x00FF) == 0x00FF)
         {
@@ -108,7 +107,7 @@ namespace nesbrasa::nucleo
         return (maior << 8) | menor;
     }
 
-    void Memoria::escrever(uint16_t endereco, uint8_t valor)
+    void Memoria::escrever(uint16 endereco, byte valor)
     {
         if (endereco <= 0x07FF)
         {
@@ -127,7 +126,7 @@ namespace nesbrasa::nucleo
         else if (endereco >= 0x2008 && endereco <= 0x3FFF)
         {
             // endereço espelhado do registrador
-            uint16_t ender_espelhado = (endereco%0x8) + 0x2000;
+            uint16 ender_espelhado = (endereco%0x8) + 0x2000;
             this->nes->ppu.registrador_escrever(nes, ender_espelhado, valor);
         }
         else if (endereco >= 0x4000 && endereco <= 0x4017)
