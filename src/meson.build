@@ -19,6 +19,7 @@ nesbrasa_headers = [
   'nesbrasa.hpp',
   'ppu.hpp',
   'util.hpp',
+  'tipos_numeros.hpp',
   'mapeadores/mapeador.hpp',
   'mapeadores/nrom.hpp',
 ]
