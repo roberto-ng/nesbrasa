@@ -38,8 +38,9 @@ namespace nesbrasa::nucleo
     private:
         Memoria* memoria;
 
-        array<uint8_t, 0x100>  oam;
-        array<uint8_t, 0x4000> vram;
+        array<uint8_t, 0x100> oam;
+        array<uint8_t, 0x800> tabelas_de_nomes;
+        array<uint8_t, 0x20>  paletas;
 
         uint8_t  buffer_dados;
         uint8_t  ultimo_valor; // último valor escrito na ppu
@@ -87,6 +88,9 @@ namespace nesbrasa::nucleo
 
         uint8_t registrador_ler(Nes *nes, uint16_t endereco);
         void registrador_escrever(Nes *nes, uint16_t endereco, uint8_t valor);
+
+        uint8_t ler_paleta(uint16_t endereco);
+        void escrever_paleta(uint16_t endereco, uint8_t valor);
 
     private:
         void set_controle(Nes *nes, uint8_t valor);

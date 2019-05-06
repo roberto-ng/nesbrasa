@@ -24,7 +24,11 @@
 
 namespace nesbrasa::nucleo
 {
-    Ppu::Ppu(Memoria* memoria): memoria(memoria)
+    Ppu::Ppu(Memoria* memoria): 
+        memoria(memoria),
+        oam({ 0 }),
+        tabelas_de_nomes({ 0 }),
+        paletas({ 0 })
     {
         this->buffer_dados = 0;
         this->ultimo_valor = 0;
@@ -59,16 +63,6 @@ namespace nesbrasa::nucleo
         this->t = 0;
         this->x = 0;
         this->w = false;
-
-        for (auto& valor : oam)
-        {
-            valor = 0;
-        }
-
-        for (auto& valor : vram)
-        {
-            valor = 0;
-        }
     }
 
     uint8_t Ppu::registrador_ler(Nes *nes, uint16_t endereco)
@@ -134,39 +128,15 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
-            uint16_t espelhado = this->endereco_espelhado(nes, endereco);
-            return this->vram.at(espelhado);
+            uint16_t endereco_espelhado = this->endereco_espelhado(nes, endereco);
+            uint16_t posicao = endereco_espelhado % this->tabelas_de_nomes.size();
+
+            return this->tabelas_de_nomes.at(posicao);
         }
         else if (endereco >= 0x3F00 && endereco < 0x4000)
         {
             //ler dados das paletas de cores
-
-            if (endereco >= 0x3F20)
-            {
-                // espelhar o endereço se necessario
-                endereco = (endereco%0x20) + 0x3F00;
-            }
-
-            if (endereco == 0x3F10)
-            {
-                return this->vram.at(0x3F00);
-            }
-            else if (endereco == 0x3F14)
-            {
-                return this->vram.at(0x3F04);
-            }
-            else if (endereco == 0x3F18)
-            {
-                return this->vram.at(0x3F08);
-            }
-            else if (endereco == 0x3F1C)
-            {
-                return this->vram.at(0x3F0C);
-            }
-            else
-            {
-                return this->vram.at(endereco);
-            }
+            this->ler_paleta(endereco % this->paletas.size());
         }
 
         return 0;
@@ -180,40 +150,26 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
-            uint16_t espelhado = this->endereco_espelhado(nes, endereco);
-            this->vram.at(espelhado) = valor;
+            uint16_t endereco_espelhado = this->endereco_espelhado(nes, endereco);
+            uint16_t posicao = endereco_espelhado % this->tabelas_de_nomes.size();
+            
+            this->tabelas_de_nomes.at(posicao) = valor;
         }
         else if (endereco >= 0x3F00 && endereco < 0x4000)
         {
             //escrever nas paletas de cores
-
-            // espelhar o endereço se for necessario
-            if (endereco >= 0x3F20)
-            {
-                endereco = (endereco%0x20) + 0x3F00;
-            }
-
-            if (endereco == 0x3F10)
-            {
-                this->vram.at(0x3F00) = valor;
-            }
-            else if (endereco == 0x3F14)
-            {
-                this->vram.at(0x3F04) = valor;
-            }
-            else if (endereco == 0x3F18)
-            {
-                this->vram.at(0x3F08) = valor;
-            }
-            else if (endereco == 0x3F1C)
-            {
-                this->vram.at(0x3F0C) = valor;
-            }
-            else
-            {
-                this->vram.at(endereco) = valor;
-            }
+            this->escrever_paleta(endereco % this->paletas.size(), valor);
         }
+    }
+
+    uint8_t Ppu::ler_paleta(uint16_t endereco)
+    {
+        return this->paletas[endereco];
+    }
+
+    void Ppu::escrever_paleta(uint16_t endereco, uint8_t valor)
+    {
+        this->paletas[endereco] = valor;
     }
 
     void Ppu::set_controle(Nes *nes, uint8_t valor)

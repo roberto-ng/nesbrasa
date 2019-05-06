@@ -41,7 +41,7 @@ namespace nesbrasa::nucleo::mapeadores
     {
         if (endereco < 0x2000)
         {
-            // ler a rom CHR
+            // ler a rom CHR ou a ram CHR
             if (cartucho->possui_chr_ram())
             {
                 return cartucho->chr_ram.at(endereco);
