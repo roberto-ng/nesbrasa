@@ -26,14 +26,10 @@ namespace nesbrasa::nucleo
     using std::stringstream;
     using std::runtime_error;
 
-    Memoria::Memoria(Nes *nes)
+    Memoria::Memoria(Nes *nes):
+        ram({ 0 })
     {
         this->nes = nes;
-    
-        for (auto& valor : this->ram)
-        {
-            valor = 0;
-        }
     }
 
     byte Memoria::ler(uint16 endereco)

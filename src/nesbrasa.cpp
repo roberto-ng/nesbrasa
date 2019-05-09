@@ -38,9 +38,9 @@ namespace nesbrasa::nucleo
     {
     }
 
-    void Nes::carregar_rom(vector<byte> rom)
+    void Nes::carregar_rom(vector<byte> arquivo)
     {
-        this->cartucho.carregar_rom(rom);
+        this->cartucho.carregar_rom(arquivo);
         this->cpu.resetar();
     }
 

@@ -50,7 +50,7 @@ namespace nesbrasa::nucleo
         this->sram.resize(0x2000);
     }
 
-    void Cartucho::carregar_rom(vector<byte> rom)
+    void Cartucho::carregar_rom(vector<byte> arquivo)
     {
         this->rom_carregada = false;
         this->formato = ArquivoFormato::DESCONHECIDO;
@@ -66,7 +66,7 @@ namespace nesbrasa::nucleo
         }
 
         // checa se o arquivo é grande o suficiente para ter um cabeçalho
-        if (rom.size() < 16)
+        if (arquivo.size() < 16)
         {
             throw runtime_error("Erro: formato não reconhecido"s);
         }
@@ -75,13 +75,13 @@ namespace nesbrasa::nucleo
         string formato_string;
         for (int i = 0; i < 4; i++)
         {
-            formato_string += static_cast<char>(rom.at(i));
+            formato_string += static_cast<char>(arquivo.at(i));
         }
 
         // arquivos nos formatos iNES e NES 2.0 começam com a string "NES\x1A"
         if (formato_string == "NES\x1A")
         {
-            if (buscar_bit(rom.at(7), 2) == false && buscar_bit(rom.at(7), 3) == true)
+            if (buscar_bit(arquivo.at(7), 2) == false && buscar_bit(arquivo.at(7), 3) == true)
             {
                 // o arquivo está no formato NES 2.0
                 this->formato = ArquivoFormato::NES_2_0;
@@ -98,10 +98,10 @@ namespace nesbrasa::nucleo
             throw runtime_error("Erro: formato não reconhecido"s);
         }
 
-        this->possui_sram = buscar_bit(rom.at(6), 1);
+        this->possui_sram = buscar_bit(arquivo.at(6), 1);
 
-        this->prg_quantidade = rom.at(4);
-        this->chr_quantidade = rom.at(5);
+        this->prg_quantidade = arquivo.at(4);
+        this->chr_quantidade = arquivo.at(5);
 
         if (this->chr_quantidade == 0)
         {
@@ -114,19 +114,23 @@ namespace nesbrasa::nucleo
         this->prg.resize(rom_prg_tamanho);
         this->chr.resize(rom_chr_tamanho);
 
+        // busca o inicio da ROM PRG
+        int rom_prg_inicio = 0;
+        if (buscar_bit(arquivo.at(6), 2) == true)
+        {
+            rom_prg_inicio = 16 + 512;
+        }
+        else
+        {
+            rom_prg_inicio = 16;
+        }
+
         // checa o tamanho do arquivo
-        if ((buscar_bit(rom.at(6), 2) + rom_prg_tamanho + rom_chr_tamanho) > rom.size())
+        if ((rom_prg_inicio + rom_prg_tamanho + rom_chr_tamanho) > arquivo.size())
         {
             // formato inválido
             throw runtime_error("Erro: formato não reconhecido"s);
         }
-
-        // busca o inicio da ROM PRG
-        int rom_prg_inicio;
-        if (buscar_bit(rom.at(6), 2) == true)
-            rom_prg_inicio = 16 + 512;
-        else
-            rom_prg_inicio = 16;
 
         // calcula o inicio da ROM CHR
         int rom_chr_inicio = rom_prg_inicio + rom_prg_tamanho;
@@ -134,17 +138,17 @@ namespace nesbrasa::nucleo
         // Copia os dados referentes à ROM PRG do arquivo para o array
         for (uint i = 0; i < this->prg.size(); i++)
         {
-            this->prg.at(i) = rom.at(rom_prg_inicio+i);
+            this->prg.at(i) = arquivo.at(rom_prg_inicio+i);
         }
 
         // Copia os dados referentes à ROM CHR do arquivo para o array
         for (uint i = 0; i < this->chr.size(); i++) 
         {
-            this->chr.at(i) = rom.at(rom_chr_inicio+i);
+            this->chr.at(i) = arquivo.at(rom_chr_inicio+i);
         }
 
-        byte mapeador_nibble_menor = (rom.at(6) & 0xF0) >> 4;
-        byte mapeador_nibble_maior = (rom.at(7) & 0xF0) >> 4;
+        byte mapeador_nibble_menor = (arquivo.at(6) & 0xF0) >> 4;
+        byte mapeador_nibble_maior = (arquivo.at(7) & 0xF0) >> 4;
         byte mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
 
         // converte o valor para uma enumeração do tipo MapeadorTipo
@@ -170,13 +174,13 @@ namespace nesbrasa::nucleo
             }
         }
 
-        if (buscar_bit(rom.at(6), 3) == true)
+        if (buscar_bit(arquivo.at(6), 3) == true)
         {
             this->espelhamento = Espelhamento::QUATRO_TELAS;
         }
         else
         {
-            if (buscar_bit(rom.at(6), 0) == false)
+            if (buscar_bit(arquivo.at(6), 0) == false)
                 this->espelhamento = Espelhamento::VERTICAL;
             else
                 this->espelhamento = Espelhamento::HORIZONTAL;

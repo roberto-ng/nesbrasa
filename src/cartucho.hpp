@@ -78,7 +78,7 @@ namespace nesbrasa::nucleo
 
         Cartucho();
 
-        void carregar_rom(vector<byte> rom);
+        void carregar_rom(vector<byte> arquivo);
 
         byte ler(uint16 endereco);
 
