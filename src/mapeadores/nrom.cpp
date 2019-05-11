@@ -16,39 +16,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include "nrom.hpp"
 
 namespace nesbrasa::nucleo::mapeadores
 {
     using std::runtime_error;
     using namespace std::string_literals;
-    using namespace nesbrasa::nucleo;
+    using namespace nucleo;
 
-    NRom::NRom(Cartucho *cartucho)
+    NRom::NRom(int prg_bancos_qtd, 
+               int chr_bancos_qtd, 
+               vector<byte>& arquivo,
+               ArquivoFormato formato):
+        Cartucho(prg_bancos_qtd, chr_bancos_qtd, arquivo, formato)
     {
-        if (cartucho->possui_chr_ram())
+        // aloca a memória que representará a ram PRG
+        this->ram_prg.resize(0x2000);
+
+        if (this->possui_chr_ram)
         {
-            // aloca a memória a ser útilizada pelo emulador
-            cartucho->chr_ram.resize(0x2000);
-            for (auto& valor : cartucho->chr_ram)
-            {
-                valor = 0;
-            }
+            // aloca a memória que representará a ram CHR
+            this->ram_chr.resize(0x2000);
         }
     }
 
-    uint8_t NRom::ler(Cartucho *cartucho, uint16 endereco)
+    uint8_t NRom::ler(uint16 endereco)
     {
         if (endereco < 0x2000)
         {
             // ler a rom CHR ou a ram CHR
-            if (cartucho->possui_chr_ram())
+            if (this->possui_chr_ram)
             {
-                return cartucho->chr_ram.at(endereco);
+                return ram_chr.at(endereco);
             }
             else
             {
-                return cartucho->chr.at(endereco);   
+                return rom_chr.at(endereco);   
             }
         }
         else if (endereco >= 0x8000)
@@ -57,22 +62,22 @@ namespace nesbrasa::nucleo::mapeadores
             uint16_t endereco_mapeado = endereco - 0x8000;
 
             // espelhar o endereço caso a rom PRG só possua 1 banco
-            if (cartucho->get_prg_quantidade() == 1)
+            if (this->prg_bancos_quantidade == 1)
             {
-                return cartucho->prg.at(endereco_mapeado % 0x4000);
+                return this->rom_prg.at(endereco_mapeado % 0x4000);
             }
             else
             {
-                return cartucho->prg.at(endereco_mapeado);
+                return this->rom_prg.at(endereco_mapeado);
             }
         }
 
         return 0;
     }
 
-    void NRom::escrever(Cartucho *cartucho, uint16 endereco, byte valor)
+    void NRom::escrever(uint16 endereco, byte valor)
     {
-        if (!cartucho->possui_chr_ram())
+        if (!this->possui_chr_ram)
         {
             throw runtime_error("CHR RAM inexistente"s);
         }
@@ -80,7 +85,7 @@ namespace nesbrasa::nucleo::mapeadores
         if (endereco < 0x2000)
         {
             // escrever na rom CHR
-            cartucho->chr.at(endereco) = valor;
+            this->rom_chr.at(endereco) = valor;
         }
     }
 

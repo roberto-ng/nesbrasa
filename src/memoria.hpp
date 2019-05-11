@@ -21,10 +21,12 @@
 #include <cstdint>
 #include <array>
 
+#include "tipos_numeros.hpp"
 
 namespace nesbrasa::nucleo
 {
     using std::array;
+    using namespace tipos;
         
     class Nes;
 

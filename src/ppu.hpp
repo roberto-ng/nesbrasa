@@ -32,6 +32,14 @@ namespace nesbrasa::nucleo
 {
     using std::array;
     using std::shared_ptr;
+
+    enum class Espelhamento
+    {
+        HORIZONTAL,
+        VERTICAL,
+        TELA_UNICA,
+        QUATRO_TELAS,
+    };
     
     class Ppu
     {
@@ -81,6 +89,8 @@ namespace nesbrasa::nucleo
         bool   w;
 
     public:        
+        Espelhamento espelhamento;
+
         Ppu(Memoria* memoria);
 
         byte ler(Nes *nes, uint16 endereco);

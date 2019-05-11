@@ -1,18 +1,17 @@
 api_version = '0.1'
 
 nesbrasa_sources = [
-    'cartucho.cpp',
     'cpu.cpp',
     'instrucao.cpp',
     'memoria.cpp',
     'nesbrasa.cpp',
     'ppu.cpp',
     'util.cpp',
+    'mapeadores/cartucho.cpp',
     'mapeadores/nrom.cpp',
 ]
 
 nesbrasa_headers = [
-  'cartucho.hpp',
   'cpu.hpp',
   'instrucao.hpp',
   'memoria.hpp',
@@ -20,7 +19,7 @@ nesbrasa_headers = [
   'ppu.hpp',
   'util.hpp',
   'tipos_numeros.hpp',
-  'mapeadores/mapeador.hpp',
+  'mapeadores/cartucho.hpp',
   'mapeadores/nrom.hpp',
 ]
 

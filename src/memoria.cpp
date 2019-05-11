@@ -66,10 +66,10 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
         {
-            return this->nes->cartucho.ler(endereco);
+            return this->nes->cartucho->ler(endereco);
         }
 
-        // endereço não existe, jogar erro
+        // enderecço não existe, jogar erro
         stringstream erro_ss;
         erro_ss << "Tentativa de leitura em um endereço não existente na memória";
         erro_ss << " (" << std::hex << endereco << ") ";
@@ -136,7 +136,7 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
         {
-            this->nes->cartucho.escrever(endereco, valor);
+            this->nes->cartucho->escrever(endereco, valor);
         }
         else
         {

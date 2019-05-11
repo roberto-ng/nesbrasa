@@ -18,7 +18,6 @@
 
 #include "ppu.hpp"
 #include "nesbrasa.hpp"
-#include "cartucho.hpp"
 #include "memoria.hpp"
 #include "util.hpp"
 
@@ -30,6 +29,7 @@ namespace nesbrasa::nucleo
         tabelas_de_nomes({ 0 }),
         paletas({ 0 })
     {
+        this->espelhamento = Espelhamento::VERTICAL;
         this->buffer_dados = 0;
         this->ultimo_valor = 0;
         this->vram_incrementar = 0;
@@ -124,7 +124,7 @@ namespace nesbrasa::nucleo
     {
         if (endereco < 0x2000)
         {
-            return nes->cartucho.ler(endereco);
+            return nes->cartucho->ler(endereco);
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
@@ -146,7 +146,7 @@ namespace nesbrasa::nucleo
     {
         if (endereco < 0x2000)
         {
-            nes->cartucho.escrever(endereco, valor);
+            nes->cartucho->escrever(endereco, valor);
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
@@ -169,7 +169,7 @@ namespace nesbrasa::nucleo
 
     void Ppu::escrever_paleta(uint16 endereco, byte valor)
     {
-        this->paletas[endereco] = valor;
+        this->paletas.at(endereco) = valor;
     }
 
     void Ppu::set_controle(Nes *nes, byte valor)
@@ -360,7 +360,7 @@ namespace nesbrasa::nucleo
     uint16 Ppu::endereco_espelhado(Nes *nes, uint16 endereco)
     {
         uint16 base = 0;
-        switch (nes->cartucho.get_espelhamento())
+        switch (this->espelhamento)
         {
             case Espelhamento::HORIZONTAL:
                 if (endereco >= 0x2000 && endereco < 0x2400)

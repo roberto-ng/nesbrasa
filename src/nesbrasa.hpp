@@ -21,24 +21,32 @@
 #include <cstdint>
 #include <array>
 #include <vector>
+#include <memory>
 
 #include "cpu.hpp"
 #include "ppu.hpp"
-#include "cartucho.hpp"
+#include "memoria.hpp"
+#include "mapeadores/cartucho.hpp"
 
 namespace nesbrasa::nucleo
 {
     using std::array;
     using std::vector;
+    using std::unique_ptr;
+    using namespace mapeadores;
 
     class Nes
     {
     public:
+        bool programa_carregado;
+
+        CartuchoTipo cartucho_tipo;
+
         Memoria memoria;
-        Cartucho cartucho;
         Cpu cpu;
         Ppu ppu;
-
+        unique_ptr<Cartucho> cartucho;
+        
         Nes();
 
         void carregar_rom(vector<byte> arquivo);

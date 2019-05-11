@@ -20,20 +20,22 @@
 
 #include <stdint.h>
 
-#include "mapeador.hpp"
 #include "cartucho.hpp"
 
 namespace nesbrasa::nucleo::mapeadores
 {
-	class NRom : public Mapeador
+	class NRom : public Cartucho
 	{
 	public:
-		NRom(Cartucho *cartucho);
+		NRom(int prg_bancos_qtd, 
+             int chr_bancos_qtd, 
+             vector<byte>& arquivo,
+             ArquivoFormato formato);
 
-		byte ler(Cartucho *cartucho, uint16 endereco);
+		byte ler(uint16 endereco) override;
 
-		void escrever(Cartucho *cartucho, uint16 endereco, byte valor);
+		void escrever(uint16 endereco, byte valor) override;
 
-		string get_nome();
+		string get_nome() override;
 	};
 }
