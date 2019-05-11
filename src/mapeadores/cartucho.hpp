@@ -46,12 +46,13 @@ namespace nesbrasa::nucleo::mapeadores
     //! Classe abstrata definindo padrão para diferentes tipos de cartuchos
     class Cartucho
     {
-    protected:
+    public:
         // tamanho em bytes de um banco da ROM PRG
         static const int PRG_BANCOS_TAMANHO;
         // tamanho em bytes de um banco da ROM CHR
         static const int CHR_BANCOS_TAMANHO;
-
+    
+    protected:
         // quantidade de bancos da ROM PRG
         int prg_bancos_quantidade;
         // quantidade de bancos da ROM CHR
@@ -76,9 +77,11 @@ namespace nesbrasa::nucleo::mapeadores
         virtual ~Cartucho() = default;
 
         virtual byte ler(uint16 endereco) = 0;
-
         virtual void escrever(uint16 endereco, byte valor) = 0;
 
         virtual string get_nome() = 0;
+
+        int get_prg_bancos_quantidade();
+        int get_chr_bancos_quantidade();
     };
 }

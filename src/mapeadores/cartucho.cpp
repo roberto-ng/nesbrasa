@@ -85,4 +85,14 @@ namespace nesbrasa::nucleo::mapeadores
             this->rom_chr.at(i) = arquivo.at(rom_chr_inicio+i);
         }
     }
+
+    int Cartucho::get_prg_bancos_quantidade()
+    {
+        return this->prg_bancos_quantidade;
+    }
+
+    int Cartucho::get_chr_bancos_quantidade()
+    {
+        return this->chr_bancos_quantidade;
+    }
 }
