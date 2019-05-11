@@ -40,6 +40,7 @@ namespace nesbrasa::nucleo::mapeadores
 
         this->possui_prg_ram = buscar_bit(arquivo.at(6), 1);
 
+        this->possui_chr_ram = false;
         if (chr_bancos_qtd == 0)
         {
             this->possui_chr_ram = true;
