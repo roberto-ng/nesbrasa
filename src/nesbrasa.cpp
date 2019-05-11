@@ -43,8 +43,6 @@ namespace nesbrasa::nucleo
 
     void Nes::carregar_rom(vector<byte> arquivo)
     {
-        this->cpu.resetar();
-
         this->cartucho = nullptr;
         this->programa_carregado = false;
         auto formato = ArquivoFormato::DESCONHECIDO;
@@ -126,6 +124,7 @@ namespace nesbrasa::nucleo
 
         //TODO: Completar suporte a ROMs no formato NES 2.0
         this->programa_carregado = true;
+        this->cpu.resetar();
     }
 
     void Nes::ciclo()
