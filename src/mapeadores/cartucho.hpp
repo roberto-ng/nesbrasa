@@ -74,7 +74,6 @@ namespace nesbrasa::nucleo::mapeadores
         static unique_ptr<Cartucho> criar(CartuchoTipo tipo, int prg_qtd, int chr_qtd, 
                                           vector<byte>& arquivo, ArquivoFormato formato);
 
-        
         Cartucho(int prg_bancos_qtd, int chr_bancos_qtd, 
                  vector<byte>& arquivo, ArquivoFormato formato);
 
