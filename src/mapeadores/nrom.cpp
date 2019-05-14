@@ -26,10 +26,8 @@ namespace nesbrasa::nucleo::mapeadores
     using namespace std::string_literals;
     using namespace nucleo;
 
-    NRom::NRom(int prg_bancos_qtd, 
-               int chr_bancos_qtd, 
-               vector<byte>& arquivo,
-               ArquivoFormato formato):
+    NRom::NRom(int prg_bancos_qtd, int chr_bancos_qtd, 
+               vector<byte>& arquivo, ArquivoFormato formato):
         Cartucho(prg_bancos_qtd, chr_bancos_qtd, arquivo, formato)
     {
         // aloca a memória que representará a ram PRG

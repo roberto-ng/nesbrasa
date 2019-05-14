@@ -17,17 +17,41 @@
  */
 
 #include <stdexcept>
+#include <sstream>
 
 #include "cartucho.hpp"
+#include "nrom.hpp"
 #include "util.hpp"
 
 namespace nesbrasa::nucleo::mapeadores
 {
     using std::runtime_error;
+    using std::stringstream;
+    using std::make_unique;
     using namespace std::string_literals;
 
     const int Cartucho::PRG_BANCOS_TAMANHO = 0x4000;
     const int Cartucho::CHR_BANCOS_TAMANHO = 0x2000;
+
+    unique_ptr<Cartucho> Cartucho::criar(CartuchoTipo tipo, int prg_qtd, int chr_qtd, 
+                                         vector<byte>& arquivo, ArquivoFormato formato)
+    {
+        switch (tipo)
+        {
+            case CartuchoTipo::NROM:
+                return make_unique<NRom>(prg_qtd, chr_qtd, arquivo, formato);
+                break;
+
+            default:
+            {
+                // jogar mensagem de erro
+                stringstream erro_ss;
+                erro_ss << "Erro: mapeador não reconhecido\n";
+                erro_ss << "Código do mapeador: " << static_cast<int>(tipo);
+                throw runtime_error(erro_ss.str());
+            }
+        }
+    }
 
     Cartucho::Cartucho(int prg_bancos_qtd, 
                  int chr_bancos_qtd, 

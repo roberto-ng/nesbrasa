@@ -38,7 +38,6 @@ namespace nesbrasa::nucleo
     {
         this->programa_carregado = false;
         this->cartucho = nullptr;
-        this->cartucho_tipo = CartuchoTipo::DESCONHECIDO;
     }
 
     void Nes::carregar_rom(vector<byte> arquivo)
@@ -87,28 +86,9 @@ namespace nesbrasa::nucleo
         byte mapeador_nibble_maior = (arquivo.at(7) & 0xF0) >> 4;
         byte mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
 
-        // converte o valor para uma enumeração do tipo MapeadorTipo
-        this->cartucho_tipo = static_cast<CartuchoTipo>(mapeador_codigo);
-
-        // construir o objeto do cartucho
-        switch (this->cartucho_tipo)
-        {
-            case CartuchoTipo::NROM:
-                this->cartucho = make_unique<NRom>(prg_qtd, chr_qtd, arquivo, formato);
-                break;
-
-            default:
-            {
-                this->cartucho = nullptr;
-                this->cartucho_tipo = CartuchoTipo::DESCONHECIDO;
-
-                // jogar mensagem de erro
-                stringstream erro_ss;
-                erro_ss << "Erro: mapeador não reconhecido\n";
-                erro_ss << "Código do mapeador: " << static_cast<int>(mapeador_codigo);
-                throw runtime_error(erro_ss.str());
-            }
-        }
+        // Usar o método factory da classe Cartucho para criar o objeto do cartucho
+        auto cartucho_tipo = static_cast<CartuchoTipo>(mapeador_codigo);
+        this->cartucho = Cartucho::criar(cartucho_tipo, prg_qtd, chr_qtd, arquivo, formato);
 
         if (buscar_bit(arquivo.at(6), 3) == true)
         {

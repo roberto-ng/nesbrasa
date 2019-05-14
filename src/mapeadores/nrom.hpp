@@ -27,10 +27,8 @@ namespace nesbrasa::nucleo::mapeadores
 	class NRom : public Cartucho
 	{
 	public:
-		NRom(int prg_bancos_qtd, 
-             int chr_bancos_qtd, 
-             vector<byte>& arquivo,
-             ArquivoFormato formato);
+		NRom(int prg_bancos_qtd, int chr_bancos_qtd, 
+             vector<byte>& arquivo, ArquivoFormato formato);
 
 		byte ler(uint16 endereco) override;
 

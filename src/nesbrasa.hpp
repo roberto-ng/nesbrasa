@@ -40,8 +40,6 @@ namespace nesbrasa::nucleo
     public:
         bool programa_carregado;
 
-        CartuchoTipo cartucho_tipo;
-
         Memoria memoria;
         Cpu cpu;
         Ppu ppu;

@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "tipos_numeros.hpp"
 
@@ -27,6 +28,7 @@ namespace nesbrasa::nucleo::mapeadores
 {
     using std::string;
     using std::vector;
+    using std::unique_ptr;
     using namespace tipos;
 
     enum class CartuchoTipo
@@ -46,12 +48,6 @@ namespace nesbrasa::nucleo::mapeadores
     //! Classe abstrata definindo padrão para diferentes tipos de cartuchos
     class Cartucho
     {
-    public:
-        // tamanho em bytes de um banco da ROM PRG
-        static const int PRG_BANCOS_TAMANHO;
-        // tamanho em bytes de um banco da ROM CHR
-        static const int CHR_BANCOS_TAMANHO;
-    
     protected:
         // quantidade de bancos da ROM PRG
         int prg_bancos_quantidade;
@@ -65,14 +61,22 @@ namespace nesbrasa::nucleo::mapeadores
         vector<byte> rom_chr;
         vector<byte> ram_prg;
         vector<byte> ram_chr;
-        
+    
     public:
         ArquivoFormato arquivo_formato;
+
+        // tamanho em bytes de um banco da ROM PRG
+        static const int PRG_BANCOS_TAMANHO;
+        // tamanho em bytes de um banco da ROM CHR
+        static const int CHR_BANCOS_TAMANHO;    
+
+        // método factory
+        static unique_ptr<Cartucho> criar(CartuchoTipo tipo, int prg_bancos_qtd, 
+                                         int chr_bancos_qtd, vector<byte>& arquivo, 
+                                         ArquivoFormato formato);
         
-        Cartucho(int prg_bancos_qtd, 
-                 int chr_bancos_qtd, 
-                 vector<byte>& arquivo,
-                 ArquivoFormato formato);
+        Cartucho(int prg_bancos_qtd, int chr_bancos_qtd, 
+                 vector<byte>& arquivo, ArquivoFormato formato);
 
         virtual ~Cartucho() = default;
 
