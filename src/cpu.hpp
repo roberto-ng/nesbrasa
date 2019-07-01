@@ -47,8 +47,6 @@ namespace nesbrasa::nucleo
     public:
         Memoria* memoria;
 
-        bool pag_alterada;
-
         uint16 pc; // contador de programa
         byte   sp; // ponteiro da stack
 
@@ -64,9 +62,14 @@ namespace nesbrasa::nucleo
         bool v; // flag de transbordamento (overflow flag)
         bool n; // flag de negativo
 
+        bool is_pag_alterada;
+
         Cpu(Memoria* memoria);
-            
-        void ciclo();
+
+        /*! Executa a próxima instrução
+            \return Quantidade de ciclos que foram executados
+         */  
+        uint avancar();
 
         void resetar();
 

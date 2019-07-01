@@ -45,7 +45,7 @@ namespace nesbrasa::nucleo
 
     optional<uint16> Instrucao::buscar_endereco(Cpu* cpu)
     {
-        cpu->pag_alterada = false;
+        cpu->is_pag_alterada = false;
 
         switch (this->modo)
         {
@@ -73,7 +73,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS_X:
             {
                 uint16 endereco = cpu->memoria->ler_16_bits(cpu->pc + 1) + cpu->x;
-                cpu->pag_alterada = !comparar_paginas(endereco - cpu->x, endereco);
+                cpu->is_pag_alterada = !comparar_paginas(endereco - cpu->x, endereco);
 
                 return endereco;
             }
@@ -81,7 +81,7 @@ namespace nesbrasa::nucleo
             case InstrucaoModo::ABS_Y:
             {
                 uint16 endereco =  cpu->memoria->ler_16_bits(cpu->pc + 1) + cpu->y;
-                cpu->pag_alterada = !comparar_paginas(endereco - cpu->y, endereco);
+                cpu->is_pag_alterada = !comparar_paginas(endereco - cpu->y, endereco);
 
                 return endereco;
             }
@@ -102,7 +102,7 @@ namespace nesbrasa::nucleo
             {
                 const uint16 valor = cpu->memoria->ler(cpu->pc + 1);
                 uint16 endereco = cpu->memoria->ler_16_bits_bug(valor) + cpu->y;
-                cpu->pag_alterada = !comparar_paginas(endereco - cpu->y, endereco);
+                cpu->is_pag_alterada = !comparar_paginas(endereco - cpu->y, endereco);
 
                 return endereco;
             }

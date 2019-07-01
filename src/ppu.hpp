@@ -93,6 +93,8 @@ namespace nesbrasa::nucleo
 
         Ppu(Memoria* memoria);
 
+        void avancar();
+
         byte ler(Nes *nes, uint16 endereco);
         void escrever(Nes *nes, uint16 endereco, byte valor);
 

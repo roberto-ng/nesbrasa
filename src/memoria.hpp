@@ -42,15 +42,10 @@ namespace nesbrasa::nucleo
         //! Lê um valor de 8 bits na memoria
         byte ler(uint16 endereco);
 
-        /*! Lê um valor de 16 bits na memoria
-            \return O valor 16 bits do enrereço lido no formato little-endian
-        */
+        //! Lê um valor de 16 bits na memoria
         uint16 ler_16_bits(uint16 endereco);
 
         //! Lê um valor de 16 bits na memoria com o bug do no modo indireto da cpu
-        /*!
-            \return O valor 16 bits do enrereço lido no formato little-endian
-        */
         uint16 ler_16_bits_bug(uint16 endereco);
 
         //! Escreve um valor na memoria

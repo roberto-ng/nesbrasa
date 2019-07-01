@@ -48,31 +48,35 @@ namespace nesbrasa::nucleo
         this->v = false;
         this->n = false;
         this->esperar = 0;
-        this->pag_alterada = false;
+        this->is_pag_alterada = false;
     }
 
-    void Cpu::ciclo()
+    uint Cpu::avancar()
     {
         if (this->esperar > 0)
         {
             this->esperar -= 1;
-            return;
+            return 1;
         }
 
-        uint32_t ciclos_qtd_anterior = this->ciclos;
+        uint ciclos_executados = 0;
+        uint ciclos_qtd_anterior = this->ciclos;
 
         byte opcode = this->memoria->ler(this->pc);
         if (!this->instrucoes.at(opcode).has_value())
         {
-            printf("Erro: Uso de opcode inválido - %02X", opcode);
-            return;
+            stringstream erro_ss;
+            erro_ss << "Erro: Uso de opcode inválido: ";
+            erro_ss << "$" << std::hex << opcode;
+
+            throw runtime_error(erro_ss.str());
         }
         
         // jogar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
         {
             stringstream erro_ss;
-            erro_ss << "Instrução não reconhecida: ";
+            erro_ss << "Opcode não reconhecido: ";
             erro_ss << "$" << std::hex << opcode;
             
             throw runtime_error(erro_ss.str());
@@ -81,19 +85,19 @@ namespace nesbrasa::nucleo
         auto instrucao = this->instrucoes.at(opcode).value();
         this->executar(&instrucao);
         
-        if (this->pag_alterada) 
+        ciclos_executados = instrucao.ciclos;
+        if (this->is_pag_alterada) 
         {
-            this->ciclos += instrucao.ciclos;
-            this->ciclos += instrucao.ciclos_pag_alt;
+            ciclos_executados += instrucao.ciclos_pag_alt;
         }
-        else
-        {
-            this->ciclos += instrucao.ciclos;
-        }
+        
+        this->ciclos += ciclos_executados;
 
         // calcula a diferença da quantidade atual de ciclos com a 
         // quantidade anterior e a adiciona ao tempo de espera
         this->esperar += this->ciclos - ciclos_qtd_anterior;
+
+        return ciclos_executados;
     }
 
     void Cpu::executar(Instrucao* instrucao)

@@ -65,6 +65,10 @@ namespace nesbrasa::nucleo
         this->w = false;
     }
 
+    void Ppu::avancar()
+    {
+    }
+
     byte Ppu::registrador_ler(Nes *nes, uint16 endereco)
     {
         switch (endereco)

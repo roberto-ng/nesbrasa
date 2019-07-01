@@ -38,17 +38,16 @@ namespace nesbrasa::nucleo
     class Nes
     {
     public:
-        bool programa_carregado;
-
         Memoria memoria;
         Cpu cpu;
         Ppu ppu;
         unique_ptr<Cartucho> cartucho;
+        bool is_programa_carregado;
         
         Nes();
 
         void carregar_rom(vector<byte> arquivo);
 
-        void ciclo();
+        void avancar();
     };
 }

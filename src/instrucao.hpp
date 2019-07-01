@@ -55,7 +55,7 @@ namespace nesbrasa::nucleo
         ABS_X,     // absoluto, indexado pelo registrador x
         ABS_Y,     // absoluto, indexado pelo registrador y
         IMED,      // imediato
-        IMPL,      // implicado
+        IMPL,      // implícito
         IND,       // indireto
         IND_X,     // indireto indexado por x
         IND_Y,     // indireto indexado por y

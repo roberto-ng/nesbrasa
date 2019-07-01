@@ -36,14 +36,14 @@ namespace nesbrasa::nucleo
         cpu(&this->memoria),
         ppu(&this->memoria)
     {
-        this->programa_carregado = false;
+        this->is_programa_carregado = false;
         this->cartucho = nullptr;
     }
 
     void Nes::carregar_rom(vector<byte> arquivo)
     {
         this->cartucho = nullptr;
-        this->programa_carregado = false;
+        this->is_programa_carregado = false;
         auto formato = ArquivoFormato::DESCONHECIDO;
 
         // checa se o arquivo é grande o suficiente para ter um cabeçalho
@@ -103,17 +103,22 @@ namespace nesbrasa::nucleo
         }
 
         //TODO: Completar suporte a ROMs no formato NES 2.0
-        this->programa_carregado = true;
+        this->is_programa_carregado = true;
         this->cpu.resetar();
     }
 
-    void Nes::ciclo()
+    void Nes::avancar()
     {
-        if (!this->programa_carregado)
+        if (!this->is_programa_carregado)
         {
-            throw runtime_error("Erro: nenhuma programa na memória"s);
+            throw runtime_error("Erro: nenhum programa na memória"s);
         }
 
-        this->cpu.ciclo();
+        const uint cpu_ciclos = this->cpu.avancar();
+        const uint ppu_ciclos = cpu_ciclos * 3;
+        for (uint i = 0; i < ppu_ciclos; i++)
+        {
+            ppu.avancar();
+        }
     }
 }
