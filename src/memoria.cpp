@@ -69,7 +69,7 @@ namespace nesbrasa::nucleo
             return this->nes->cartucho->ler(endereco);
         }
 
-        // enderecço não existe, jogar erro
+        // enderecço não existe, lançar erro
         stringstream erro_ss;
         erro_ss << "Tentativa de leitura em um endereço não existente na memória";
         erro_ss << " (" << std::hex << endereco << ") ";
@@ -140,7 +140,7 @@ namespace nesbrasa::nucleo
         }
         else
         {
-            // endereço não existe, jogar erro
+            // endereço não existe, lançar erro
             stringstream erro_ss;
             erro_ss << "Tentativa de escrita do valor " << std::hex << valor;
             erro_ss << " em um endereço não existente na memória";

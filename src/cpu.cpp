@@ -62,17 +62,8 @@ namespace nesbrasa::nucleo
         uint ciclos_executados = 0;
         uint ciclos_qtd_anterior = this->ciclos;
 
-        byte opcode = this->memoria->ler(this->pc);
-        if (!this->instrucoes.at(opcode).has_value())
-        {
-            stringstream erro_ss;
-            erro_ss << "Erro: Uso de opcode inválido: ";
-            erro_ss << "$" << std::hex << opcode;
-
-            throw runtime_error(erro_ss.str());
-        }
-        
-        // jogar erro se a instrução não existir na tabela
+        byte opcode = this->memoria->ler(this->pc);        
+        // lançar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
         {
             stringstream erro_ss;
@@ -225,7 +216,7 @@ namespace nesbrasa::nucleo
 
     string Cpu::instrucao_para_asm(byte opcode)
     {
-        // jogar erro se a instrução não existir na tabela
+        // lançar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
         {
             stringstream erro_ss;

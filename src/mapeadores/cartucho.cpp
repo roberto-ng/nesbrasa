@@ -44,7 +44,7 @@ namespace nesbrasa::nucleo::mapeadores
 
             default:
             {
-                // jogar mensagem de erro
+                // lançar mensagem de erro
                 stringstream erro_ss;
                 erro_ss << "Erro: mapeador não reconhecido\n";
                 erro_ss << "Código do mapeador: " << static_cast<int>(tipo);
