@@ -92,14 +92,14 @@ namespace nesbrasa::nucleo
 
         if (buscar_bit(arquivo.at(6), 3) == true)
         {
-            this->ppu.espelhamento = Espelhamento::QUATRO_TELAS;
+            this->ppu.espelhamento = Ppu::Espelhamento::QUATRO_TELAS;
         }
         else
         {
             if (buscar_bit(arquivo.at(6), 0) == false)
-                this->ppu.espelhamento = Espelhamento::VERTICAL;
+                this->ppu.espelhamento = Ppu::Espelhamento::VERTICAL;
             else
-                this->ppu.espelhamento = Espelhamento::HORIZONTAL;
+                this->ppu.espelhamento = Ppu::Espelhamento::HORIZONTAL;
         }
 
         //TODO: Completar suporte a ROMs no formato NES 2.0

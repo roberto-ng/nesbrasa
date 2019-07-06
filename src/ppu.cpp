@@ -30,6 +30,11 @@ namespace nesbrasa::nucleo
         paletas({ 0 })
     {
         this->espelhamento = Espelhamento::VERTICAL;
+
+        this->ciclo = 0;
+        this->scanline = 261;
+        this->frame = 0;
+
         this->buffer_dados = 0;
         this->ultimo_valor = 0;
         this->vram_incrementar = 0;
@@ -37,6 +42,11 @@ namespace nesbrasa::nucleo
         this->nametable_endereco = 0;
         this->padrao_fundo_endereco = 0;
         this->padrao_sprite_endereco = 0;
+
+        this->nmi_ocorreu = false;
+        this->nmi_anterior = false;
+        this->nmi_atrasar = false;
+        this->nmi_output = false;
 
         this->flag_nmi = false;
         this->flag_mestre_escravo = false;
@@ -63,24 +73,42 @@ namespace nesbrasa::nucleo
         this->t = 0;
         this->x = 0;
         this->w = false;
+        this->f = false;
+
+        this->reiniciar();
+    }
+
+    void Ppu::reiniciar()
+    {
+        this->set_oam_enderco(0);
+        this->set_controle(0);
+        this->set_mascara(0);
+        
+        this->frame = 0;
+        this->ciclo = 340;
+        this->scanline = 240;
+
+        this->espelhamento = Espelhamento::VERTICAL;
     }
 
     void Ppu::avancar()
     {
+        const auto ciclo_tipo = this->get_ciclo_tipo();
+        const auto scanline_tipo = this->get_scanline_tipo();
     }
 
-    byte Ppu::registrador_ler(Nes *nes, uint16 endereco)
+    byte Ppu::registrador_ler(uint16 endereco)
     {
         switch (endereco)
         {
             case 0x2002:
-                return this->get_estado(nes);
+                return this->get_estado();
 
             case 0x2004:
-                return this->get_oam_dados(nes);
+                return this->get_oam_dados();
 
             case 0x2007:
-                return this->get_dados(nes);
+                return this->get_dados();
 
             default:
                 return 0;
@@ -92,23 +120,23 @@ namespace nesbrasa::nucleo
         switch (endereco)
         {
             case 0x2000:
-                this->set_controle(nes, valor);
+                this->set_controle(valor);
                 break;
 
             case 0x2001:
-                this->set_mascara(nes, valor);
+                this->set_mascara(valor);
                 break;
 
             case 0x2003:
-                this->set_oam_enderco(nes, valor);
+                this->set_oam_enderco(valor);
                 break;
 
             case 0x2005:
-                this->set_scroll(nes, valor);
+                this->set_scroll(valor);
                 break;
 
             case 0x2006:
-                this->set_endereco(nes, valor);
+                this->set_endereco(valor);
                 break;
 
             case 0x2007:
@@ -132,7 +160,7 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
-            uint16 endereco_espelhado = this->endereco_espelhado(nes, endereco);
+            uint16 endereco_espelhado = this->endereco_espelhado(endereco);
             uint16 posicao = endereco_espelhado % this->tabelas_de_nomes.size();
 
             return this->tabelas_de_nomes.at(posicao);
@@ -154,7 +182,7 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
-            uint16 endereco_espelhado = this->endereco_espelhado(nes, endereco);
+            uint16 endereco_espelhado = this->endereco_espelhado(endereco);
             uint16 posicao = endereco_espelhado % this->tabelas_de_nomes.size();
             
             this->tabelas_de_nomes.at(posicao) = valor;
@@ -176,7 +204,55 @@ namespace nesbrasa::nucleo
         this->paletas.at(endereco) = valor;
     }
 
-    void Ppu::set_controle(Nes *nes, byte valor)
+    Ppu::CicloTipo Ppu::get_ciclo_tipo()
+    {
+        if (this->ciclo == 0)
+        {
+            return Ppu::CicloTipo::ZERO;
+        }
+        else if (this->ciclo == 1)
+        {
+            return Ppu::CicloTipo::UM;
+        }
+        else if (this->ciclo >= 2 && this->ciclo <= 256)
+        {
+            return Ppu::CicloTipo::VISIVEL;
+        }
+        else if (this->ciclo >= 321 && this->ciclo <= 336)
+        {
+            return Ppu::CicloTipo::PRE_BUSCA;
+        }
+        else if (this->ciclo == 340)
+        {
+            return Ppu::CicloTipo::CONTINUAR;
+        }
+        else
+        {
+            return Ppu::CicloTipo::OUTRO;
+        }
+    }
+
+    Ppu::ScanLineTipo Ppu::get_scanline_tipo()
+    {
+        if (this->scanline < 240)
+        {
+            return ScanLineTipo::VISIVEL;
+        }
+        else if (this->scanline == 241)
+        {
+            return ScanLineTipo::VBLANK;
+        }
+        else if (this->scanline == 261)
+        {
+            return ScanLineTipo::PRE_RENDERIZACAO;
+        }
+        else
+        {
+            return ScanLineTipo::OUTRO;
+        }
+    }
+
+    void Ppu::set_controle(byte valor)
     {
         this->flag_nmi = buscar_bit(valor, 7);
         this->flag_mestre_escravo = buscar_bit(valor, 6);
@@ -207,7 +283,7 @@ namespace nesbrasa::nucleo
         this->t = (this->t & 0b1111001111111111) | ((valor & 0b00000011) << 10);
     }
 
-    void Ppu::set_mascara(Nes *nes, byte  valor)
+    void Ppu::set_mascara(byte valor)
     {
         this->flag_enfase_b = buscar_bit(valor, 7);
         this->flag_enfase_g = buscar_bit(valor, 6);
@@ -219,7 +295,7 @@ namespace nesbrasa::nucleo
         this->flag_escala_cinza = buscar_bit(valor, 0);
     }
 
-    byte Ppu::get_estado(Nes *nes)
+    byte Ppu::get_estado()
     {
         // os 5 ultimos bits do último valor escrito na PPU
         const byte ultimo = this->ultimo_valor & 0b00011111;
@@ -235,23 +311,23 @@ namespace nesbrasa::nucleo
         return v | s | o | ultimo;
     }
 
-    void Ppu::set_oam_enderco(Nes *nes, byte valor)
+    void Ppu::set_oam_enderco(byte valor)
     {
         this->oam_endereco = valor;
     }
 
-    void Ppu::set_oam_dados(Nes *nes, byte valor)
+    void Ppu::set_oam_dados(byte valor)
     {
         this->oam.at(this->oam_endereco) = valor;
         this->oam_endereco += 1;
     }
 
-    byte Ppu::get_oam_dados(Nes *nes)
+    byte Ppu::get_oam_dados()
     {
         return this->oam.at(this->oam_endereco);
     }
 
-    void Ppu::set_scroll(Nes *nes, byte valor)
+    void Ppu::set_scroll(byte valor)
     {
         // se o valor de 'w' for 0, estamos na primeira escrita
         // caso não seja, estamos na segunda escrita
@@ -282,7 +358,7 @@ namespace nesbrasa::nucleo
         }
     }
 
-    void Ppu::set_endereco(Nes *nes, byte valor)
+    void Ppu::set_endereco(byte valor)
     {
         // se o valor de 'w' for 0, estamos na primeira escrita
         // caso não seja, estamos na segunda escrita
@@ -336,7 +412,7 @@ namespace nesbrasa::nucleo
         }
     }
 
-    byte Ppu::get_dados(Nes *nes)
+    byte Ppu::get_dados()
     {
         if (this->v < 0x3F00)
         {
@@ -361,7 +437,7 @@ namespace nesbrasa::nucleo
         this->v += this->vram_incrementar;
     }
 
-    uint16 Ppu::endereco_espelhado(Nes *nes, uint16 endereco)
+    uint16 Ppu::endereco_espelhado(uint16 endereco)
     {
         uint16 base = 0;
         switch (this->espelhamento)

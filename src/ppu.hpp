@@ -32,23 +32,48 @@ namespace nesbrasa::nucleo
 {
     using std::array;
     using std::shared_ptr;
-
-    enum class Espelhamento
-    {
-        HORIZONTAL,
-        VERTICAL,
-        TELA_UNICA,
-        QUATRO_TELAS,
-    };
     
     class Ppu
     {
+    public:
+        enum class Espelhamento
+        {
+            HORIZONTAL,
+            VERTICAL,
+            TELA_UNICA,
+            QUATRO_TELAS,
+        };
+
+        enum class CicloTipo
+        {
+            ZERO,
+            UM,
+            VISIVEL,
+            PRE_BUSCA,
+            CONTINUAR,
+            OUTRO,
+        };
+
+        enum class ScanLineTipo
+        {
+            VISIVEL,
+            VBLANK,
+            PRE_RENDERIZACAO,
+            OUTRO,
+        };
+    
+        Espelhamento espelhamento;
+
     private:
         Memoria* memoria;
 
         array<byte, 0x100> oam;
         array<byte, 0x800> tabelas_de_nomes;
         array<byte, 0x20>  paletas;
+
+        uint16 ciclo;
+        uint16 scanline;
+        uint64 frame;
 
         byte buffer_dados;
         byte ultimo_valor; // último valor escrito na ppu
@@ -57,6 +82,12 @@ namespace nesbrasa::nucleo
         uint16 nametable_endereco;
         uint16 padrao_fundo_endereco;
         uint16 padrao_sprite_endereco;
+        
+        // flags do nmi
+        bool nmi_ocorreu;
+        bool nmi_anterior;
+        bool nmi_output;
+        uint nmi_atrasar;
 
         // PPUCTRL - $2000
         bool flag_nmi;
@@ -87,36 +118,39 @@ namespace nesbrasa::nucleo
         uint16 t;
         byte   x;
         bool   w;
+        bool   f;
 
     public:        
-        Espelhamento espelhamento;
-
         Ppu(Memoria* memoria);
 
+        void reiniciar();
         void avancar();
 
         byte ler(Nes *nes, uint16 endereco);
         void escrever(Nes *nes, uint16 endereco, byte valor);
 
-        byte registrador_ler(Nes *nes, uint16 endereco);
+        byte registrador_ler(uint16 endereco);
         void registrador_escrever(Nes *nes, uint16 endereco, byte valor);
 
         byte ler_paleta(uint16 endereco);
         void escrever_paleta(uint16 endereco, byte valor);
 
     private:
-        void set_controle(Nes *nes, byte valor);
-        void set_mascara(Nes *nes, byte  valor);
-        byte get_estado(Nes *nes);
-        void set_oam_enderco(Nes *nes, byte valor);
-        void set_oam_dados(Nes *nes, byte valor);
-        byte get_oam_dados(Nes *nes);
-        void set_scroll(Nes *nes, byte valor);
-        void set_endereco(Nes *nes, byte valor);
+        CicloTipo get_ciclo_tipo();
+        ScanLineTipo get_scanline_tipo();
+
+        void set_controle(byte valor);
+        void set_mascara(byte  valor);
+        byte get_estado();
+        void set_oam_enderco(byte valor);
+        void set_oam_dados(byte valor);
+        byte get_oam_dados();
+        void set_scroll(byte valor);
+        void set_endereco(byte valor);
         void set_omd_dma(Nes *nes, byte valor);
-        byte get_dados(Nes *nes);
+        byte get_dados();
         void set_dados(Nes *nes, byte valor);
             
-        uint16 endereco_espelhado(Nes *nes, uint16 endereco);
+        uint16 endereco_espelhado(uint16 endereco);
     };
 }
