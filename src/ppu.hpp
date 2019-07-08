@@ -89,7 +89,7 @@ namespace nesbrasa::nucleo
         byte tile_byte_maior;
         byte tile_byte_menor;
         byte tabela_de_nomes_byte;
-        byte tabela_de_atributos_bytes;
+        byte tabela_de_atributos_byte;
 
         // membros relacionados às texturas dos sprites
         array<uint, 8> sprites_padroes;
@@ -156,6 +156,12 @@ namespace nesbrasa::nucleo
 
         void executar_ciclo_vblank();
         void encerrar_ciclo_vblank();
+
+        void buscar_byte_tabela_de_nomes();
+        void buscar_byte_tabela_de_atributos();
+        void buscar_tile_byte_menor();
+        void buscar_tile_byte_maior();
+        void tile_guardar_dados();
 
         void set_controle(byte valor);
         void set_mascara(byte  valor);

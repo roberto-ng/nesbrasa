@@ -51,7 +51,7 @@ namespace nesbrasa::nucleo
         this->tile_byte_maior = 0;
         this->tile_byte_menor = 0;
         this->tabela_de_nomes_byte = 0;
-        this->tabela_de_atributos_bytes = 0;
+        this->tabela_de_atributos_byte = 0;
 
         this->sprites_qtd = 0;
 
@@ -163,30 +163,35 @@ namespace nesbrasa::nucleo
             {
                 if (ciclo_tipo == CicloTipo::PRE_BUSCA || ciclo_tipo == CicloTipo::VISIVEL)
                 {
-                    // TODO
                     this->tile_dados <<= 4;
 
                     switch (this->ciclo % 8)
                     {
                         case 1:
                             // buscar byte da tabela de nomes
+                            this->buscar_byte_tabela_de_nomes();
                             break;
 
                         case 3:
                             // buscar byte da tabela de atributos
+                            this->buscar_byte_tabela_de_atributos();
                             break;
 
                         case 5:
                             // buscar o byte de menor significancia do tile
+                            this->buscar_tile_byte_menor();
                             break;
                         
                         case 7:
                             // buscar o byte de maior significancia do tile
+                            this->buscar_tile_byte_maior();
                             break;
                         
                         case 0:
                             // guardar os dados do tile
-                            // incremenetar X
+                            this->tile_guardar_dados();
+                            
+                            // incrementar X
                             break;
 
                         default:
@@ -400,6 +405,72 @@ namespace nesbrasa::nucleo
     {
         this->nmi_ocorreu = false;
         this->nmi_anterior = false;
+    }
+
+    void Ppu::buscar_byte_tabela_de_nomes()
+    {
+        uint16 endereco = 0b0010000000000000 | (this->v  & 0x0FFF);
+        this->tabela_de_nomes_byte = this->memoria->ler(endereco);
+    }
+
+    void Ppu::buscar_byte_tabela_de_atributos()
+    {
+        uint16 endereco = 0b0010001111000000 | (this->v  & 0b0000110000000000);
+        endereco |= ((this->v >> 4) & 0b00111000); 
+        endereco |= ((this->v >> 2) & 0b00000111);
+
+        uint16 shift = ((this->v >> 4) & 0b00000100) | (this->v & 0b00000010);
+
+        byte valor = this->memoria->ler(endereco);
+        this->tabela_de_atributos_byte = ((valor >>  shift) & 0b00000011) << 2;
+    }
+
+    void Ppu::buscar_tile_byte_menor()
+    {
+        const uint16 y = (this->v >> 12) & 0b00000111;
+        const uint16 tile = this->tabela_de_nomes_byte;
+
+        uint16 endereco = tile * 16 + y;
+        if (this->flag_padrao_fundo)
+        {
+            endereco += 0x1000;
+        }
+
+        this->tile_byte_menor = this->memoria->ler(endereco);
+    }
+
+    void Ppu::buscar_tile_byte_maior()
+    {
+        const uint16 y = (this->v >> 12) & 0b00000111;
+        const uint16 tile = this->tabela_de_nomes_byte;
+
+        uint16 endereco = tile * 16 + y + 8;
+        if (this->flag_padrao_fundo)
+        {
+            endereco += 0x1000;
+        }
+
+        this->tile_byte_maior = this->memoria->ler(endereco);
+    }
+
+    void Ppu::tile_guardar_dados()
+    {
+        uint32 valor = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            byte byte_1 = (this->tile_byte_menor & 0b10000000) >> 7;
+            byte byte_2 = (this->tile_byte_maior & 0b10000000) >> 6;
+
+            this->tile_byte_menor <<= 1;
+            this->tile_byte_maior <<= 1;
+
+            valor <<= 4;
+            valor |= static_cast<uint32>(this->tabela_de_atributos_byte);
+            valor |= static_cast<uint32>(byte_1);
+            valor |= static_cast<uint32>(byte_2);
+        }
+
+        this->tile_dados |= static_cast<uint64>(valor);
     }
 
     void Ppu::set_controle(byte valor)
