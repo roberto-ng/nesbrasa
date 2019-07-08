@@ -163,6 +163,11 @@ namespace nesbrasa::nucleo
         void buscar_tile_byte_maior();
         void tile_guardar_dados();
 
+        void copiar_x();
+        void copiar_y();
+        void mudar_scroll_x();
+        void mudar_scroll_y();
+
         void set_controle(byte valor);
         void set_mascara(byte  valor);
         byte get_estado();

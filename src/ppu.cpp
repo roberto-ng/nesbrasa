@@ -190,8 +190,7 @@ namespace nesbrasa::nucleo
                         case 0:
                             // guardar os dados do tile
                             this->tile_guardar_dados();
-                            
-                            // incrementar X
+                            this->mudar_scroll_x();
                             break;
 
                         default:
@@ -201,17 +200,17 @@ namespace nesbrasa::nucleo
 
                 if (this->ciclo == 256)
                 {
-                    // incrementar Y
+                    this->mudar_scroll_y();
                 }
                 else if (this->ciclo == 257)
                 {
-                    // copiar X
+                    this->copiar_x();
                 }
             }
 
             if (ciclo_tipo == CicloTipo::COPIAR_Y)
             {
-                // copiar Y
+                this->copiar_y();
             }
         }
 
@@ -471,6 +470,61 @@ namespace nesbrasa::nucleo
         }
 
         this->tile_dados |= static_cast<uint64>(valor);
+    }
+
+    void Ppu::copiar_x()
+    {
+        // v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
+        this->v = (this->v & 0b1111101111100000) | (this->t & 0b0000010000011111);
+    }
+
+    void Ppu::copiar_y()
+    {
+        // v: IHGF.ED CBA..... = t: IHGF.ED CBA.....
+        this->v = (this->v & 0b1000010000011111) | (this->t & 0b0111101111100000);
+    }
+
+    void Ppu::mudar_scroll_x()
+    {
+        if ((this->v & 0b00011111) == 31)
+        {
+            // x = 0
+            this->v &= 0b1111111111100000;
+            this->v ^= 0x0400;
+        }
+        else
+        {
+            this->v += 1;
+        }
+    }
+
+    void Ppu::mudar_scroll_y()
+    {
+        if ((this->v & 0x7000) != 0x7000)
+        {
+            this->v += 0x1000;
+        }
+        else
+        {
+            this->v &= 0b1000111111111111;
+            
+            uint16 y = (this->v & 0b0000001111100000) >> 5;
+            if (y == 29)
+            {
+                y = 0;
+                this->v ^= 0x0800;
+            }
+            else if (y == 31)
+            {
+                y = 0;
+            }
+            else
+            {
+                y += 1;
+            }
+
+            this->v = (this->v & 0b1111110000011111) | (y << 5);
+        }
     }
 
     void Ppu::set_controle(byte valor)
