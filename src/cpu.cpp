@@ -49,6 +49,7 @@ namespace nesbrasa::nucleo
         this->n = false;
         this->esperar = 0;
         this->is_pag_alterada = false;
+        this->interrupcao = Interrupcao::NENHUMA;
     }
 
     uint Cpu::avancar()

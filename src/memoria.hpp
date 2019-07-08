@@ -50,5 +50,7 @@ namespace nesbrasa::nucleo
 
         //! Escreve um valor na memoria
         void escrever(uint16 endereco, byte valor);
+
+        void cpu_ativar_interrupcao(Cpu::Interrupcao interrupcao);
     };
 }

@@ -45,7 +45,16 @@ namespace nesbrasa::nucleo
         array< optional<Instrucao>, 256 > instrucoes;
     
     public:
+        enum class Interrupcao
+        {
+            NMI,
+            IRQ,
+            NENHUMA,
+        };
+
         Memoria* memoria;
+
+        Interrupcao interrupcao;
 
         uint16 pc; // contador de programa
         byte   sp; // ponteiro da stack

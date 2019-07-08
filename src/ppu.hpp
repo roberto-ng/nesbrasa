@@ -49,6 +49,7 @@ namespace nesbrasa::nucleo
             ZERO,
             UM,
             VISIVEL,
+            COPIAR_Y,
             PRE_BUSCA,
             CONTINUAR,
             OUTRO,
@@ -82,6 +83,20 @@ namespace nesbrasa::nucleo
         uint16 nametable_endereco;
         uint16 padrao_fundo_endereco;
         uint16 padrao_sprite_endereco;
+
+        // membros relacionados às texturas de fundo
+        byte tile_dados;
+        byte tile_byte_maior;
+        byte tile_byte_menor;
+        byte tabela_de_nomes_byte;
+        byte tabela_de_atributos_bytes;
+
+        // membros relacionados às texturas dos sprites
+        array<uint, 8> sprites_padroes;
+        array<byte, 8> sprites_posicoes;
+        array<byte, 8> sprites_prioridades;
+        array<byte, 8> sprites_indices;
+        uint sprites_qtd;
         
         // flags do nmi
         bool nmi_ocorreu;
@@ -138,6 +153,9 @@ namespace nesbrasa::nucleo
     private:
         CicloTipo get_ciclo_tipo();
         ScanLineTipo get_scanline_tipo();
+
+        void executar_ciclo_vblank();
+        void encerrar_ciclo_vblank();
 
         void set_controle(byte valor);
         void set_mascara(byte  valor);

@@ -46,13 +46,13 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco <= 0x2007)
         {
-            return this->nes->ppu.registrador_ler(nes, endereco);
+            return this->nes->ppu.registrador_ler(endereco);
         }
         else if (endereco >= 0x2008 && endereco <= 0x3FFF)
         {
             // endereço espelhado do registrador
             uint16 ender_espelhado = (endereco%0x8) + 0x2000;
-            return this->nes->ppu.registrador_ler(nes, ender_espelhado);
+            return this->nes->ppu.registrador_ler(ender_espelhado);
         }
         else if (endereco >= 0x4000 && endereco <= 0x4017)
         {
@@ -148,5 +148,10 @@ namespace nesbrasa::nucleo
 
             throw runtime_error(erro_ss.str());
         }
+    }
+
+    void Memoria::cpu_ativar_interrupcao(Cpu::Interrupcao interrupcao)
+    {
+        this->nes->cpu.interrupcao = interrupcao;
     }
 }

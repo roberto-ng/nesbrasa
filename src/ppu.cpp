@@ -27,7 +27,11 @@ namespace nesbrasa::nucleo
         memoria(memoria),
         oam({ 0 }),
         tabelas_de_nomes({ 0 }),
-        paletas({ 0 })
+        paletas({ 0 }),
+        sprites_padroes({ 0 }),
+        sprites_posicoes({ 0 }),
+        sprites_prioridades({ 0 }),
+        sprites_indices({ 0 })
     {
         this->espelhamento = Espelhamento::VERTICAL;
 
@@ -42,6 +46,14 @@ namespace nesbrasa::nucleo
         this->nametable_endereco = 0;
         this->padrao_fundo_endereco = 0;
         this->padrao_sprite_endereco = 0;
+
+        this->tile_dados = 0;
+        this->tile_byte_maior = 0;
+        this->tile_byte_menor = 0;
+        this->tabela_de_nomes_byte = 0;
+        this->tabela_de_atributos_bytes = 0;
+
+        this->sprites_qtd = 0;
 
         this->nmi_ocorreu = false;
         this->nmi_anterior = false;
@@ -93,8 +105,123 @@ namespace nesbrasa::nucleo
 
     void Ppu::avancar()
     {
-        const auto ciclo_tipo = this->get_ciclo_tipo();
-        const auto scanline_tipo = this->get_scanline_tipo();
+        auto ciclo_tipo = this->get_ciclo_tipo();
+        auto scanline_tipo = this->get_scanline_tipo();
+
+        if (this->nmi_output && this->nmi_ocorreu)
+        {
+            this->memoria->cpu_ativar_interrupcao(Cpu::Interrupcao::NMI);
+        }
+
+        if (!this->flag_fundo_habilitar || this->flag_sprite_habilitar)
+        {
+            if (this->f && scanline_tipo == ScanLineTipo::PRE_RENDERIZACAO && this->ciclo == 339)
+            {
+                this->ciclo = 0;
+                this->scanline = 0;
+                this->frame += 1;
+                this->f = !this->f;
+                
+                return;
+            }
+        }
+
+        if (ciclo_tipo == CicloTipo::CONTINUAR)
+        {
+            this->ciclo = 0;
+            ciclo_tipo = this->get_ciclo_tipo();
+
+            if (scanline_tipo == ScanLineTipo::PRE_RENDERIZACAO)
+            {
+                this->scanline = 0;
+                scanline_tipo = this->get_scanline_tipo();
+
+                this->frame += 1;
+                this->f = !this->f;
+            }
+            else
+            {
+                this->scanline += 1;
+                scanline_tipo = this->get_scanline_tipo();
+            }
+        }
+        else
+        {
+            this->ciclo += 1;
+            ciclo_tipo = this->get_ciclo_tipo();
+        }
+        
+        // se a renderização estiver habilitada
+        if (this->flag_fundo_habilitar || this->flag_sprite_habilitar)
+        {
+            if (ciclo_tipo == CicloTipo::VISIVEL && scanline_tipo == ScanLineTipo::VISIVEL)
+            {
+                // TODO: renderizar pixel
+            }
+
+            if (scanline_tipo == ScanLineTipo::PRE_RENDERIZACAO || scanline_tipo == ScanLineTipo::VISIVEL)
+            {
+                if (ciclo_tipo == CicloTipo::PRE_BUSCA || ciclo_tipo == CicloTipo::VISIVEL)
+                {
+                    // TODO
+                    this->tile_dados <<= 4;
+
+                    switch (this->ciclo % 8)
+                    {
+                        case 1:
+                            // buscar byte da tabela de nomes
+                            break;
+
+                        case 3:
+                            // buscar byte da tabela de atributos
+                            break;
+
+                        case 5:
+                            // buscar o byte de menor significancia do tile
+                            break;
+                        
+                        case 7:
+                            // buscar o byte de maior significancia do tile
+                            break;
+                        
+                        case 0:
+                            // guardar os dados do tile
+                            // incremenetar X
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                if (this->ciclo == 256)
+                {
+                    // incrementar Y
+                }
+                else if (this->ciclo == 257)
+                {
+                    // copiar X
+                }
+            }
+
+            if (ciclo_tipo == CicloTipo::COPIAR_Y)
+            {
+                // copiar Y
+            }
+        }
+
+        if (scanline_tipo == ScanLineTipo::VBLANK && ciclo_tipo == CicloTipo::UM)
+        {
+            this->executar_ciclo_vblank();
+        }
+        else if (scanline_tipo == ScanLineTipo::PRE_RENDERIZACAO && ciclo_tipo == CicloTipo::UM)
+        {
+            // encerrar vblank
+            this->encerrar_ciclo_vblank();
+            this->flag_sprite_zero = 0;
+            this->flag_sprite_transbordamento = 0;
+        }
+
     }
 
     byte Ppu::registrador_ler(uint16 endereco)
@@ -218,6 +345,10 @@ namespace nesbrasa::nucleo
         {
             return Ppu::CicloTipo::VISIVEL;
         }
+        else if (this->ciclo >= 280 && this->ciclo <= 304)
+        {
+            return CicloTipo::COPIAR_Y;
+        }
         else if (this->ciclo >= 321 && this->ciclo <= 336)
         {
             return Ppu::CicloTipo::PRE_BUSCA;
@@ -250,6 +381,25 @@ namespace nesbrasa::nucleo
         {
             return ScanLineTipo::OUTRO;
         }
+    }
+
+    void Ppu::executar_ciclo_vblank()
+    {
+        this->nmi_ocorreu = true;
+        if (this->nmi_output)
+        {
+            this->nmi_anterior = true;
+        }
+        else
+        {
+            this->nmi_anterior = false;
+        }
+    }
+
+    void Ppu::encerrar_ciclo_vblank()
+    {
+        this->nmi_ocorreu = false;
+        this->nmi_anterior = false;
     }
 
     void Ppu::set_controle(byte valor)
