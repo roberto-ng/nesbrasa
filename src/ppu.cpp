@@ -26,12 +26,10 @@ namespace nesbrasa::nucleo
     Ppu::Ppu(Memoria* memoria): 
         memoria(memoria),
         oam({ 0 }),
+        oam_secundaria({}),
         tabelas_de_nomes({ 0 }),
         paletas({ 0 }),
-        sprites_padroes({ 0 }),
-        sprites_posicoes({ 0 }),
-        sprites_prioridades({ 0 }),
-        sprites_indices({ 0 })
+        sprite_indices({ 0 })
     {
         this->espelhamento = Espelhamento::VERTICAL;
 
@@ -385,6 +383,117 @@ namespace nesbrasa::nucleo
         {
             return ScanLineTipo::OUTRO;
         }
+    }
+
+    byte Ppu::buscar_pixel_fundo()
+    {
+        if (!this->flag_fundo_habilitar)
+            return 0;
+
+        int pos_x = this->ciclo - 1;
+        if (!this->flag_fundo_habilitar_col_esquerda && pos_x < 8)
+            return 0;
+        
+        uint32 tile = static_cast<uint32>(this->tile_dados) >> 32;
+        byte cor = static_cast<byte>((tile >> (this->x*4)) & 0x0F);
+        return cor;
+    }
+
+    byte Ppu::buscar_pixel_sprite(uint& indice)
+    {
+        indice = 0;
+
+        if (this->flag_sprite_habilitar == 0)
+            return 0;
+
+        int pos_x = static_cast<int>(this->ciclo) - 1;
+        int pos_y = static_cast<int>(this->scanline) - 1;
+        if (!this->flag_fundo_habilitar_col_esquerda && pos_x < 8)
+            return 0;
+
+        uint32 endereco_padrao_atual = this->padrao_sprite_endereco;
+        for (uint i = 0; i < this->sprites_qtd; i++)
+        {
+            const uint pos = i*4 + 1;
+            byte altura = 8 - 1;
+            byte largura = 8 - 1;
+
+            int offset_x = pos_x - static_cast<int>(this->oam_secundaria.at(i + 3));
+            if (offset_x < 0 || offset_x >= 8)
+                continue;
+
+            int offset_y = pos_y - static_cast<int>(this->oam_secundaria.at(i));
+
+            byte padrao_indice = this->oam_secundaria.at(pos);
+            if (this->flag_sprite_altura)
+            {
+                altura = 16 - 1;
+                endereco_padrao_atual = (this->oam_secundaria.at(pos) & 1) * 0x1000;
+                padrao_indice &= 0b11111110;
+            }
+
+            uint endereco_padrao = endereco_padrao_atual + padrao_indice*16;
+
+            bool inverter_horizontal = false;
+            bool inverter_vertical = false;            
+            if ((this->oam_secundaria.at(pos+1) & 0b01000000) != 0)
+            {
+                inverter_horizontal = true;
+            }
+            if ((this->oam_secundaria.at(pos+1) & 0b10000000) != 0)
+            {
+                inverter_vertical = true;
+            }
+
+            if (inverter_horizontal)
+            {
+                offset_x = largura - offset_x;
+            }
+            if (inverter_vertical)
+            {
+                offset_y = altura - offset_y;
+            }
+
+            uint endereco_y = endereco_padrao + offset_y;
+            if (offset_y >= 8)
+            {
+                endereco_y += 8;
+            }
+
+            const byte byte_1 = this->memoria->ler(endereco_y);
+            const byte byte_2 = this->memoria->ler(endereco_y + 8);
+            const byte bit_menor = (byte_1 >> (7-offset_x)) & 1;
+            const byte bit_maior = (byte_2 >> (7-offset_x)) & 1;
+            const byte cor_num = ((bit_maior << 1) | bit_menor) & 0b00000011;
+
+            if (cor_num != 0)
+            {
+                indice = i;
+                byte paleta_num = this->oam_secundaria.at(pos+1) & 0b00000011;
+                return ((paleta_num << 2) | cor_num) & 0b00001111;
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        return 0;
+    }
+
+    void Ppu::renderizar_pixel()
+    {
+        uint indice = 0;
+        byte pixel_fundo = this->buscar_pixel_fundo();
+        byte pixel_sprite = this->buscar_pixel_sprite(indice);
+
+        bool sprite_zero = false;
+        if (this->sprite_indices.at(indice) == 0)
+        {
+            sprite_zero = true;
+        }
+
+        // TODO: TERMINAR FUNÇÃO
     }
 
     void Ppu::executar_ciclo_vblank()

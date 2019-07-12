@@ -32,6 +32,9 @@ namespace nesbrasa::nucleo
 {
     using std::array;
     using std::shared_ptr;
+
+    static const int TELA_LARGURA = 256;
+    static const int TELA_ALTURA = 240;
     
     class Ppu
     {
@@ -68,9 +71,16 @@ namespace nesbrasa::nucleo
     private:
         Memoria* memoria;
 
+        // textura RGB representando a tela do NES
+        array<byte, (TELA_LARGURA*TELA_ALTURA*3)> textura_tela;
+        array<byte, (TELA_LARGURA*TELA_ALTURA)> prioridades;
+        array< array<byte, 3>, 64> tabela_de_cores;
+
         array<byte, 0x100> oam;
+        array<byte, 0x20>  oam_secundaria;
         array<byte, 0x800> tabelas_de_nomes;
         array<byte, 0x20>  paletas;
+        array<byte, 0x8>   sprite_indices;
 
         uint16 ciclo;
         uint16 scanline;
@@ -91,11 +101,6 @@ namespace nesbrasa::nucleo
         byte tabela_de_nomes_byte;
         byte tabela_de_atributos_byte;
 
-        // membros relacionados às texturas dos sprites
-        array<uint, 8> sprites_padroes;
-        array<byte, 8> sprites_posicoes;
-        array<byte, 8> sprites_prioridades;
-        array<byte, 8> sprites_indices;
         uint sprites_qtd;
         
         // flags do nmi
@@ -153,6 +158,11 @@ namespace nesbrasa::nucleo
     private:
         CicloTipo get_ciclo_tipo();
         ScanLineTipo get_scanline_tipo();
+
+        byte buscar_pixel_fundo();
+        byte buscar_pixel_sprite(uint& indice);
+        byte buscar_cor();
+        void renderizar_pixel();
 
         void executar_ciclo_vblank();
         void encerrar_ciclo_vblank();
