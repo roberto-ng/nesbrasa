@@ -25,6 +25,7 @@ namespace nesbrasa::nucleo
 {
     Ppu::Ppu(Memoria* memoria): 
         memoria(memoria),
+        tela_dados({ 0 }),
         oam({ 0 }),
         oam_secundaria({}),
         tabelas_de_nomes({ 0 }),
@@ -154,7 +155,7 @@ namespace nesbrasa::nucleo
         {
             if (ciclo_tipo == CicloTipo::VISIVEL && scanline_tipo == ScanLineTipo::VISIVEL)
             {
-                // TODO: renderizar pixel
+                this->renderizar_pixel();
             }
 
             if (scanline_tipo == ScanLineTipo::PRE_RENDERIZACAO || scanline_tipo == ScanLineTipo::VISIVEL)
@@ -481,6 +482,88 @@ namespace nesbrasa::nucleo
         return 0;
     }
 
+    byte Ppu::buscar_cor_fundo(byte valor)
+    {
+        // indice da cor
+        uint cor_pos = (valor & 0b00000011) - 1;
+        // indice da paleta
+        uint paleta_pos = (valor >> 2) & 0b00000011;
+
+        uint16 paleta_endereco = 0;
+        if (cor_pos + 1 == 0)
+        {
+            paleta_endereco = (0x3F00);
+        }
+        else
+        {
+            switch (paleta_pos)
+            {
+                case 0:
+                    paleta_endereco = 0x3F01 + cor_pos;
+                    break;
+                
+                case 1:
+                    paleta_endereco = 0x3F05 + cor_pos;
+                    break;
+
+                case 2:
+                    paleta_endereco = 0x3F09 + cor_pos;
+                    break;
+
+                case 3:
+                    paleta_endereco = 0x3F0D + cor_pos;
+                    break;
+                
+                default:
+                    throw std::runtime_error("Paleta de fundo inválida");
+                    break;
+            }
+        }
+
+        return this->memoria->ler(paleta_endereco);
+    }
+
+    byte Ppu::buscar_cor_sprite(byte valor)
+    {
+        // indice da cor
+        uint cor_pos = (valor & 0b00000011) - 1;
+        // indice da paleta
+        uint paleta_pos = (valor >> 2) & 0b00000011;
+
+        uint16 paleta_endereco = 0;
+        if (cor_pos + 1 == 0)
+        {
+            paleta_endereco = (0x3F00);
+        }
+        else
+        {
+            switch (paleta_pos)
+            {
+                case 0:
+                    paleta_endereco = 0x3F11 + cor_pos;
+                    break;
+                
+                case 1:
+                    paleta_endereco = 0x3F15 + cor_pos;
+                    break;
+
+                case 2:
+                    paleta_endereco = 0x3F19 + cor_pos;
+                    break;
+
+                case 3:
+                    paleta_endereco = 0x3F1D + cor_pos;
+                    break;
+                
+                default:
+                    throw std::runtime_error("Paleta de sprite inválida");
+                    break;
+            }
+        }
+
+        return this->memoria->ler(paleta_endereco);
+    }
+
     void Ppu::renderizar_pixel()
     {
         uint indice = 0;
@@ -493,7 +576,34 @@ namespace nesbrasa::nucleo
             sprite_zero = true;
         }
 
-        // TODO: TERMINAR FUNÇÃO
+        byte cor = 0;
+        if (pixel_sprite == 0)
+        {
+            cor = this->buscar_cor_fundo(pixel_fundo);
+        }
+        else if (pixel_sprite != 0 && pixel_fundo == 0)
+        {
+            cor = this->buscar_cor_sprite(pixel_sprite);
+        }
+        else if (pixel_sprite != 0 && pixel_fundo != 0)
+        {
+            if (this->sprite_indices.at(indice) == 0)
+            {
+                this->flag_sprite_zero = true;
+            }
+
+            int prioridade = ((this->oam_secundaria.at(indice*4)+2) >> 5) & 0b00000001;
+            if (prioridade == 1)
+            {
+                cor = this->buscar_cor_fundo(pixel_fundo);
+            }
+            else
+            {
+                cor = this->buscar_cor_sprite(pixel_sprite);
+            }
+        }
+
+        this->tela_dados.at(this->scanline*256 + this->ciclo-1) = cor;
     }
 
     void Ppu::executar_ciclo_vblank()

@@ -72,9 +72,7 @@ namespace nesbrasa::nucleo
         Memoria* memoria;
 
         // textura RGB representando a tela do NES
-        array<byte, (TELA_LARGURA*TELA_ALTURA*3)> textura_tela;
-        array<byte, (TELA_LARGURA*TELA_ALTURA)> prioridades;
-        array< array<byte, 3>, 64> tabela_de_cores;
+        array<byte, (TELA_LARGURA*TELA_ALTURA)> tela_dados;
 
         array<byte, 0x100> oam;
         array<byte, 0x20>  oam_secundaria;
@@ -161,7 +159,8 @@ namespace nesbrasa::nucleo
 
         byte buscar_pixel_fundo();
         byte buscar_pixel_sprite(uint& indice);
-        byte buscar_cor();
+        byte buscar_cor_fundo(byte valor);
+        byte buscar_cor_sprite(byte valor);
         void renderizar_pixel();
 
         void executar_ciclo_vblank();
