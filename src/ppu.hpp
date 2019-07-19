@@ -171,6 +171,7 @@ namespace nesbrasa::nucleo
         void buscar_tile_byte_menor();
         void buscar_tile_byte_maior();
         void tile_guardar_dados();
+        void avaliar_sprites();
 
         void copiar_x();
         void copiar_y();

@@ -153,6 +153,12 @@ namespace nesbrasa::nucleo
         // se a renderização estiver habilitada
         if (this->flag_fundo_habilitar || this->flag_sprite_habilitar)
         {
+            if (this->ciclo == 257 && scanline_tipo == ScanLineTipo::VISIVEL)
+            {
+                // avaliar sprites
+                this->avaliar_sprites();
+            }
+
             if (ciclo_tipo == CicloTipo::VISIVEL && scanline_tipo == ScanLineTipo::VISIVEL)
             {
                 this->renderizar_pixel();
@@ -689,6 +695,46 @@ namespace nesbrasa::nucleo
         }
 
         this->tile_dados |= static_cast<uint64>(valor);
+    }
+
+    void Ppu::avaliar_sprites()
+    {
+        uint altura = 8;
+        if (this->flag_sprite_altura)
+        {
+            altura = 16;
+        }
+
+        this->sprites_qtd = 0;
+        for (int i = this->oam_endereco; i < (256/4); i++)
+        {
+            uint indice = i*4;
+            uint pos_y = this->oam_secundaria.at(indice);
+            uint atrib = this->oam_secundaria.at(indice+2);
+            uint pos_x = this->oam_secundaria.at(indice+3);
+            
+            int linha = static_cast<int16>(this->scanline) - static_cast<int16>(pos_y);
+            if (linha >= 0 && linha < altura)
+            {
+                if (this->sprites_qtd >= 8)
+                {
+                    this->sprites_qtd = 8;
+                    this->flag_sprite_transbordamento = true;
+                    break;
+                }
+                else
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        int pos = this->sprites_qtd * 4;
+                        this->oam_secundaria.at(pos + j) = this->oam.at(indice + j);
+                    }
+
+                    this->sprite_indices.at(this->sprites_qtd) = (indice - oam_endereco)/4;
+                    this->sprites_qtd += 1;
+                }
+            }
+        }
     }
 
     void Ppu::copiar_x()
