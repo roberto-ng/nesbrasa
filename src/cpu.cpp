@@ -63,6 +63,29 @@ namespace nesbrasa::nucleo
         uint ciclos_executados = 0;
         uint ciclos_qtd_anterior = this->ciclos;
 
+        switch (this->interrupcao)
+        {
+            case Interrupcao::NMI:
+                this->stack_empurrar_16_bits(this->pc);
+                this->stack_empurrar(this->get_estado());
+                this->pc = this->memoria->ler_16_bits(0xFFFA);
+                this->i = true;
+                this->interrupcao = Interrupcao::NENHUMA;
+                this->ciclos += 7;
+                break;
+            
+            case Interrupcao::IRQ:
+                this->stack_empurrar_16_bits(this->pc);
+                this->stack_empurrar(this->get_estado());
+                this->pc = this->memoria->ler_16_bits(0xFFFE);
+                this->i = true;
+                this->interrupcao = Interrupcao::NENHUMA;
+                this->ciclos += 7;
+                break;
+
+            default: break;
+        }
+
         byte opcode = this->memoria->ler(this->pc);        
         // lançar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
