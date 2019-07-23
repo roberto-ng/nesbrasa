@@ -121,4 +121,9 @@ namespace nesbrasa::nucleo
             ppu.avancar();
         }
     }
+
+    array<byte, (256*240*3)> Nes::gerar_textura_rgb()
+    {
+        return this->ppu.gerar_textura_rgb();
+    }
 }

@@ -29,6 +29,7 @@ namespace nesbrasa::nucleo
     using namespace tipos;
         
     class Nes;
+    enum class Interrupcao;
 
     class Memoria
     {
@@ -51,6 +52,6 @@ namespace nesbrasa::nucleo
         //! Escreve um valor na memoria
         void escrever(uint16 endereco, byte valor);
 
-        void cpu_ativar_interrupcao(Cpu::Interrupcao interrupcao);
+        void cpu_ativar_interrupcao(Interrupcao interrupcao);
     };
 }

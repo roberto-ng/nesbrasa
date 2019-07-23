@@ -35,6 +35,13 @@ namespace nesbrasa::nucleo
     using std::shared_ptr;
     using std::optional;
 
+    enum class Interrupcao
+    {
+        NMI,
+        IRQ,
+        NENHUMA,
+    };
+
     class Cpu
     {
     private:
@@ -45,12 +52,6 @@ namespace nesbrasa::nucleo
         array< optional<Instrucao>, 256 > instrucoes;
     
     public:
-        enum class Interrupcao
-        {
-            NMI,
-            IRQ,
-            NENHUMA,
-        };
 
         Memoria* memoria;
 

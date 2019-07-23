@@ -49,5 +49,7 @@ namespace nesbrasa::nucleo
         void carregar_rom(vector<byte> arquivo);
 
         void avancar();
+
+        array<byte, (256*240*3)> gerar_textura_rgb();
     };
 }

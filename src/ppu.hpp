@@ -32,9 +32,6 @@ namespace nesbrasa::nucleo
 {
     using std::array;
     using std::shared_ptr;
-
-    static const int TELA_LARGURA = 256;
-    static const int TELA_ALTURA = 240;
     
     class Ppu
     {
@@ -72,7 +69,7 @@ namespace nesbrasa::nucleo
         Memoria* memoria;
 
         // textura RGB representando a tela do NES
-        array<byte, (TELA_LARGURA*TELA_ALTURA)> tela_dados;
+        array<byte, (256*240)> tela_dados;
 
         array<byte, 0x100> oam;
         array<byte, 0x20>  oam_secundaria;
@@ -152,6 +149,8 @@ namespace nesbrasa::nucleo
 
         byte ler_paleta(uint16 endereco);
         void escrever_paleta(uint16 endereco, byte valor);
+
+        array<byte, (256*240*3)> gerar_textura_rgb();
 
     private:
         CicloTipo get_ciclo_tipo();

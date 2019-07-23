@@ -150,7 +150,7 @@ namespace nesbrasa::nucleo
         }
     }
 
-    void Memoria::cpu_ativar_interrupcao(Cpu::Interrupcao interrupcao)
+    void Memoria::cpu_ativar_interrupcao(Interrupcao interrupcao)
     {
         this->nes->cpu.interrupcao = interrupcao;
     }

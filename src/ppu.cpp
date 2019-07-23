@@ -20,9 +20,13 @@
 #include "nesbrasa.hpp"
 #include "memoria.hpp"
 #include "util.hpp"
+#include "cores.hpp"
 
 namespace nesbrasa::nucleo
 {
+    const int TELA_LARGURA = 256;
+    const int TELA_ALTURA = 240;
+
     Ppu::Ppu(Memoria* memoria): 
         memoria(memoria),
         tela_dados({ 0 }),
@@ -109,7 +113,7 @@ namespace nesbrasa::nucleo
 
         if (this->nmi_output && this->nmi_ocorreu)
         {
-            this->memoria->cpu_ativar_interrupcao(Cpu::Interrupcao::NMI);
+            this->memoria->cpu_ativar_interrupcao(Interrupcao::NMI);
         }
 
         if (!this->flag_fundo_habilitar || this->flag_sprite_habilitar)
@@ -338,6 +342,24 @@ namespace nesbrasa::nucleo
     void Ppu::escrever_paleta(uint16 endereco, byte valor)
     {
         this->paletas.at(endereco) = valor;
+    }
+
+    array<byte, (TELA_LARGURA*TELA_ALTURA*3)> Ppu::gerar_textura_rgb()
+    {
+        const uint pixels_quantidade = TELA_LARGURA*TELA_ALTURA;
+
+        array<byte, (pixels_quantidade*3)> textura_rgb;
+        for (uint i = 0; i < pixels_quantidade; i++)
+        {
+            byte cor = this->tela_dados.at(i);
+            auto cor_rgb = cores::buscar_cor_rgb(cor);
+            for (uint j = 0; j < cor_rgb.size(); j++)
+            {
+                textura_rgb.at(i*3 + j) = cor_rgb.at(j);
+            }
+        }
+
+        return textura_rgb;
     }
 
     Ppu::CicloTipo Ppu::get_ciclo_tipo()
@@ -576,12 +598,6 @@ namespace nesbrasa::nucleo
         byte pixel_fundo = this->buscar_pixel_fundo();
         byte pixel_sprite = this->buscar_pixel_sprite(indice);
 
-        bool sprite_zero = false;
-        if (this->sprite_indices.at(indice) == 0)
-        {
-            sprite_zero = true;
-        }
-
         byte cor = 0;
         if (pixel_sprite == 0)
         {
@@ -699,7 +715,7 @@ namespace nesbrasa::nucleo
 
     void Ppu::avaliar_sprites()
     {
-        uint altura = 8;
+        int altura = 8;
         if (this->flag_sprite_altura)
         {
             altura = 16;
@@ -710,8 +726,8 @@ namespace nesbrasa::nucleo
         {
             uint indice = i*4;
             uint pos_y = this->oam_secundaria.at(indice);
-            uint atrib = this->oam_secundaria.at(indice+2);
-            uint pos_x = this->oam_secundaria.at(indice+3);
+            //uint atrib = this->oam_secundaria.at(indice+2);
+            //uint pos_x = this->oam_secundaria.at(indice+3);
             
             int linha = static_cast<int16>(this->scanline) - static_cast<int16>(pos_y);
             if (linha >= 0 && linha < altura)
