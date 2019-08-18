@@ -423,7 +423,7 @@ namespace nesbrasa::nucleo
         if (!this->flag_fundo_habilitar_col_esquerda && pos_x < 8)
             return 0;
         
-        uint32 tile = static_cast<uint32>(this->tile_dados) >> 32;
+        uint32 tile = static_cast<uint32>(this->tile_dados >> 32);
         byte cor = static_cast<byte>((tile >> (this->x*4)) & 0x0F);
         return cor;
     }

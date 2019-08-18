@@ -90,7 +90,7 @@ namespace nesbrasa::nucleo
         uint16 padrao_sprite_endereco;
 
         // membros relacionados às texturas de fundo
-        byte tile_dados;
+        uint64 tile_dados;
         byte tile_byte_maior;
         byte tile_byte_menor;
         byte tabela_de_nomes_byte;
