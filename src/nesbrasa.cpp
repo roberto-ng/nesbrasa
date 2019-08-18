@@ -31,6 +31,8 @@ namespace nesbrasa::nucleo
     using namespace std::string_literals;
     using namespace mapeadores;
 
+    const int Nes::CPU_FREQUENCIA = 1789773;
+
     Nes::Nes(): 
         memoria(this),
         cpu(&this->memoria),
@@ -62,7 +64,7 @@ namespace nesbrasa::nucleo
         // arquivos nos formatos iNES e NES 2.0 começam com a string "NES\x1A"
         if (formato_string == "NES\x1A")
         {
-            if (buscar_bit(arquivo.at(7), 2) == false && buscar_bit(arquivo.at(7), 3) == true)
+            if ((buscar_bit(arquivo.at(7), 2) == false) && (buscar_bit(arquivo.at(7), 3) == true))
             {
                 // o arquivo está no formato NES 2.0
                 formato = ArquivoFormato::NES_2_0;
@@ -107,18 +109,31 @@ namespace nesbrasa::nucleo
         this->cpu.resetar();
     }
 
-    void Nes::avancar()
+    int Nes::avancar()
     {
         if (!this->is_programa_carregado)
         {
             throw runtime_error("Erro: nenhum programa na memória"s);
         }
 
-        const uint cpu_ciclos = this->cpu.avancar();
-        const uint ppu_ciclos = cpu_ciclos * 3;
-        for (uint i = 0; i < ppu_ciclos; i++)
+        const int cpu_ciclos = this->cpu.avancar();
+        const int ppu_ciclos = cpu_ciclos * 3;
+        for (int i = 0; i < ppu_ciclos; i++)
         {
-            ppu.avancar();
+            this->ppu.avancar();
+        }
+
+        return cpu_ciclos;
+    }
+
+    void Nes::avancar_por(double segundos)
+    {
+        const int ciclos_qtd = CPU_FREQUENCIA * segundos;
+
+        int ciclos_restantes = ciclos_qtd;
+        while (ciclos_restantes > 0)
+        {
+            ciclos_restantes -= this->avancar();
         }
     }
 
