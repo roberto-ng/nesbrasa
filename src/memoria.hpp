@@ -34,10 +34,11 @@ namespace nesbrasa::nucleo
     class Memoria
     {
     private:
-        Nes* nes;
         array<byte, 0x0800> ram; 
         
     public:        
+        Nes* nes;
+        
         Memoria(Nes* nes);
 
         //! Lê um valor de 8 bits na memoria

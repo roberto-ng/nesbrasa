@@ -164,6 +164,7 @@ namespace nesbrasa::nucleo
 
         void executar_ciclo_vblank();
         void encerrar_ciclo_vblank();
+        void alterar_nmi();
 
         void buscar_byte_tabela_de_nomes();
         void buscar_byte_tabela_de_atributos();

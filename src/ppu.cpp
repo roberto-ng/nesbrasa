@@ -21,6 +21,7 @@
 #include "memoria.hpp"
 #include "util.hpp"
 #include "cores.hpp"
+#include <iostream>
 
 namespace nesbrasa::nucleo
 {
@@ -95,14 +96,14 @@ namespace nesbrasa::nucleo
 
     void Ppu::reiniciar()
     {
-        this->set_oam_enderco(0);
-        this->set_controle(0);
-        this->set_mascara(0);
-        
         this->frame = 0;
         this->ciclo = 340;
         this->scanline = 240;
 
+        this->set_oam_enderco(0);
+        this->set_controle(0);
+        this->set_mascara(0);
+        
         this->espelhamento = Espelhamento::VERTICAL;
     }
 
@@ -111,9 +112,13 @@ namespace nesbrasa::nucleo
         auto ciclo_tipo = this->get_ciclo_tipo();
         auto scanline_tipo = this->get_scanline_tipo();
 
-        if (this->nmi_output && this->nmi_ocorreu)
+        if (nmi_atrasar > 0)
         {
-            this->memoria->cpu_ativar_interrupcao(Interrupcao::NMI);
+            nmi_atrasar -= 1;
+            if (this->nmi_output && this->nmi_ocorreu)
+            {
+                this->memoria->cpu_ativar_interrupcao(Interrupcao::NMI);
+            }
         }
 
         if (!this->flag_fundo_habilitar || this->flag_sprite_habilitar)
@@ -234,7 +239,6 @@ namespace nesbrasa::nucleo
             this->flag_sprite_zero = 0;
             this->flag_sprite_transbordamento = 0;
         }
-
     }
 
     byte Ppu::registrador_ler(uint16 endereco)
@@ -257,6 +261,7 @@ namespace nesbrasa::nucleo
 
     void Ppu::registrador_escrever(Nes *nes, uint16 endereco, byte valor)
     {
+        this->ultimo_valor = valor;
         switch (endereco)
         {
             case 0x2000:
@@ -264,6 +269,7 @@ namespace nesbrasa::nucleo
                 break;
 
             case 0x2001:
+                std::cout << "Escrevendo r endereco: $" << std::hex << endereco << " val: $" << std::hex << (int)valor << "\n";
                 this->set_mascara(valor);
                 break;
 
@@ -294,6 +300,8 @@ namespace nesbrasa::nucleo
 
     byte Ppu::ler(Nes *nes, uint16 endereco)
     {
+        endereco = endereco % 0x4000;
+
         if (endereco < 0x2000)
         {
             return nes->cartucho->ler(endereco);
@@ -316,6 +324,7 @@ namespace nesbrasa::nucleo
 
     void Ppu::escrever(Nes *nes, uint16 endereco, byte valor)
     {
+        endereco = endereco % 0x4000;
         if (endereco < 0x2000)
         {
             nes->cartucho->escrever(endereco, valor);
@@ -631,25 +640,28 @@ namespace nesbrasa::nucleo
     void Ppu::executar_ciclo_vblank()
     {
         this->nmi_ocorreu = true;
-        if (this->nmi_output)
-        {
-            this->nmi_anterior = true;
-        }
-        else
-        {
-            this->nmi_anterior = false;
-        }
+        this->alterar_nmi();
     }
 
     void Ppu::encerrar_ciclo_vblank()
     {
         this->nmi_ocorreu = false;
-        this->nmi_anterior = false;
+        this->alterar_nmi();
+    }
+
+    void Ppu::alterar_nmi()
+    {
+        bool nmi = this->nmi_anterior && this->nmi_ocorreu;
+        if (nmi && !this->nmi_anterior)
+        {
+            this->nmi_atrasar = 15;
+        }
+        this->nmi_anterior = nmi;
     }
 
     void Ppu::buscar_byte_tabela_de_nomes()
     {
-        uint16 endereco = 0b0010000000000000 | (this->v  & 0x0FFF);
+        uint16 endereco = 0x2000 | (this->v  & 0x0FFF);
         this->tabela_de_nomes_byte = this->memoria->ler(endereco);
     }
 
@@ -725,7 +737,15 @@ namespace nesbrasa::nucleo
         for (int i = this->oam_endereco; i < (256/4); i++)
         {
             uint indice = i*4;
-            uint pos_y = this->oam_secundaria.at(indice);
+            uint pos_y;
+            try 
+            {
+                pos_y = this->oam.at(indice);
+            }
+            catch (std::exception& e)
+            {
+                throw e;
+            }
             //uint atrib = this->oam_secundaria.at(indice+2);
             //uint pos_x = this->oam_secundaria.at(indice+3);
             
@@ -810,13 +830,14 @@ namespace nesbrasa::nucleo
 
     void Ppu::set_controle(byte valor)
     {
-        this->flag_nmi = buscar_bit(valor, 7);
         this->flag_mestre_escravo = buscar_bit(valor, 6);
         this->flag_sprite_altura = buscar_bit(valor, 5);
         this->flag_padrao_fundo = buscar_bit(valor, 4);
         this->flag_padrao_sprite = buscar_bit(valor, 3);
         this->flag_incrementar = buscar_bit(valor, 2);
         this->flag_nametable_base = valor & 0b00000011;
+        this->flag_nmi = buscar_bit(valor, 7) == 1;
+        this->alterar_nmi();
 
         this->nametable_endereco = 0x2000 + (0x400 * this->flag_nametable_base);
 
@@ -836,7 +857,7 @@ namespace nesbrasa::nucleo
             this->padrao_fundo_endereco = 0x0000;
 
         // t: ...BA.. ........ = d: ......BA
-        this->t = (this->t & 0b1111001111111111) | ((valor & 0b00000011) << 10);
+        this->t = (this->t & 0b1111001111111111) | ((static_cast<uint16>(valor) & 0b00000011) << 10);
     }
 
     void Ppu::set_mascara(byte valor)
@@ -853,6 +874,7 @@ namespace nesbrasa::nucleo
 
     byte Ppu::get_estado()
     {
+        /*
         // os 5 ultimos bits do último valor escrito na PPU
         const byte ultimo = this->ultimo_valor & 0b00011111;
 
@@ -865,6 +887,22 @@ namespace nesbrasa::nucleo
         this->w = 0;
 
         return v | s | o | ultimo;
+        */
+
+        byte resultado = this->ultimo_valor & 0b00011111;;
+        resultado |= (byte)this->flag_sprite_transbordamento << 5;
+        resultado |= (byte)this->flag_sprite_zero << 6;
+        
+        if (this->nmi_ocorreu)
+        {
+            resultado |= 1 << 7;
+        }
+        this->nmi_ocorreu = false;
+        this->alterar_nmi();
+        
+        // w: = 0
+        this->w = 0;
+        return resultado;
     }
 
     void Ppu::set_oam_enderco(byte valor)
@@ -970,18 +1008,18 @@ namespace nesbrasa::nucleo
 
     byte Ppu::get_dados()
     {
-        if (this->v < 0x3F00)
+        byte valor = this->ler(this->memoria->nes, this->v);
+        if (this->v%0x4000 < 0x3F00)
         {
-            const byte dados = this->buffer_dados;
-            this->buffer_dados = this->memoria->ler(this->v);
+            const byte buffer_dados = this->buffer_dados;
+            this->buffer_dados = valor;
             this->v += this->vram_incrementar;
 
-            return dados;
+            return buffer_dados;
         }
         else
         {
-            const byte valor = this->memoria->ler(this->v);
-            this->buffer_dados = this->memoria->ler(this->v - 0x1000);
+            this->buffer_dados = this->ler(this->memoria->nes, this->v - 0x1000);
 
             return valor;
         }
