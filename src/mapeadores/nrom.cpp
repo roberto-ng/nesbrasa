@@ -75,10 +75,12 @@ namespace nesbrasa::nucleo::mapeadores
 
     void NRom::escrever(uint16 endereco, byte valor)
     {
+        /*
         if (!this->possui_chr_ram)
         {
             throw runtime_error("CHR RAM inexistente"s);
         }
+        */
 
         if (endereco < 0x2000)
         {

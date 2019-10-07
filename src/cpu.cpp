@@ -18,12 +18,15 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 #include "cpu.hpp"
 #include "nesbrasa.hpp"
 #include "util.hpp"
 #include "memoria.hpp"
 #include "instrucao.hpp"
+
+static int aaa = 150;
 
 namespace nesbrasa::nucleo
 {
@@ -60,33 +63,42 @@ namespace nesbrasa::nucleo
             return 1;
         }
 
-        uint ciclos_executados = 0;
-        uint ciclos_qtd_anterior = this->ciclos;
+        uint ciclos = this->ciclos;
 
         switch (this->interrupcao)
         {
             case Interrupcao::NMI:
                 this->stack_empurrar_16_bits(this->pc);
-                this->stack_empurrar(this->get_estado());
+                this->stack_empurrar(this->get_estado() | 0x10);
                 this->pc = this->memoria->ler_16_bits(0xFFFA);
-                this->i = true;
-                this->interrupcao = Interrupcao::NENHUMA;
+                this->i = 1;
                 this->ciclos += 7;
                 break;
             
             case Interrupcao::IRQ:
                 this->stack_empurrar_16_bits(this->pc);
-                this->stack_empurrar(this->get_estado());
+                this->stack_empurrar(this->get_estado() | 0x10);
                 this->pc = this->memoria->ler_16_bits(0xFFFE);
-                this->i = true;
-                this->interrupcao = Interrupcao::NENHUMA;
+                this->i = 1;
                 this->ciclos += 7;
                 break;
 
             default: break;
         }
+        this->interrupcao = Interrupcao::NENHUMA;
 
         byte opcode = this->memoria->ler(this->pc);        
+
+        /*
+        if (aaa > 0)
+        {
+            if (this->instrucao_para_asm(opcode) == "CMP $D2")
+                aaa -= 1;
+            std::cout << std::hex << this->pc << " - " << 
+                this->instrucao_para_asm(opcode) << " N: " << this->n << "\n";
+        }
+        */
+        
         // lançar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
         {
@@ -100,19 +112,17 @@ namespace nesbrasa::nucleo
         auto instrucao = this->instrucoes.at(opcode).value();
         this->executar(&instrucao);
         
-        ciclos_executados = instrucao.ciclos;
+        this->ciclos += instrucao.ciclos;
         if (this->is_pag_alterada) 
         {
-            ciclos_executados += instrucao.ciclos_pag_alt;
+            this->ciclos += instrucao.ciclos_pag_alt;
         }
         
-        this->ciclos += ciclos_executados;
-
         // calcula a diferença da quantidade atual de ciclos com a 
         // quantidade anterior e a adiciona ao tempo de espera
-        this->esperar += this->ciclos - ciclos_qtd_anterior;
+        //this->esperar += this->ciclos - ciclos_qtd_anterior;
 
-        return ciclos_executados;
+        return this->ciclos - ciclos;
     }
 
     void Cpu::executar(Instrucao* instrucao)
@@ -125,9 +135,9 @@ namespace nesbrasa::nucleo
 
     void Cpu::resetar()
     {
-        this->sp = 0xFD;
         this->pc = this->memoria->ler_16_bits(0xFFFC);
-        this->set_estado(0b00100100);
+        this->sp = 0xFD;
+        this->set_estado(0x24);
     }
 
     void Cpu::branch_somar_ciclos(uint16 endereco)

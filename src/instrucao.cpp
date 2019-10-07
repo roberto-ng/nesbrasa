@@ -17,6 +17,8 @@
  */
 
 #include <memory>
+#include <iostream>
+#include <bitset>
 
 #include "nesbrasa.hpp"
 #include "cpu.hpp"
@@ -487,6 +489,7 @@ namespace nesbrasa::nucleo
     static void instrucao_lda(Instrucao* instrucao, Cpu* cpu, optional<uint16> endereco)
     {
         cpu->a = cpu->memoria->ler(endereco.value());
+        //std::cout << "A: " << std::bitset<8>(cpu->a) << "\n";
 
         // atualizar flags
         cpu->set_n(cpu->a);

@@ -18,6 +18,7 @@
 
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include "nesbrasa.hpp"
 #include "mapeadores/nrom.hpp"
@@ -117,6 +118,7 @@ namespace nesbrasa::nucleo
         }
 
         const int cpu_ciclos = this->cpu.avancar();
+        //std::cout << "cpu ciclos " << cpu_ciclos << "\n";
         const int ppu_ciclos = cpu_ciclos * 3;
         for (int i = 0; i < ppu_ciclos; i++)
         {
@@ -128,12 +130,10 @@ namespace nesbrasa::nucleo
 
     void Nes::avancar_por(double segundos)
     {
-        const int ciclos_qtd = CPU_FREQUENCIA * segundos;
-
-        int ciclos_restantes = ciclos_qtd;
-        while (ciclos_restantes > 0)
+        int ciclos_qtd = CPU_FREQUENCIA * segundos;
+        while (ciclos_qtd > 0)
         {
-            ciclos_restantes -= this->avancar();
+            ciclos_qtd -= this->avancar();
         }
     }
 

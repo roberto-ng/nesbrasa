@@ -69,10 +69,10 @@ namespace nesbrasa::nucleo
         Memoria* memoria;
 
         // textura RGB representando a tela do NES
-        array<byte, (256*240)> tela_dados;
+        array<byte, (256*240)> frente;
+        array<byte, (256*240)> fundo;
 
         array<byte, 0x100> oam;
-        array<byte, 0x20>  oam_secundaria;
         array<byte, 0x800> tabelas_de_nomes;
         array<byte, 0x20>  paletas;
         array<byte, 0x8>   sprite_indices;
@@ -97,6 +97,10 @@ namespace nesbrasa::nucleo
         byte tabela_de_atributos_byte;
 
         uint sprites_qtd;
+        array<uint32, 8> sprites_padroes;
+        array<byte, 8>   sprites_posicoes;
+        array<byte, 8>   sprites_prioridades;
+        array<byte, 8>   sprites_indices;
         
         // flags do nmi
         bool nmi_ocorreu;
@@ -105,7 +109,6 @@ namespace nesbrasa::nucleo
         uint nmi_atrasar;
 
         // PPUCTRL - $2000
-        bool flag_nmi;
         bool flag_mestre_escravo;
         bool flag_sprite_altura;
         bool flag_padrao_fundo;
@@ -139,6 +142,7 @@ namespace nesbrasa::nucleo
         Ppu(Memoria* memoria);
 
         void reiniciar();
+        void atualizar();
         void avancar();
 
         byte ler(Nes *nes, uint16 endereco);
@@ -152,6 +156,8 @@ namespace nesbrasa::nucleo
 
         array<byte, (256*240*3)> gerar_textura_rgb();
 
+        array<byte, (256*240)> get_textura();
+
     private:
         CicloTipo get_ciclo_tipo();
         ScanLineTipo get_scanline_tipo();
@@ -160,6 +166,7 @@ namespace nesbrasa::nucleo
         byte buscar_pixel_sprite(uint& indice);
         byte buscar_cor_fundo(byte valor);
         byte buscar_cor_sprite(byte valor);
+        uint32 buscar_padrao_sprite(int i, int linha);
         void renderizar_pixel();
 
         void executar_ciclo_vblank();
@@ -189,7 +196,9 @@ namespace nesbrasa::nucleo
         void set_omd_dma(Nes *nes, byte valor);
         byte get_dados();
         void set_dados(Nes *nes, byte valor);
-            
+
         uint16 endereco_espelhado(uint16 endereco);
+
+        void set_textura_valor(array<byte, (256*240)>& textura, int x, int y, int valor);
     };
 }

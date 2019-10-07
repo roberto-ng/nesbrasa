@@ -17,6 +17,7 @@
  */
 
 #include <sstream>
+#include <iostream>
 
 #include "memoria.hpp"
 #include "nesbrasa.hpp"
