@@ -27,8 +27,5 @@ namespace nesbrasa::nucleo::cores
     using std::array;
     using namespace nesbrasa::tipos;
 
-    using cor_rgb = array<byte, 3>;
-
-    cor_rgb buscar_cor_rgb(byte valor);
-    extern array<cor_rgb, 0x40> tabela_rgb;
+    extern array<uint32, 0x40> tabela_rgb;
 }

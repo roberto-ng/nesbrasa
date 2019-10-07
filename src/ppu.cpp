@@ -115,7 +115,6 @@ namespace nesbrasa::nucleo
             nmi_atrasar -= 1;
             if (nmi_atrasar == 0 && this->nmi_output && this->nmi_ocorreu)
             {
-                //std::cout << "OI NMI\n";
                 this->memoria->cpu_ativar_interrupcao(Interrupcao::NMI);
             }
         }
@@ -370,24 +369,6 @@ namespace nesbrasa::nucleo
         this->paletas.at(endereco) = valor;
     }
 
-    array<byte, (TELA_LARGURA*TELA_ALTURA*3)> Ppu::gerar_textura_rgb()
-    {
-        const uint pixels_quantidade = TELA_LARGURA*TELA_ALTURA;
-
-        array<byte, (pixels_quantidade*3)> textura_rgb;
-        for (uint i = 0; i < pixels_quantidade; i++)
-        {
-            byte cor = this->frente.at(i);
-            auto cor_rgb = cores::buscar_cor_rgb(cor);
-            for (uint j = 0; j < cor_rgb.size(); j++)
-            {
-                textura_rgb.at(i*3 + j) = cor_rgb.at(j);
-            }
-        }
-
-        return textura_rgb;
-    }
-
     Ppu::CicloTipo Ppu::get_ciclo_tipo()
     {
         if (this->ciclo == 0)
@@ -450,30 +431,30 @@ namespace nesbrasa::nucleo
         return static_cast<byte>(cor & 0x0F);
     }
 
-    byte Ppu::buscar_pixel_sprite(uint& indice)
+    byte Ppu::buscar_pixel_sprite(byte* indice)
     {
         if (!flag_sprite_habilitar)
         {
-            indice = 0;
+            *indice = 0;
             return 0;
         }
 
         for (int i = 0; i < this->sprites_qtd; i++)
         {
-            auto offset = (static_cast<int>(this->ciclo) - 1) - static_cast<int>(this->sprites_posicoes.at(i));
+            int offset = (this->ciclo - 1) - static_cast<int>(this->sprites_posicoes.at(i));
             if (offset < 0 || offset > 7)
                 continue;
-
             offset = 7 - offset;
+
             byte cor = static_cast<byte>((this->sprites_padroes.at(i) >> static_cast<byte>(offset*4)) & 0x0F);
             if (cor%4 == 0)
                 continue;
 
-            indice = i;
+            *indice = i;
             return cor;
         }
 
-        indice = 0;
+        *indice = 0;
         return 0;
     }
 
@@ -616,7 +597,7 @@ namespace nesbrasa::nucleo
                 tile_byte_maior <<= 1;
             }
 
-            valor << 4;
+            valor <<= 4;
             valor |= static_cast<uint32>(a | p1 | p2);
         }
 
@@ -627,9 +608,9 @@ namespace nesbrasa::nucleo
     {
         int x = this->ciclo - 1;
         int y = this->scanline;
-        uint indice = 0;
+        byte indice = 0;
         byte fundo = this->buscar_pixel_fundo();
-        auto sprite = this->buscar_pixel_sprite(indice);
+        auto sprite = this->buscar_pixel_sprite(&indice);
 
         if (x < 8 && !this->flag_fundo_habilitar_col_esquerda)
             fundo = 0;
@@ -669,7 +650,8 @@ namespace nesbrasa::nucleo
         }
         
         auto cor_nes = this->ler_paleta(static_cast<uint16>(cor)%64);
-        this->set_textura_valor(this->fundo, x, y, cor_nes);
+        this->fundo.at(y*256 + x) = cores::tabela_rgb.at(cor_nes);
+        //this->set_textura_valor(this->fundo, x, y, cor_nes);
     }
 
     void Ppu::executar_ciclo_vblank()
@@ -742,8 +724,8 @@ namespace nesbrasa::nucleo
             int p2 = (this->tile_byte_maior & 0x80) >> 6;
             this->tile_byte_menor <<= 1;
 		    this->tile_byte_maior <<= 1;
-            valor << 4;
-            valor |= a | p1 | p2;
+            valor <<= 4;
+            valor |= (a | p1 | p2);
         }
         this->tile_dados |= static_cast<uint64>(valor);
     }
@@ -763,11 +745,11 @@ namespace nesbrasa::nucleo
         int contagem = 0;
         for (int i = 0; i < 64; i++)
         {
-            uint pos_y = this->oam.at(i*4);
+            uint pos_y = this->oam.at(i*4+0);
             uint atrib = this->oam.at(i*4+2);
             uint pos_x = this->oam.at(i*4+3);
-            int linha = static_cast<int>(this->scanline) - static_cast<int>(pos_y);
 
+            int linha = this->scanline - static_cast<int>(pos_y);
             if (linha < 0 || linha >= altura)
             {
                 continue;
@@ -983,7 +965,7 @@ namespace nesbrasa::nucleo
             this->buffer_dados = this->ler(this->memoria->nes, this->v - 0x1000);
         }
 
-        if (this->flag_incrementar == false)
+        if (this->flag_incrementar == 0)
             this->v += 1;
         else
             this->v += 32;
@@ -1073,11 +1055,10 @@ namespace nesbrasa::nucleo
 
     void Ppu::set_textura_valor(array<byte, (256*240)>& textura, int x, int y, int valor)
     {
-        const int largura = 256;
-        textura.at(x + largura*y) = valor;
+        textura.at(y*256 + x) = valor;
     }
 
-    array<byte, (256*240)> Ppu::get_textura()
+    array<uint32, (256*240)>& Ppu::get_textura()
     {
         return this->frente;
     }

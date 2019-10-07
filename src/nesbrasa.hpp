@@ -52,7 +52,5 @@ namespace nesbrasa::nucleo
 
         int avancar();
         void avancar_por(double segundos);
-
-        array<byte, (256*240*3)> gerar_textura_rgb();
     };
 }

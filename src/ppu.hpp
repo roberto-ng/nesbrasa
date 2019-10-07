@@ -69,17 +69,17 @@ namespace nesbrasa::nucleo
         Memoria* memoria;
 
         // textura RGB representando a tela do NES
-        array<byte, (256*240)> frente;
-        array<byte, (256*240)> fundo;
+        array<uint32, (256*240)> frente;
+        array<uint32, (256*240)> fundo;
 
         array<byte, 0x100> oam;
         array<byte, 0x800> tabelas_de_nomes;
         array<byte, 0x20>  paletas;
         array<byte, 0x8>   sprite_indices;
 
-        uint16 ciclo;
-        uint16 scanline;
-        uint64 frame;
+        int ciclo;
+        int scanline;
+        int frame;
 
         byte buffer_dados;
         byte ultimo_valor; // último valor escrito na ppu
@@ -154,16 +154,14 @@ namespace nesbrasa::nucleo
         byte ler_paleta(uint16 endereco);
         void escrever_paleta(uint16 endereco, byte valor);
 
-        array<byte, (256*240*3)> gerar_textura_rgb();
-
-        array<byte, (256*240)> get_textura();
+        array<uint32, (256*240)>& get_textura();
 
     private:
         CicloTipo get_ciclo_tipo();
         ScanLineTipo get_scanline_tipo();
 
         byte buscar_pixel_fundo();
-        byte buscar_pixel_sprite(uint& indice);
+        byte buscar_pixel_sprite(byte* indice);
         byte buscar_cor_fundo(byte valor);
         byte buscar_cor_sprite(byte valor);
         uint32 buscar_padrao_sprite(int i, int linha);
