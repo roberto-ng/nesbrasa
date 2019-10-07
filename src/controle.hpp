@@ -1,4 +1,4 @@
-/* nesbrasa.hpp
+/* controle.hpp
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *
@@ -16,44 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <cstdint>
 #include <array>
-#include <vector>
-#include <memory>
 
-#include "cpu.hpp"
-#include "ppu.hpp"
 #include "memoria.hpp"
-#include "mapeadores/cartucho.hpp"
-#include "controle.hpp"
 
 namespace nesbrasa::nucleo
 {
     using std::array;
-    using std::vector;
-    using std::unique_ptr;
-    using namespace mapeadores;
 
-    class Nes
+    enum class BotaoTipos : uint
     {
+        A          = 0,
+        B          = 1,
+        SELECT     = 2,
+        START      = 3,
+        CIMA       = 4,
+        BAIXO      = 5,
+        ESQUERDA   = 6,
+        DIREITA    = 7,
+    };
+
+    class Controle
+    {
+        array<bool, 8> botoes;
+        byte indice;
+        byte sinal;
+
     public:
-        static const int CPU_FREQUENCIA;
+        Controle();
 
-        Memoria memoria;
-        Cpu cpu;
-        Ppu ppu;
-        Controle controle_1;
-        Controle controle_2;
-        unique_ptr<Cartucho> cartucho;
-        bool is_programa_carregado;
-        
-        Nes();
+        byte ler();
+        void escrever(byte valor);
 
-        void carregar_rom(vector<byte> arquivo);
-
-        int avancar();
-        void avancar_por(double segundos);
+        void set_botao(BotaoTipos tipo, bool valor);
     };
 }

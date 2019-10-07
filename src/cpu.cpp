@@ -26,8 +26,6 @@
 #include "memoria.hpp"
 #include "instrucao.hpp"
 
-static int aaa = 150;
-
 namespace nesbrasa::nucleo
 {
     using std::stringstream;
@@ -88,16 +86,6 @@ namespace nesbrasa::nucleo
         this->interrupcao = Interrupcao::NENHUMA;
 
         byte opcode = this->memoria->ler(this->pc);        
-
-        /*
-        if (aaa > 0)
-        {
-            if (this->instrucao_para_asm(opcode) == "CMP $D2")
-                aaa -= 1;
-            std::cout << std::hex << this->pc << " - " << 
-                this->instrucao_para_asm(opcode) << " N: " << this->n << "\n";
-        }
-        */
         
         // lançar erro se a instrução não existir na tabela
         if (!this->instrucoes.at(opcode).has_value())
@@ -118,10 +106,6 @@ namespace nesbrasa::nucleo
             this->ciclos += instrucao.ciclos_pag_alt;
         }
         
-        // calcula a diferença da quantidade atual de ciclos com a 
-        // quantidade anterior e a adiciona ao tempo de espera
-        //this->esperar += this->ciclos - ciclos_qtd_anterior;
-
         return this->ciclos - ciclos;
     }
 

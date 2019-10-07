@@ -55,14 +55,22 @@ namespace nesbrasa::nucleo
             uint16 ender_espelhado = (endereco%0x8) + 0x2000;
             return this->nes->ppu.registrador_ler(ender_espelhado);
         }
-        else if (endereco >= 0x4000 && endereco <= 0x4017)
+        else if (endereco >= 0x4000 && endereco <= 0x4015)
         {
-            // TODO: registradores da APU e de input/output
+            // TODO: registradores da APU
             return 0;
+        }
+        else if (endereco == 0x4016)
+        {
+            return this->nes->controle_1.ler();
+        }
+        else if (endereco == 0x4017)
+        {
+            return this->nes->controle_2.ler();
         }
         else if (endereco >= 0x4018 && endereco <= 0x401F)
         {
-            // originalmente usado apenas em modo de testes da CPU
+            // endereços não útilizados 
             return 0;
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)
@@ -128,11 +136,19 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x4000 && endereco <= 0x4017)
         {
-            // TODO: registradores da APU e de input/output
+            if (endereco == 0x4016)
+            {
+                this->nes->controle_1.escrever(valor);
+                this->nes->controle_2.escrever(valor);
+            }
+            else 
+            {
+                // TODO: registradores da APU
+            }
         }
         else if (endereco >= 0x4018 && endereco <= 0x401F)
         {
-            // originalmente usado apenas no modo de testes da CPU
+            // endereços não útilizados
             return;
         }
         else if (endereco >= 0x4020 && endereco <= 0xFFFF)

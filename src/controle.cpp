@@ -1,4 +1,4 @@
-/* nesbrasa.hpp
+/* controle.cpp
  *
  * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
  *
@@ -16,44 +16,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <cstdint>
-#include <array>
-#include <vector>
-#include <memory>
-
-#include "cpu.hpp"
-#include "ppu.hpp"
-#include "memoria.hpp"
-#include "mapeadores/cartucho.hpp"
 #include "controle.hpp"
 
 namespace nesbrasa::nucleo
 {
-    using std::array;
-    using std::vector;
-    using std::unique_ptr;
-    using namespace mapeadores;
-
-    class Nes
+    Controle::Controle()
     {
-    public:
-        static const int CPU_FREQUENCIA;
+        this->indice = 0;
+        this->sinal = false;
+    }
 
-        Memoria memoria;
-        Cpu cpu;
-        Ppu ppu;
-        Controle controle_1;
-        Controle controle_2;
-        unique_ptr<Cartucho> cartucho;
-        bool is_programa_carregado;
-        
-        Nes();
+    byte Controle::ler()
+    {
+        byte valor = 0;
+        if (this->indice < 8 && this->botoes.at(this->indice) == true)
+        {
+            valor = 1;
+        }
 
-        void carregar_rom(vector<byte> arquivo);
+        if (this->sinal%1 == 1)
+        {
+            this->indice = 0;
+        }
+        else
+        {
+            this->indice += 1;
+        }
 
-        int avancar();
-        void avancar_por(double segundos);
-    };
+        return valor;
+    }
+
+    void Controle::escrever(byte valor)
+    {
+        this->sinal = valor;
+
+        if (this->sinal%1 == 1)
+        {
+            this->indice = 0;
+        }
+    }
+
+    void Controle::set_botao(BotaoTipos tipo, bool valor)
+    {
+        uint i = static_cast<uint>(tipo);
+        this->botoes.at(i) = valor;
+    }
 }

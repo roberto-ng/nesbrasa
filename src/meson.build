@@ -2,6 +2,7 @@ api_version = '0.1'
 
 nesbrasa_sources = [
     'cores.cpp',
+    'controle.cpp',
     'cpu.cpp',
     'instrucao.cpp',
     'memoria.cpp',
@@ -14,6 +15,7 @@ nesbrasa_sources = [
 
 nesbrasa_headers = [
   'cores.hpp',
+  'controle.hpp',
   'cpu.hpp',
   'instrucao.hpp',
   'memoria.hpp',
