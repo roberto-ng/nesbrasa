@@ -369,58 +369,6 @@ namespace nesbrasa::nucleo
         this->paletas.at(endereco) = valor;
     }
 
-    Ppu::CicloTipo Ppu::get_ciclo_tipo()
-    {
-        if (this->ciclo == 0)
-        {
-            return Ppu::CicloTipo::ZERO;
-        }
-        else if (this->ciclo == 1)
-        {
-            return Ppu::CicloTipo::UM;
-        }
-        else if (this->ciclo >= 2 && this->ciclo <= 256)
-        {
-            return Ppu::CicloTipo::VISIVEL;
-        }
-        else if (this->ciclo >= 280 && this->ciclo <= 304)
-        {
-            return CicloTipo::COPIAR_Y;
-        }
-        else if (this->ciclo >= 321 && this->ciclo <= 336)
-        {
-            return Ppu::CicloTipo::PRE_BUSCA;
-        }
-        else if (this->ciclo == 340)
-        {
-            return Ppu::CicloTipo::CONTINUAR;
-        }
-        else
-        {
-            return Ppu::CicloTipo::OUTRO;
-        }
-    }
-
-    Ppu::ScanLineTipo Ppu::get_scanline_tipo()
-    {
-        if (this->scanline < 240)
-        {
-            return ScanLineTipo::VISIVEL;
-        }
-        else if (this->scanline == 241)
-        {
-            return ScanLineTipo::VBLANK;
-        }
-        else if (this->scanline == 261)
-        {
-            return ScanLineTipo::PRE_RENDERIZACAO;
-        }
-        else
-        {
-            return ScanLineTipo::OUTRO;
-        }
-    }
-
     byte Ppu::buscar_pixel_fundo()
     {
         if (!this->flag_fundo_habilitar)
@@ -456,88 +404,6 @@ namespace nesbrasa::nucleo
 
         *indice = 0;
         return 0;
-    }
-
-    byte Ppu::buscar_cor_fundo(byte valor)
-    {
-        // indice da cor
-        uint cor_pos = (valor & 0b00000011) - 1;
-        // indice da paleta
-        uint paleta_pos = (valor >> 2) & 0b00000011;
-
-        uint16 paleta_endereco = 0;
-        if (cor_pos + 1 == 0)
-        {
-            paleta_endereco = (0x3F00);
-        }
-        else
-        {
-            switch (paleta_pos)
-            {
-                case 0:
-                    paleta_endereco = 0x3F01 + cor_pos;
-                    break;
-                
-                case 1:
-                    paleta_endereco = 0x3F05 + cor_pos;
-                    break;
-
-                case 2:
-                    paleta_endereco = 0x3F09 + cor_pos;
-                    break;
-
-                case 3:
-                    paleta_endereco = 0x3F0D + cor_pos;
-                    break;
-                
-                default:
-                    throw std::runtime_error("Paleta de fundo inválida");
-                    break;
-            }
-        }
-
-        return this->memoria->ler(paleta_endereco);
-    }
-
-    byte Ppu::buscar_cor_sprite(byte valor)
-    {
-        // indice da cor
-        uint cor_pos = (valor & 0b00000011) - 1;
-        // indice da paleta
-        uint paleta_pos = (valor >> 2) & 0b00000011;
-
-        uint16 paleta_endereco = 0;
-        if (cor_pos + 1 == 0)
-        {
-            paleta_endereco = (0x3F00);
-        }
-        else
-        {
-            switch (paleta_pos)
-            {
-                case 0:
-                    paleta_endereco = 0x3F11 + cor_pos;
-                    break;
-                
-                case 1:
-                    paleta_endereco = 0x3F15 + cor_pos;
-                    break;
-
-                case 2:
-                    paleta_endereco = 0x3F19 + cor_pos;
-                    break;
-
-                case 3:
-                    paleta_endereco = 0x3F1D + cor_pos;
-                    break;
-                
-                default:
-                    throw std::runtime_error("Paleta de sprite inválida");
-                    break;
-            }
-        }
-
-        return this->memoria->ler(paleta_endereco);
     }
 
     uint32 Ppu::buscar_padrao_sprite(int i, int linha)
@@ -651,7 +517,6 @@ namespace nesbrasa::nucleo
         
         auto cor_nes = this->ler_paleta(static_cast<uint16>(cor)%64);
         this->fundo.at(y*256 + x) = cores::tabela_rgb.at(cor_nes);
-        //this->set_textura_valor(this->fundo, x, y, cor_nes);
     }
 
     void Ppu::executar_ciclo_vblank()
@@ -1051,11 +916,6 @@ namespace nesbrasa::nucleo
         }
 
         return base | (endereco & 0b0000001111111111);
-    }
-
-    void Ppu::set_textura_valor(array<byte, (256*240)>& textura, int x, int y, int valor)
-    {
-        textura.at(y*256 + x) = valor;
     }
 
     array<uint32, (256*240)>& Ppu::get_textura()

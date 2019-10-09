@@ -54,6 +54,5 @@ namespace nesbrasa::nucleo
         void carregar_rom(vector<byte> arquivo);
 
         int avancar();
-        void avancar_por(double segundos);
     };
 }

@@ -29,7 +29,7 @@ namespace nesbrasa::nucleo
     byte Controle::ler()
     {
         byte valor = 0;
-        if (this->indice < 8 && this->botoes.at(this->indice) == true)
+        if (this->indice < 8 && this->buffer_botoes.at(this->indice) == true)
         {
             valor = 1;
         }
@@ -56,9 +56,9 @@ namespace nesbrasa::nucleo
         }
     }
 
-    void Controle::set_botao(BotaoTipos tipo, bool valor)
+    void Controle::set_valor(Botao botao, bool valor)
     {
-        uint i = static_cast<uint>(tipo);
-        this->botoes.at(i) = valor;
+        uint botao_indice = static_cast<uint>(botao);
+        this->buffer_botoes.at(botao_indice) = valor;
     }
 }

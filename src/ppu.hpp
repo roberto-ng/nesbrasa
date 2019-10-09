@@ -43,25 +43,6 @@ namespace nesbrasa::nucleo
             TELA_UNICA,
             QUATRO_TELAS,
         };
-
-        enum class CicloTipo
-        {
-            ZERO,
-            UM,
-            VISIVEL,
-            COPIAR_Y,
-            PRE_BUSCA,
-            CONTINUAR,
-            OUTRO,
-        };
-
-        enum class ScanLineTipo
-        {
-            VISIVEL,
-            VBLANK,
-            PRE_RENDERIZACAO,
-            OUTRO,
-        };
     
         Espelhamento espelhamento;
 
@@ -157,13 +138,8 @@ namespace nesbrasa::nucleo
         array<uint32, (256*240)>& get_textura();
 
     private:
-        CicloTipo get_ciclo_tipo();
-        ScanLineTipo get_scanline_tipo();
-
         byte buscar_pixel_fundo();
         byte buscar_pixel_sprite(byte* indice);
-        byte buscar_cor_fundo(byte valor);
-        byte buscar_cor_sprite(byte valor);
         uint32 buscar_padrao_sprite(int i, int linha);
         void renderizar_pixel();
 

@@ -24,7 +24,7 @@ namespace nesbrasa::nucleo
 {
     using std::array;
 
-    enum class BotaoTipos : uint
+    enum class Botao : uint
     {
         A          = 0,
         B          = 1,
@@ -38,7 +38,7 @@ namespace nesbrasa::nucleo
 
     class Controle
     {
-        array<bool, 8> botoes;
+        array<bool, 8> buffer_botoes;
         byte indice;
         byte sinal;
 
@@ -48,6 +48,6 @@ namespace nesbrasa::nucleo
         byte ler();
         void escrever(byte valor);
 
-        void set_botao(BotaoTipos tipo, bool valor);
+        void set_valor(Botao botao, bool valor);
     };
 }
