@@ -45,7 +45,7 @@ namespace nesbrasa::nucleo
 
     // Tipo usado para referenciar funções de alto nível 
     // que reimplementam instruções da arquitetura 6502
-    using InstrucaoImplementacao = function< void(Instrucao*, Cpu*, optional<uint16>) >;
+    using InstrucaoImplementacao = std::function< void(Instrucao*, Cpu*, optional<uint16>) >;
 
     //! Modos de endereçamento das instruções
     enum class InstrucaoModo
@@ -65,8 +65,6 @@ namespace nesbrasa::nucleo
         P_ZERO_Y,  // página 0, indexado pelo registrador y
     };
 
-
-    //! Uma instrução da arquitetura 6502
     class Instrucao
     {
     public:

@@ -39,20 +39,21 @@ namespace nesbrasa::nucleo
     class Nes
     {
     public:
-        static const int CPU_FREQUENCIA;
-
         Memoria memoria;
+        
         Cpu cpu;
         Ppu ppu;
+        
         Controle controle_1;
         Controle controle_2;
+        
         unique_ptr<Cartucho> cartucho;
+        
         bool is_programa_carregado;
         
         Nes();
 
         void carregar_rom(vector<byte> arquivo);
-
         int avancar();
     };
 }

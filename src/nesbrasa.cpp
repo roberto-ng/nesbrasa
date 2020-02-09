@@ -32,8 +32,6 @@ namespace nesbrasa::nucleo
     using namespace std::string_literals;
     using namespace mapeadores;
 
-    const int Nes::CPU_FREQUENCIA = 1789773;
-
     Nes::Nes(): 
         memoria(this),
         cpu(&this->memoria),
@@ -89,21 +87,14 @@ namespace nesbrasa::nucleo
         byte mapeador_nibble_maior = (arquivo.at(7) & 0xF0) >> 4;
         byte mapeador_codigo = (mapeador_nibble_maior << 4) | mapeador_nibble_menor;
 
-        // Usar o método factory da classe Cartucho para criar o objeto do cartucho
-        auto cartucho_tipo = static_cast<CartuchoTipo>(mapeador_codigo);
-        this->cartucho = Cartucho::criar(cartucho_tipo, prg_qtd, chr_qtd, arquivo, formato);
+        byte espelhamento1 = buscar_bit(arquivo.at(6), 0);
+        byte espelhamento2 = buscar_bit(arquivo.at(6), 3);
+        byte espelhamento = espelhamento1 | espelhamento2 << 1;
 
-        if (buscar_bit(arquivo.at(6), 3) == true)
-        {
-            this->ppu.espelhamento = Ppu::Espelhamento::QUATRO_TELAS;
-        }
-        else
-        {
-            if (buscar_bit(arquivo.at(6), 0) == false)
-                this->ppu.espelhamento = Ppu::Espelhamento::VERTICAL;
-            else
-                this->ppu.espelhamento = Ppu::Espelhamento::HORIZONTAL;
-        }
+        // transforma o valor numérico em um enum
+        auto cartucho_tipo = static_cast<CartuchoTipo>(mapeador_codigo);
+        // Usar o método factory da classe Cartucho para criar o objeto do cartucho
+        this->cartucho = Cartucho::criar(cartucho_tipo, prg_qtd, chr_qtd, arquivo, formato, espelhamento);
 
         //TODO: Completar suporte a ROMs no formato NES 2.0
         this->is_programa_carregado = true;

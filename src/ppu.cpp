@@ -1,20 +1,9 @@
 /* ppu.cpp
- *
- * Copyright 2019 Roberto Nazareth <nazarethroberto97@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ 
+   The code present is this file is based on https://github.com/fogleman/nes/blob/master/nes/ppu.go
+   
+   O código presente neste arquivo é baseado em https://github.com/fogleman/nes/blob/master/nes/ppu.go
+*/
 
 #include "ppu.hpp"
 #include "nesbrasa.hpp"
@@ -28,19 +17,17 @@ namespace nesbrasa::nucleo
     const int TELA_LARGURA = 256;
     const int TELA_ALTURA = 240;
 
-    Ppu::Ppu(Memoria* memoria): 
-        memoria(memoria),
-        oam({ 0 }),
-        sprites_padroes({ 0 }),
-        sprites_posicoes({ 0 }),
-        sprites_prioridades({ 0 }),
-        sprites_indices({ 0 }),
-        tabelas_de_nomes({ 0 }),
-        paletas({ 0 }),
-        sprite_indices({ 0 })
-    {
-        this->espelhamento = Espelhamento::VERTICAL;
+    array< array<uint16, 4>, 5> espelhamento_tabela {
+        array<uint16, 4> {0, 0, 1, 1},
+        array<uint16, 4> {0, 1, 0, 1},
+        array<uint16, 4> {0, 0, 0, 0},
+        array<uint16, 4> {1, 1, 1, 1},
+        array<uint16, 4> {0, 1, 2, 3},
+    };
 
+    Ppu::Ppu(Memoria* memoria): 
+        memoria(memoria)
+    {
         this->ciclo = 0;
         this->scanline = 261;
         this->frame = 0;
@@ -49,9 +36,6 @@ namespace nesbrasa::nucleo
         this->ultimo_valor = 0;
         this->vram_incrementar = 0;
         this->oam_endereco = 0;
-        this->nametable_endereco = 0;
-        this->padrao_fundo_endereco = 0;
-        this->padrao_sprite_endereco = 0;
 
         this->tile_dados = 0;
         this->tile_byte_maior = 0;
@@ -82,7 +66,6 @@ namespace nesbrasa::nucleo
         this->flag_fundo_habilitar_col_esquerda = false;
         this->flag_escala_cinza = false;
 
-        this->flag_vblank = false;
         this->flag_sprite_zero = false;
         this->flag_sprite_transbordamento = false;
 
@@ -103,9 +86,7 @@ namespace nesbrasa::nucleo
 
         this->set_oam_enderco(0);
         this->set_controle(0);
-        this->set_mascara(0);
-        
-        this->espelhamento = Espelhamento::VERTICAL;
+        this->set_mascara(0);        
     }
 
     void Ppu::atualizar()
@@ -119,7 +100,7 @@ namespace nesbrasa::nucleo
             }
         }
 
-        if (this->flag_fundo_habilitar || this->flag_sprite_habilitar)
+        if (this->flag_fundo_habilitar != 0 || this->flag_sprite_habilitar != 0)
         {
             if (this->f == 1 && this->scanline == 261 && this->ciclo == 339)
             {
@@ -127,7 +108,6 @@ namespace nesbrasa::nucleo
                 this->scanline = 0;
                 this->frame += 1;
                 this->f ^= 1;
-                
                 return;
             }
         }
@@ -279,7 +259,6 @@ namespace nesbrasa::nucleo
                 break;
 
             case 0x2001:
-                //std::cout << "Escrevendo r endereco: $" << std::hex << endereco << " val: $" << std::hex << (int)valor << "\n";
                 this->set_mascara(valor);
                 break;
 
@@ -318,7 +297,8 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
-            uint16 endereco_espelhado = this->endereco_espelhado(endereco);
+            byte modo = nes->cartucho->espelhamento;
+            uint16 endereco_espelhado = this->endereco_espelhado(modo, endereco);
             uint16 posicao = endereco_espelhado % this->tabelas_de_nomes.size();
 
             return this->tabelas_de_nomes.at(posicao);
@@ -327,6 +307,10 @@ namespace nesbrasa::nucleo
         {
             //ler dados das paletas de cores
             this->ler_paleta(endereco % this->paletas.size());
+        }
+        else
+        {
+            throw std::runtime_error("Escrita em endereço desconhecido da PPU");
         }
 
         return 0;
@@ -341,7 +325,8 @@ namespace nesbrasa::nucleo
         }
         else if (endereco >= 0x2000 && endereco < 0x3F00)
         {
-            uint16 endereco_espelhado = this->endereco_espelhado(endereco);
+            byte modo = nes->cartucho->espelhamento;
+            uint16 endereco_espelhado = this->endereco_espelhado(modo, endereco);
             uint16 posicao = endereco_espelhado % this->tabelas_de_nomes.size();
             
             this->tabelas_de_nomes.at(posicao) = valor;
@@ -379,67 +364,142 @@ namespace nesbrasa::nucleo
         return static_cast<byte>(cor & 0x0F);
     }
 
-    byte Ppu::buscar_pixel_sprite(byte* indice)
+    byte Ppu::buscar_pixel_sprite(byte& indice)
     {
-        if (!flag_sprite_habilitar)
+        if (this->flag_sprite_habilitar == 0)
         {
-            *indice = 0;
+            indice = 0;
             return 0;
         }
 
         for (int i = 0; i < this->sprites_qtd; i++)
         {
             int offset = (this->ciclo - 1) - static_cast<int>(this->sprites_posicoes.at(i));
-            if (offset < 0 || offset > 7)
+            if (offset < 0 || offset > 7) 
+            {
                 continue;
+            }
+
             offset = 7 - offset;
-
-            byte cor = static_cast<byte>((this->sprites_padroes.at(i) >> static_cast<byte>(offset*4)) & 0x0F);
-            if (cor%4 == 0)
+            byte cor = (this->sprites_padroes.at(i) >> (offset*4)) & 0x0F;
+            if (cor%4 == 0) 
+            {
                 continue;
+            }
 
-            *indice = i;
+            if (i != 0)
+                std::cout << "aaa " << (int)i << " bbb " << offset  << " cor " << cor << "\n";
+            
+            indice = i;
             return cor;
         }
 
-        *indice = 0;
+        indice = 0;
         return 0;
+    }
+
+    byte Ppu::buscar_cor_fundo(byte dados)
+    {
+        int cor_num = dados & 0x3;
+        int paleta_num = (dados >> 2) & 0x3;
+
+        if (cor_num == 0) return this->ler(this->memoria->nes, 0x3F00);
+
+        uint16 paleta_endereco = 0;
+        switch (paleta_num)
+        {
+            case 0:
+                paleta_endereco = 0x3F01;
+                break;
+
+            case 1:
+                paleta_endereco = 0x3F05;
+                break;
+            
+            case 2:
+                paleta_endereco = 0x3F09;
+                break;
+            
+            case 3:
+                paleta_endereco = 0x3F0D;
+                break;
+            
+            default: break;
+        }
+
+        paleta_endereco += cor_num - 1;
+        return this->ler(this->memoria->nes, paleta_endereco);
+    }
+
+    byte Ppu::buscar_cor_pixel(byte dados)
+    {
+        int cor_num = dados & 0x3;
+        int paleta_num = (dados >> 2) & 0x3;
+
+        if (cor_num == 0) return this->ler(this->memoria->nes, 0x3F00);
+
+        uint16 paleta_endereco = 0;
+        switch (paleta_endereco)
+        {
+            case 0:
+                paleta_endereco = 0x3F11;
+                break;
+            
+            case 1:
+                paleta_endereco = 0x3F15;
+                break;
+
+            case 2:
+                paleta_endereco = 0x3F19;
+                break;
+
+            case 3:
+                paleta_endereco = 0x3F1D;
+                break;
+            
+            default: break;
+        }
+
+        paleta_endereco += cor_num - 1;
+        return this->ler(this->memoria->nes, paleta_endereco);
     }
 
     uint32 Ppu::buscar_padrao_sprite(int i, int linha)
     {
-        uint16 tile = this->oam.at(i*4 + 1);
-        byte atributos = this->oam.at(i*4 + 2);
+        int h = this->flag_sprite_altura ? 15 : 7;
 
+        uint16 tile = this->oam.at(i*4+1);
+        byte atributos = this->oam.at(i*4+2);
+        
         uint16 endereco = 0;
         if (!this->flag_sprite_altura)
         {
-            if (atributos%0x80 == 0x80)
+            if (atributos&0x80 == 0x80)
             {
                 linha = 7 - linha;
             }
 
-            uint16 padrao = this->flag_padrao_sprite ? 1 : 0;
-            endereco = 0x1000*padrao + tile*16 + linha;
+            uint16 tabela = this->flag_padrao_sprite ? 1 : 0;
+            endereco = 0x1000*tabela + tile*16 + linha;
         }
         else
         {
-            if (atributos%0x80 == 0x80)
+            if (atributos&0x80 == 0x80)
             {
                 linha = 15 - linha;
             }
 
-            uint16 padrao = tile & 1;
+            uint16 tabela = tile & 1;
             tile &= 0xFE;
             if (linha > 7)
             {
                 tile += 1;
                 linha -= 8;
             }
-            endereco = 0x1000*padrao + tile*16 + linha;
+            endereco = 0x1000*tabela + tile*16 + linha;
         }
 
-        auto a = (atributos & 3) << 2;
+        byte atrib = (atributos & 3) << 2;
         byte tile_byte_menor = this->ler(this->memoria->nes, endereco);
         byte tile_byte_maior = this->ler(this->memoria->nes, endereco+8);
 
@@ -464,7 +524,7 @@ namespace nesbrasa::nucleo
             }
 
             valor <<= 4;
-            valor |= static_cast<uint32>(a | p1 | p2);
+            valor |= static_cast<uint32>(atrib | p1 | p2);
         }
 
         return valor;
@@ -472,15 +532,15 @@ namespace nesbrasa::nucleo
 
     void Ppu::renderizar_pixel()
     {
-        int x = this->ciclo - 1;
-        int y = this->scanline;
+        int pos_x = this->ciclo - 1;
+        int pos_y = this->scanline;
         byte indice = 0;
         byte fundo = this->buscar_pixel_fundo();
-        auto sprite = this->buscar_pixel_sprite(&indice);
+        byte sprite = this->buscar_pixel_sprite(indice);
 
-        if (x < 8 && !this->flag_fundo_habilitar_col_esquerda)
+        if (pos_x < 8 && !this->flag_fundo_habilitar_col_esquerda)
             fundo = 0;
-        if (x < 8 && !this->flag_sprite_habilitar_col_esquerda)
+        if (pos_x < 8 && !this->flag_sprite_habilitar_col_esquerda)
             sprite = 0;
 
         bool f = fundo%4 != 0;
@@ -500,7 +560,7 @@ namespace nesbrasa::nucleo
         }
         else
         {
-            if (this->sprites_indices.at(indice) == 0 && x < 255)
+            if (this->sprites_indices.at(indice) == 0 && pos_x < 255)
             {
                 this->flag_sprite_zero = true;
             }
@@ -515,8 +575,8 @@ namespace nesbrasa::nucleo
             }
         }
         
-        auto cor_nes = this->ler_paleta(static_cast<uint16>(cor)%64);
-        this->fundo.at(y*256 + x) = cores::tabela_rgb.at(cor_nes);
+        auto cor_nes = this->ler_paleta(static_cast<uint16>(cor));
+        this->fundo.at(pos_y*256 + pos_x) = cores::tabela_rgb.at(cor_nes%64);
     }
 
     void Ppu::executar_ciclo_vblank()
@@ -540,7 +600,6 @@ namespace nesbrasa::nucleo
         bool nmi = this->nmi_output && this->nmi_ocorreu;
         if (nmi && !this->nmi_anterior)
         {
-            //std::cout << "ALTERAR NMI\n";
             this->nmi_atrasar = 15;
         }
         this->nmi_anterior = nmi;
@@ -564,18 +623,18 @@ namespace nesbrasa::nucleo
     void Ppu::buscar_tile_byte_menor()
     {
         uint16 y = (this->v >> 12) & 7;
-        uint16 table = this->flag_padrao_fundo;
+        uint16 tabela = this->flag_padrao_fundo ? 1 : 0;
         uint16 tile = this->tabela_de_nomes_byte;
-        uint16 endereco = 0x1000*static_cast<uint16>(table) + static_cast<uint16>(tile)*16 + y;
+        uint16 endereco = 0x1000*tabela + tile*16 + y;
         this->tile_byte_menor = this->ler(this->memoria->nes, endereco);
     }
 
     void Ppu::buscar_tile_byte_maior()
     {
         uint16 y = (this->v >> 12) & 7;
-        uint16 table = this->flag_padrao_fundo;
+        uint16 tabela = this->flag_padrao_fundo ? 1 : 0;
         uint16 tile = this->tabela_de_nomes_byte;
-        uint16 endereco = 0x1000*static_cast<uint16>(table) + static_cast<uint16>(tile)*16 + y;
+        uint16 endereco = 0x1000*tabela + tile*16 + y;
         this->tile_byte_maior = this->ler(this->memoria->nes, endereco+8);
     }
 
@@ -585,12 +644,12 @@ namespace nesbrasa::nucleo
         for (int i = 0; i < 8; i++)
         {
             byte a = this->tabela_de_atributos_byte;
-            int p1 = (this->tile_byte_menor & 0x80) >> 7;
-            int p2 = (this->tile_byte_maior & 0x80) >> 6;
+            byte p1 = (this->tile_byte_menor & 0x80) >> 7;
+            byte p2 = (this->tile_byte_maior & 0x80) >> 6;
             this->tile_byte_menor <<= 1;
 		    this->tile_byte_maior <<= 1;
             valor <<= 4;
-            valor |= (a | p1 | p2);
+            valor |= static_cast<uint32>(a | p1 | p2);
         }
         this->tile_dados |= static_cast<uint64>(valor);
     }
@@ -613,7 +672,6 @@ namespace nesbrasa::nucleo
             uint pos_y = this->oam.at(i*4+0);
             uint atrib = this->oam.at(i*4+2);
             uint pos_x = this->oam.at(i*4+3);
-
             int linha = this->scanline - static_cast<int>(pos_y);
             if (linha < 0 || linha >= altura)
             {
@@ -623,11 +681,11 @@ namespace nesbrasa::nucleo
             if (contagem < 8)
             {
                 this->sprites_padroes.at(contagem) = this->buscar_padrao_sprite(i, linha);
-                this->sprites_posicoes.at(contagem) = x;
+                this->sprites_posicoes.at(contagem) = pos_x;
                 this->sprites_prioridades.at(contagem) = (atrib >> 5) & 1;
-                this->sprites_indices.at(contagem) = static_cast<byte>(i);
+                this->sprites_indices.at(contagem) = i;
             }
-            contagem += 1;
+            contagem++;
         }
         if (contagem > 8)
         {
@@ -693,14 +751,16 @@ namespace nesbrasa::nucleo
 
     void Ppu::set_controle(byte valor)
     {
-        this->flag_nametable_base = valor & 0b00000011;
-        this->flag_incrementar = buscar_bit(valor, 2);
-        this->flag_padrao_sprite = buscar_bit(valor, 3);
-        this->flag_padrao_fundo = buscar_bit(valor, 4);
-        this->flag_sprite_altura = buscar_bit(valor, 5);
-        this->flag_mestre_escravo = buscar_bit(valor, 6);
-        this->nmi_output = buscar_bit(valor, 7) == 1;
+        this->flag_nametable_base = (valor >> 0) & 3;
+        this->flag_incrementar = (valor >> 2) & 1;
+        this->flag_padrao_sprite =  (valor >> 3) & 1;
+        this->flag_padrao_fundo = (valor >> 4) & 1;
+        this->flag_sprite_altura = (valor >> 5) & 1;
+        this->flag_mestre_escravo = (valor >> 6) & 1;
+        this->nmi_output = (valor>>7)&1 == 1;
         this->alterar_nmi();
+
+        this->sprite_padrao_tabela_endereco = 0x1000 * this->flag_padrao_sprite;
 
         // t: ...BA.. ........ = d: ......BA
         this->t = (this->t & 0xF3FF) | ((static_cast<uint16>(valor) & 0x03) << 10);
@@ -708,14 +768,14 @@ namespace nesbrasa::nucleo
 
     void Ppu::set_mascara(byte valor)
     {
-        this->flag_enfase_b = buscar_bit(valor, 7);
-        this->flag_enfase_g = buscar_bit(valor, 6);
-        this->flag_enfase_r = buscar_bit(valor, 5);
-        this->flag_sprite_habilitar = buscar_bit(valor, 4);
-        this->flag_fundo_habilitar = buscar_bit(valor, 3);
-        this->flag_sprite_habilitar_col_esquerda = buscar_bit(valor, 2);
-        this->flag_fundo_habilitar_col_esquerda = buscar_bit(valor, 1);
-        this->flag_escala_cinza = buscar_bit(valor, 0);
+        this->flag_escala_cinza = (valor >> 0) & 1;
+        this->flag_fundo_habilitar_col_esquerda = (valor >> 1) & 1;
+        this->flag_sprite_habilitar_col_esquerda = (valor >> 2) & 1;
+        this->flag_fundo_habilitar = (valor >> 3) & 1;
+        this->flag_sprite_habilitar = (valor >> 4) & 1;
+        this->flag_enfase_r = (valor >> 5) & 1;
+        this->flag_enfase_g = (valor >> 6) & 1;
+        this->flag_enfase_b = (valor >> 7) & 1;
     }
 
     byte Ppu::get_estado()
@@ -763,7 +823,7 @@ namespace nesbrasa::nucleo
             // w:                  = 1
             this->t = (this->t & 0xFFE0) | (static_cast<uint16>(valor) >> 3);
             this->x = valor & 0x07;
-            this->w = true;
+            this->w = 1;
         }
         else
         {
@@ -771,7 +831,7 @@ namespace nesbrasa::nucleo
             // w:                  = 0
             this->t = (this->t & 0x8FFF) | ((static_cast<uint16>(valor) & 0x07) << 12);
 		    this->t = (this->t & 0xFC1F) | ((static_cast<uint16>(valor) & 0xF8) << 2);
-		    this->w = false;
+		    this->w = 0;
         }
     }
 
@@ -802,11 +862,11 @@ namespace nesbrasa::nucleo
     {
         uint16 ponteiro = static_cast<uint16>(valor) << 8;
 
-        for (uint32 i = 0; i < 256; i++)
+        for (uint i = 0; i < 256; i++)
         {
             this->oam.at(this->oam_endereco) = this->memoria->ler(ponteiro);
-            this->oam_endereco += 1;
-            ponteiro += 1;
+            this->oam_endereco++;
+            ponteiro++;
         }
 
         nes->cpu.esperar_adicionar(513);
@@ -821,7 +881,7 @@ namespace nesbrasa::nucleo
         byte valor = this->ler(this->memoria->nes, this->v);
         if ((this->v%0x4000) < 0x3F00)
         {
-            const byte buffer_dados = this->buffer_dados;
+            byte buffer_dados = this->buffer_dados;
             this->buffer_dados = valor;
             valor = buffer_dados;
         }
@@ -848,74 +908,12 @@ namespace nesbrasa::nucleo
             this->v += 32;
     }
 
-    uint16 Ppu::endereco_espelhado(uint16 endereco)
+    uint16 Ppu::endereco_espelhado(byte modo, uint16 endereco)
     {
-        uint16 base = 0;
-        switch (this->espelhamento)
-        {
-            case Espelhamento::HORIZONTAL:
-                if (endereco >= 0x2000 && endereco < 0x2400)
-                {
-                    base = 0x2000;
-                }
-                else if (endereco >= 0x2400 && endereco < 0x2800)
-                {
-                    base = 0x2000;
-                }
-                else if (endereco >= 0x2800 && endereco < 0x2C00)
-                {
-                    base = 0x2400;
-                }
-                else
-                {
-                    base = 0x2400;
-                }
-                break;
-
-            case Espelhamento::VERTICAL:
-                if (endereco >= 0x2000 && endereco < 0x2400)
-                {
-                    base = 0x2000;
-                }
-                else if (endereco >= 0x2400 && endereco < 0x2800)
-                {
-                    base = 0x2400;
-                }
-                else if (endereco >= 0x2800 && endereco < 0x2C00)
-                {
-                    base = 0x2000;
-                }
-                else
-                {
-                    base = 0x2400;
-                }
-                break;
-
-            case Espelhamento::TELA_UNICA:
-                base = 0x2000;
-                break;
-
-            case Espelhamento::QUATRO_TELAS:
-                if (endereco >= 0x2000 && endereco < 0x2400)
-                {
-                    base = 0x2000;
-                }
-                else if (endereco >= 0x2400 && endereco < 0x2800)
-                {
-                    base = 0x2400;
-                }
-                else if (endereco >= 0x2800 && endereco < 0x2C00)
-                {
-                    base = 0x2800;
-                }
-                else
-                {
-                    base = 0x2C00;
-                }
-                break;
-        }
-
-        return base | (endereco & 0b0000001111111111);
+        uint16 endereco_espelhado = (endereco - 0x2000) % 0x1000;
+        uint16 tabela = endereco_espelhado / 0x0400;
+        uint16 offset = endereco_espelhado % 0x0400;
+        return 0x2000 + espelhamento_tabela.at(modo).at(tabela) * 0x0400 + offset;
     }
 
     array<uint32, (256*240)>& Ppu::get_textura()

@@ -47,7 +47,7 @@ namespace nesbrasa::nucleo
         //! Lê um valor de 16 bits na memoria
         uint16 ler_16_bits(uint16 endereco);
 
-        //! Lê um valor de 16 bits na memoria com o bug do no modo indireto da cpu
+        //! Lê um valor de 16 bits na memoria do no modo indireto da cpu reproduzindo um bug da CPU
         uint16 ler_16_bits_bug(uint16 endereco);
 
         //! Escreve um valor na memoria

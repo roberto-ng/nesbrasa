@@ -33,69 +33,62 @@ namespace nesbrasa::nucleo
     using std::array;
     using std::shared_ptr;
     
+    extern array< array<uint16, 4>, 5> espelhamento_tabela;
+
     class Ppu
     {
-    public:
-        enum class Espelhamento
-        {
-            HORIZONTAL,
-            VERTICAL,
-            TELA_UNICA,
-            QUATRO_TELAS,
-        };
-    
-        Espelhamento espelhamento;
-
     private:
         Memoria* memoria;
 
-        // textura RGB representando a tela do NES
+        int ciclo;
+        int scanline;
+        uint64 frame;
+
+        array<byte, 0x20>  paletas;
+        array<byte, 0x800> tabelas_de_nomes;
+        array<byte, 0x100> oam;
+        // texturas RGB representando a tela do NES
         array<uint32, (256*240)> frente;
         array<uint32, (256*240)> fundo;
 
-        array<byte, 0x100> oam;
-        array<byte, 0x800> tabelas_de_nomes;
-        array<byte, 0x20>  paletas;
-        array<byte, 0x8>   sprite_indices;
+        // registradores internos
+        uint16 v;
+        uint16 t;
+        byte   x;
+        bool   w;
+        bool   f;
 
-        int ciclo;
-        int scanline;
-        int frame;
-
-        byte buffer_dados;
         byte ultimo_valor; // último valor escrito na ppu
-        uint16 vram_incrementar;
-        uint16 oam_endereco;
-        uint16 nametable_endereco;
-        uint16 padrao_fundo_endereco;
-        uint16 padrao_sprite_endereco;
 
-        // membros relacionados às texturas de fundo
-        uint64 tile_dados;
-        byte tile_byte_maior;
-        byte tile_byte_menor;
-        byte tabela_de_nomes_byte;
-        byte tabela_de_atributos_byte;
-
-        uint sprites_qtd;
-        array<uint32, 8> sprites_padroes;
-        array<byte, 8>   sprites_posicoes;
-        array<byte, 8>   sprites_prioridades;
-        array<byte, 8>   sprites_indices;
-        
         // flags do nmi
         bool nmi_ocorreu;
-        bool nmi_anterior;
         bool nmi_output;
-        uint nmi_atrasar;
+        bool nmi_anterior;
+        byte nmi_atrasar;
 
+        // membros relacionados às texturas de fundo
+        byte tabela_de_nomes_byte;
+        byte tabela_de_atributos_byte;
+        byte tile_byte_maior;
+        byte tile_byte_menor;
+        uint64 tile_dados;
+
+        int sprites_qtd;
+        array<uint64, 8> sprites_padroes;
+        array<byte, 8>   sprites_posicoes;
+        array<byte, 8>   sprites_prioridades;
+        array<int, 8>   sprites_indices;        
+        
+        uint16 vram_incrementar;
+        
         // PPUCTRL - $2000
-        bool flag_mestre_escravo;
-        bool flag_sprite_altura;
-        bool flag_padrao_fundo;
-        bool flag_padrao_sprite;
-        bool flag_incrementar;
         byte flag_nametable_base;
+        bool flag_incrementar;
+        bool flag_padrao_sprite;
+        bool flag_padrao_fundo;
+        bool flag_sprite_altura;
+        bool flag_mestre_escravo;
+        uint16 sprite_padrao_tabela_endereco;
 
         // PPUMASK - $2001
         bool flag_enfase_b;
@@ -108,16 +101,14 @@ namespace nesbrasa::nucleo
         bool flag_escala_cinza;
 
         // PPUSTATUS - $2002
-        bool flag_vblank;
         bool flag_sprite_zero;
         bool flag_sprite_transbordamento;
 
-        // registradores internos
-        uint16 v;
-        uint16 t;
-        byte   x;
-        bool   w;
-        bool   f;
+        // OAMADDR - $2003
+        byte oam_endereco;
+
+        // PPUDATA - $2007
+        byte buffer_dados;
 
     public:        
         Ppu(Memoria* memoria);
@@ -139,7 +130,9 @@ namespace nesbrasa::nucleo
 
     private:
         byte buscar_pixel_fundo();
-        byte buscar_pixel_sprite(byte* indice);
+        byte buscar_pixel_sprite(byte& indice);
+        byte buscar_cor_fundo(byte dados);
+        byte buscar_cor_pixel(byte dados);
         uint32 buscar_padrao_sprite(int i, int linha);
         void renderizar_pixel();
 
@@ -171,7 +164,7 @@ namespace nesbrasa::nucleo
         byte get_dados();
         void set_dados(Nes *nes, byte valor);
 
-        uint16 endereco_espelhado(uint16 endereco);
+        uint16 endereco_espelhado(byte modo, uint16 endereco);
 
         void set_textura_valor(array<byte, (256*240)>& textura, int x, int y, int valor);
     };

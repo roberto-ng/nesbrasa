@@ -27,8 +27,9 @@ namespace nesbrasa::nucleo::mapeadores
     using namespace nucleo;
 
     NRom::NRom(int prg_bancos_qtd, int chr_bancos_qtd, 
-               vector<byte>& arquivo, ArquivoFormato formato):
-        Cartucho(prg_bancos_qtd, chr_bancos_qtd, arquivo, formato)
+               vector<byte>& arquivo, ArquivoFormato formato,
+               byte espelhamento):
+        Cartucho(prg_bancos_qtd, chr_bancos_qtd, arquivo, formato, espelhamento)
     {
         // aloca a memória que representará a ram PRG
         this->ram_prg.resize(0x2000);
@@ -75,12 +76,10 @@ namespace nesbrasa::nucleo::mapeadores
 
     void NRom::escrever(uint16 endereco, byte valor)
     {
-        /*
         if (!this->possui_chr_ram)
         {
             throw runtime_error("CHR RAM inexistente"s);
         }
-        */
 
         if (endereco < 0x2000)
         {

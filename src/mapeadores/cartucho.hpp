@@ -65,6 +65,8 @@ namespace nesbrasa::nucleo::mapeadores
     public:
         ArquivoFormato arquivo_formato;
 
+        byte espelhamento;
+
         // tamanho em bytes de um banco da ROM PRG
         static const int PRG_BANCOS_TAMANHO;
         // tamanho em bytes de um banco da ROM CHR
@@ -72,10 +74,12 @@ namespace nesbrasa::nucleo::mapeadores
 
         // método factory
         static unique_ptr<Cartucho> criar(CartuchoTipo tipo, int prg_qtd, int chr_qtd, 
-                                          vector<byte>& arquivo, ArquivoFormato formato);
+                                          vector<byte>& arquivo, ArquivoFormato formato,
+                                          byte espelhamento);
 
         Cartucho(int prg_bancos_qtd, int chr_bancos_qtd, 
-                 vector<byte>& arquivo, ArquivoFormato formato);
+                 vector<byte>& arquivo, ArquivoFormato formato, 
+                 byte espelhamento);
 
         virtual ~Cartucho() = default;
 

@@ -34,12 +34,13 @@ namespace nesbrasa::nucleo::mapeadores
     const int Cartucho::CHR_BANCOS_TAMANHO = 0x2000;
 
     unique_ptr<Cartucho> Cartucho::criar(CartuchoTipo tipo, int prg_qtd, int chr_qtd, 
-                                         vector<byte>& arquivo, ArquivoFormato formato)
+                                         vector<byte>& arquivo, ArquivoFormato formato,
+                                         byte espelhamento)
     {
         switch (tipo)
         {
             case CartuchoTipo::NROM:
-                return make_unique<NRom>(prg_qtd, chr_qtd, arquivo, formato);
+                return make_unique<NRom>(prg_qtd, chr_qtd, arquivo, formato, espelhamento);
                 break;
 
             default:
@@ -56,8 +57,10 @@ namespace nesbrasa::nucleo::mapeadores
     Cartucho::Cartucho(int prg_bancos_qtd, 
                  int chr_bancos_qtd, 
                  vector<byte>& arquivo,
-                 ArquivoFormato formato)
+                 ArquivoFormato formato,
+                 byte espelhamento)
     {
+        this->espelhamento = espelhamento;
         this->arquivo_formato = formato;
         this->prg_bancos_quantidade = prg_bancos_qtd;
         this->chr_bancos_quantidade = chr_bancos_qtd;

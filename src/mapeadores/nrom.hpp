@@ -28,7 +28,8 @@ namespace nesbrasa::nucleo::mapeadores
 	{
 	public:
 		NRom(int prg_bancos_qtd, int chr_bancos_qtd,
-		     vector<byte>& arquivo, ArquivoFormato formato);
+		     vector<byte>& arquivo, ArquivoFormato formato,
+			 byte espelhamento);
 
 		byte ler(uint16 endereco) override;
 
