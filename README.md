@@ -1,7 +1,7 @@
 # Nesbrasa 
 ## Emulador de NES para Windows e GNU/Linux
 
-Repisitório da biblioteca núcleo: https://gitlab.com/robertonazareth/nesbrasa
+Repisitório do front-end Gtk: https://gitlab.com/robertonazareth/nesbrasa-gtk
 
 ### Dependências:
 * Compilador para C++17
