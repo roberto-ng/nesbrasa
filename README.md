@@ -1,7 +1,7 @@
 # Nesbrasa 
 ## Emulador de NES e Famicom
 
-Este repositório é o repositório para a biblioteca núcleo do emulador Nesbrasa, que contém apenas as partes idependentes de sistema operacional do código.
+Este repositório é o repositório para a biblioteca núcleo do emulador Nesbrasa, que contém apenas as partes do código que são idependentes de sistema operacional.
 
 Repisitório do front-end Gtk para Windows e GNU/Linux: https://gitlab.com/robertonazareth/nesbrasa-gtk
 
